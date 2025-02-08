@@ -1,0 +1,7 @@
+here's how we're gonna do this:
+ - remake the whole 2018 & 2015 twitch site
+  - 2018: https://www.google.com/search?q=twitch+website+in+2018&udm=2, https://youtu.be/DdQM-YauwJk?t=90s & https://medium.com/twitch-news/twitchcon-2018-keynote-56be103fea21
+  - 2015: https://www.youtube.com/watch?v=1dgrRokxOmI
+ - make the extension replaces the select pages with custom ones.
+ - get an api key or something to get the user's stats, such as following, recommends, etc. and also use for streamer stats.
+ - figure out the "usher.ttvnw.net" (https://github.com/pixeltris/TwitchAdSolutions/issues/7) with a combo of twitch's internal api to get streams & shit.

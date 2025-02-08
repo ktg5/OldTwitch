@@ -1,0 +1,9 @@
+{
+    "manifest_version": 3,
+    "name": "OldTTV",
+    "version": "0.0.1",
+    "action": {},
+    "background": {
+        "service_worker": "src/js/ot-background.js"
+    }
+}
