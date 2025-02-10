@@ -7,23 +7,18 @@ const { execSync } = require('child_process');
 
 
 // Before starting, make sure that the other folders don't exist.
-var chromeDir = './dist/OldTTV-Chrome';
-var firefoxDir = './dist/OldTTV-Firefox';
-var tsDistDir = './ts-dist';
+var chromeDir = 'dist/OldTTV-Chrome';
+var firefoxDir = 'dist/OldTTV-Firefox';
 if (fs.existsSync('./dist')) {
     console.log(`Deleting dist folder`);
     fs.rmSync('./dist', { recursive: true });
     console.log(`Deleted dist folder`);
 }
-if (fs.existsSync(tsDistDir)) {
-    console.log(`Deleting dist TypeScript folder`);
-    fs.rmSync(tsDistDir, { recursive: true });
-    console.log(`Deleted dist TypeScript folder`);
-}
 
 
 // Function to copy all the dirs but not REALLY all of them.
 async function copyDir(sourceDir, newDir) {
+    console.log(sourceDir, newDir);
     // Get dirs in the project folder.
     var dirs = fs.readdirSync(sourceDir, { withFileTypes: true });
     fs.mkdirSync(newDir);
@@ -32,6 +27,7 @@ async function copyDir(sourceDir, newDir) {
     for (let entry of dirs) {
         // Folders & files that we AIN'T ALLOWIN'!
         if (
+            entry.name === 'dist' ||
             entry.name === '.git' ||
             entry.name === '.github' ||
             entry.name === 'psds' ||
@@ -78,13 +74,6 @@ process.argv.forEach(function (val, index, array) {
 
 console.log(`-------------`);
 // Here's we build.
-// Let's get "npx tsc" to do it's thing.
-console.log(`Compiling TypeScript...`);
-execSync('npx tsc');
-console.log(`Done building JS files.`);
-console.log(`-------------`);
-
-// Okay! we can move on now.
 // Make sure to have the dist folder ready.
 if (!fs.existsSync('./dist')) fs.mkdirSync('./dist');
 // Let's copy the src folder for Chrome.
@@ -110,5 +99,77 @@ copyDir('./src', chromeDir).then(async () => {
         console.log(`WHAT THE FRICK! ${e}`);
     }
     console.log(`Zipped Chrome version into "${chromeDir}.zip"`);
+    console.log(`-------------`);
+});
+
+// Then we copy the same folder for Firefox.
+copyDir('./src', firefoxDir).then(async () => {
+    console.log(`(Re)made the Firefox folder`);
+    // Then we modify the Firefox extension a bit cuz no
+    // browser developer can come up with extension
+    // manifest standards like WHY.
+    var firefoxManifest = JSON.parse(fs.readFileSync(`${firefoxDir}/manifest.json`, { encoding: 'utf8' }));
+    firefoxManifest.manifest_version = 2;
+    firefoxManifest.background = {
+        "scripts": [
+        "src/pt-background.js"
+        ],
+        "persistent": false,
+        "type": "module"
+    }; // Add this so Firefox extension can work
+    firefoxManifest.web_accessible_resources = [
+        "css/*"
+    ],
+    delete firefoxManifest.action; // Manifest v2 moment
+    delete firefoxManifest.background.service_worker; // This is only for Chrome, Firefox will freak out if this isn't deleted lol.
+    // Write the manifest file for Firefox
+    fs.writeFileSync(`${firefoxDir}/manifest.json`, JSON.stringify(firefoxManifest, null, 2));
+
+    // Since v1.6, we also have to replace all the "chrome-extension://" with "moz-extension://"
+    // WHY CAN'T IT JUST BE "extension://" OR SOMETHING??????
+    console.log('Replacing all css files that include "chrome-extension://" with "moz-extension://"');
+    // For each CSS file, do the replacing moment for both vanilla css and v3 css
+    async function replaceChromewithMoz(cssFiles) {
+        let fsCssFiles = fs.readdirSync(cssFiles);
+        fsCssFiles.forEach(cssFileName => {
+            let cssPath = `${cssFiles}${cssFileName}`;
+            // Make sure cssPath has an extension
+            if (cssPath.endsWith('.css')) {
+                process.stdout.write(`> ${cssPath}`);
+                // Read the CSS file
+                let cssFile = fs.readFileSync(cssPath, { encoding: 'utf8' });
+                // Replace all chrome-extension:// with moz-extension://
+                cssFile = cssFile.replaceAll('chrome-extension://', 'moz-extension://');
+                // Then write the CSS file with "cssFile"
+                fs.writeFileSync(cssPath, cssFile);
+                readline.clearLine(process.stdout, 0);
+                readline.cursorTo(process.stdout, 0, null);
+                process.stdout.write(`✓ ${cssPath}\n`);
+            }
+        });
+    };
+    await replaceChromewithMoz(`${firefoxDir}/html/css/`);
+
+    console.log(`Replace complete.`);
+
+    // If the zip already exists...
+    if (fs.existsSync(`${firefoxDir}.zip`)) {
+        console.log("Deleting old Firefox zip");
+        fs.unlinkSync(`${firefoxDir}.zip`);
+        console.log("Deleted old Firefox zip");
+    }
+
+    console.log("Zipping Firefox version...");
+    // Try to zip up the extension
+    try {
+        const zip = new Zip();
+        const outputDir = `${firefoxDir}.zip`;
+        zip.addLocalFolder(firefoxDir);
+        zip.writeZip(outputDir);
+    } catch (e) {
+        console.log(`WHAT THE FRICK! ${e}`);
+    }
+    console.log(`Zipped Firefox version into ${firefoxDir}.zip`);
+    // End
     console.log(`-------------`);
 });

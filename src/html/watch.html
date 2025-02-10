@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Twitch</title>
+
+    <link rel="shortcut icon" crossorigin="anonymous" href="__EXTENSION_URL__/html/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" crossorigin="anonymous" href="__EXTENSION_URL__/html/css/main.css">
+</head>
+
+
+<body style="display: none;">
+    <div
+        class="twilight-root tw-right-0 tw-bottom-0 tw-left-0 tw-overflow-hidden tw-flex tw-flex-column tw-flex-nowrap tw-absolute">
+        <nav class="top-nav tw-top-0 tw-full-width tw-fixed"></nav>
+
+        <div class="tw-full-height tw-flex tw-flex-nowrap tw-relative">
+            <div data-a-target="side-nav-bar"
+                class="side-nav tw-full-height tw-flex-grow-0 tw-flex-shrink-0 tw-relative"></div>
+
+            <main class="twilight-main tw-full-width tw-full-height tw-overflow-hidden tw-flex tw-flex-column tw-flex-grow-1 tw-relative">
+                <div class="">
+                    <div class="channel-header tw-flex-shrink-0" style="position: relative;">
+                        <div class="tw-hide-accessible">
+                            <div class="channel-banner">
+                                <span class="tw-placeholder-wrapper" data-test-selector="channel-banner__placeholder">
+                                    <span class="tw-placeholder tw-placeholder--fill tw-placeholder--custom-height" style="height: 38rem;"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="tw-full-height tw-flex tw-flex-nowrap tw-justify-content-between tw-mg-x-3">
+                            <div data-target="channel-header-left" class="tw-align-items-stretch tw-flex tw-flex-shrink-0 tw-flex-nowrap">
+                                <div class="channel-header__banner-toggle channel-header__user channel-header__user--selected tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap tw-pd-r-2 tw-pd-y-05" data-target="channel-header__channel-link" data-a-target="user-channel-header-item">
+                                    <div class="tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
+                                        <div class="channel-header__user-avatar channel-header__user-avatar--active tw-align-items-stretch tw-flex tw-flex-shrink-0 tw-mg-r-1">
+                                            <div class="tw-relative">
+                                                <figure class="tw-avatar tw-avatar--size-36">
+                                                    <div class="tw-overflow-hidden ">
+                                                        <img class="tw-image" src="" alt="pfp">
+                                                    </div>
+                                                </figure>
+                                            </div>
+                                        </div>
+                                        <div class="tw-align-items-center">
+                                            <span class="tw-placeholder-wrapper">
+                                                <span class="tw-placeholder" style="width: 12rem;"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="videos-channel-header-item" href="#">
+                                    <div class="tw-flex tw-pd-x-2 tw-pd-y-05">
+                                        <span class="tw-font-size-5">Videos</span>
+                                        <div class="channel-header__item-count tw-flex tw-mg-l-05">
+                                            <span class="tw-font-size-5">0</span>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="clips-channel-header-item" href="#">
+                                    <div class="tw-flex tw-pd-x-2 tw-pd-y-05">
+                                        <span class="tw-font-size-5">Clips</span>
+                                    </div>
+                                </a>
+                                <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="schedule-channel-header-item" href="#">
+                                    <div class="tw-flex tw-pd-x-2 tw-pd-y-05">
+                                        <span class="tw-font-size-5">Schedule</span>
+                                    </div>
+                                </a>
+                                <!-- <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="collections-channel-header-item" href="#">
+                                    <div class="tw-flex tw-pd-x-2 tw-pd-y-05">
+                                        <span class="tw-font-size-5">Collections</span>
+                                    </div>
+                                </a> -->
+                                <!-- <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="events-channel-header-item" href="#">
+                                    <div class="tw-flex tw-pd-x-2 tw-pd-y-05">
+                                        <span class="tw-font-size-5">Events</span>
+                                    </div>
+                                </a> -->
+                                <a class="channel-header__item tw-align-items-center tw-flex-shrink-0"
+                                    data-target="channel-header-item" data-a-target="followers-channel-header-item"
+                                    href="#">
+                                    <div class="tw-flex tw-pd-x-2 tw-pd-y-05"><span
+                                            class="tw-font-size-5">Followers</span>
+                                        <div class="channel-header__item-count tw-flex tw-mg-l-05"><span
+                                                class="tw-font-size-5">0</span></div>
+                                    </div>
+                                </a>
+                                <!-- <a class="channel-header__item tw-align-items-center tw-flex-shrink-0"
+                                    data-target="channel-header-item" data-a-target="following-channel-header-item"
+                                    href="#">
+                                    <div class="tw-flex tw-pd-x-2 tw-pd-y-05"><span
+                                            class="tw-font-size-5">Following</span>
+                                        <div class="channel-header__item-count tw-flex tw-mg-l-05"><span
+                                                class="tw-font-size-5">0</span></div>
+                                    </div>
+                                </a> -->
+                                <div data-target="channel-header-button"
+                                    class="channel-header__item channel-header__item--no-underline tw-align-self-center tw-flex-shrink-0 tw-pd-x-1 channel-header__item--hide">
+                                    <div data-toggle-balloon-id="e7c15833-1a8e-4ca6-82fd-4fa8fd44d050"
+                                        class="tw-relative">
+                                        <div data-test-selector="toggle-balloon-wrapper__mouse-enter-detector"
+                                            style="display: inherit;"><button aria-label="More"
+                                                class="tw-button-icon"><span class="tw-button-icon__icon">
+                                                    <figure class="tw-svg"><svg
+                                                            class="tw-svg__asset tw-svg__asset--navmore tw-svg__asset--inherit"
+                                                            width="16px" height="16px" version="1.1" viewBox="0 0 18 18"
+                                                            x="0px" y="0px">
+                                                            <path clip-rule="evenodd"
+                                                                d="M13,11V7h4v4H13z M7,7h4v4H7V7z M1,7h4v4H1V7z"
+                                                                fill-rule="evenodd"></path>
+                                                        </svg></figure>
+                                                </span></button></div>
+                                        <div class="tw-balloon tw-balloon--down tw-hide tw-absolute">
+                                            <div
+                                                class="tw-border-t tw-border-r tw-border-b tw-border-l tw-elevation-1 tw-border-radius-small tw-c-background  ">
+                                                <div class="tw-pd-y-1">
+                                                    <div data-target="channel-header-dropdown-item"
+                                                        class="channel-header__item--hide"><a
+                                                            class="tw-interactable tw-interactable--disabled" href="#">
+                                                            <div
+                                                                class="channel-header__dropdown-hover-target tw-flex tw-pd-x-1 tw-pd-y-05">
+                                                                <span class="">Videos</span>
+                                                                <div
+                                                                    class="channel-header__item-count tw-flex tw-mg-l-05">
+                                                                    <span class="">0</span></div>
+                                                            </div>
+                                                        </a></div>
+                                                    <div data-target="channel-header-dropdown-item"
+                                                        class="channel-header__item--hide"><a
+                                                            class="tw-interactable tw-interactable--disabled" href="#">
+                                                            <div
+                                                                class="channel-header__dropdown-hover-target tw-flex tw-pd-x-1 tw-pd-y-05">
+                                                                <span class="">Clips</span></div>
+                                                        </a></div>
+                                                    <div data-target="channel-header-dropdown-item"
+                                                        class="channel-header__item--hide"><a
+                                                            class="tw-interactable tw-interactable--disabled" href="#">
+                                                            <div
+                                                                class="channel-header__dropdown-hover-target tw-flex tw-pd-x-1 tw-pd-y-05">
+                                                                <span class="">Collections</span></div>
+                                                        </a></div>
+                                                    <div data-target="channel-header-dropdown-item"
+                                                        class="channel-header__item--hide"><a
+                                                            class="tw-interactable tw-interactable--disabled" href="#">
+                                                            <div
+                                                                class="channel-header__dropdown-hover-target tw-flex tw-pd-x-1 tw-pd-y-05">
+                                                                <span class="">Events</span></div>
+                                                        </a></div>
+                                                    <div data-target="channel-header-dropdown-item"
+                                                        class="channel-header__item--hide"><a
+                                                            class="tw-interactable tw-interactable--disabled" href="#">
+                                                            <div
+                                                                class="channel-header__dropdown-hover-target tw-flex tw-pd-x-1 tw-pd-y-05">
+                                                                <span class="">Followers</span>
+                                                                <div
+                                                                    class="channel-header__item-count tw-flex tw-mg-l-05">
+                                                                    <span class="">0</span></div>
+                                                            </div>
+                                                        </a></div>
+                                                    <div data-target="channel-header-dropdown-item"
+                                                        class="channel-header__item--hide"><a
+                                                            class="tw-interactable tw-interactable--disabled" href="#">
+                                                            <div
+                                                                class="channel-header__dropdown-hover-target tw-flex tw-pd-x-1 tw-pd-y-05">
+                                                                <span class="">Following</span>
+                                                                <div
+                                                                    class="channel-header__item-count tw-flex tw-mg-l-05">
+                                                                    <span class="">0</span></div>
+                                                            </div>
+                                                        </a></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-target="channel-header-right"
+                                class="channel-header__right tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
+                                <div class="channel-header__follow-button tw-align-items-stretch tw-flex tw-mg-l-1">
+                                    <button aria-label="Follow" class="tw-button" data-a-target="follow-button"><span
+                                            class="tw-button__icon tw-button__icon--left">
+                                            <figure class="tw-svg"><svg
+                                                    class="tw-svg__asset tw-svg__asset--heart tw-svg__asset--inherit"
+                                                    width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px"
+                                                    y="0px">
+                                                    <path clip-rule="evenodd"
+                                                        d="M8,14L1,7V4l2-2h3l2,2l2-2h3l2,2v3L8,14z" fill-rule="evenodd">
+                                                    </path>
+                                                </svg></figure>
+                                        </span><span class="tw-button__text"
+                                            data-a-target="tw-button-text">Follow</span></button></div>
+                                <div class="tw-mg-l-1"></div>
+                            </div>
+                        </div>
+                        <div class="resize-detector">
+                            <div class="resize-detector">
+                                <div class="resize-detector__grow" style="width: 100000px; height: 100000px;"></div>
+                            </div>
+                            <div class="resize-detector">
+                                <div class="resize-detector__shrink"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="root-scrollable scrollable-area scrollable-area--suppress-scroll-x"
+                    data-test-selector="scrollable-area-wrapper" data-a-target="root-scroller" data-simplebar="init">
+                    <div class="simplebar-track vertical" style="visibility: hidden;">
+                        <div class="simplebar-scrollbar"></div>
+                    </div>
+                    <div class="simplebar-track horizontal" style="visibility: hidden;">
+                        <div class="simplebar-scrollbar"></div>
+                    </div>
+                    <div class="simplebar-scroll-content" style="padding-right: 17px; margin-bottom: -34px;">
+                        <div class="simplebar-content root-scrollable__content"
+                            style="padding-bottom: 17px; margin-right: -17px;">
+                            <div class="root-scrollable__wrapper tw-full-width tw-relative">
+                                <div class="channel-page tw-full-height ">
+                                    <div
+                                        class="chennel-page-layout tw-full-height tw-flex tw-flex-column tw-flex-nowrap">
+                                        <div class="tw-pd-t-2 tw-pd-x-3">
+                                            <div class="video-player-hosting-ui__container  "><span>
+                                                    <div class="channel-page__video-player tw-flex-nowrap tw-relative">
+                                                        <figure class="tw-aspect tw-aspect--16x9 tw-aspect--align-top">
+                                                            <div data-target="persistent-player-content"
+                                                                class="tw-theme--light tw-c-background-alt-2  tw-top-0 tw-right-0 tw-bottom-0 tw-left-0 tw-absolute">
+                                                            </div>
+                                                        </figure>
+                                                    </div>
+                                                </span>
+                                                <div class="tw-z-above tw-hide tw-relative"></div>
+                                            </div>
+                                            <div
+                                                class="channel-info-bar tw-border-t tw-border-r tw-border-b tw-border-l   tw-flex tw-flex-wrap tw-justify-content-between tw-pd-1 tw-lg-pd-t-1 tw-lg-pd-b-0 tw-lg-pd-x-1">
+                                                <div class="tw-overflow-hidden  tw-lg-mg-b-1">
+                                                    <div class="tw-card tw-relative">
+                                                        <div
+                                                            class="tw-align-items-center tw-flex tw-flex-row tw-flex-nowrap">
+                                                            <div class="tw-card-body tw-overflow-hidden tw-relative">
+                                                                <div class="tw-ellipsis tw-mg-b-05"><span
+                                                                        class="tw-font-size-4"
+                                                                        data-a-target="stream-title"></span></div>
+                                                                <div class="tw-flex tw-flex-wrap"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="channel-info-bar__action-container tw-c-text-alt-2 tw-font-size-5  tw-align-items-center tw-flex tw-justify-content-between tw-mg-t-1 tw-pd-t-1 tw-lg-justify-content-end tw-lg-mg-t-0 tw-lg-mg-b-1 tw-lg-pd-t-0">
+                                                    <div class="tw-flex">
+                                                        <div class="tw-c-text-live  tw-inline-flex tw-mg-r-1"></div>
+                                                        <div class="tw-tooltip-wrapper tw-inline-flex"
+                                                            aria-describedby="228759886d06d5fdd94e8a05596b023b">
+                                                            <div class="tw-stat" data-a-target="total-views-count"><span
+                                                                    class="tw-stat__icon">
+                                                                    <figure class="tw-svg"><svg
+                                                                            class="tw-svg__asset tw-svg__asset--glyphviews tw-svg__asset--inherit"
+                                                                            width="16px" height="16px" version="1.1"
+                                                                            viewBox="0 0 16 16" x="0px" y="0px">
+                                                                            <path clip-rule="evenodd"
+                                                                                d="M11,13H5L1,9V8V7l4-4h6l4,4v1v1L11,13z M8,5C6.344,5,5,6.343,5,8c0,1.656,1.344,3,3,3c1.657,0,3-1.344,3-3C11,6.343,9.657,5,8,5z M8,9C7.447,9,7,8.552,7,8s0.447-1,1-1s1,0.448,1,1S8.553,9,8,9z"
+                                                                                fill-rule="evenodd"></path>
+                                                                        </svg></figure>
+                                                                </span><span class="tw-stat__value"
+                                                                    data-a-target="tw-stat-value">0</span></div>
+                                                            <div class="tw-tooltip tw-tooltip--down tw-tooltip--align-center"
+                                                                data-a-target="tw-tooltip-label" role="tooltip"
+                                                                id="228759886d06d5fdd94e8a05596b023b">Total Views</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="tw-flex">
+                                                        <div class="tw-mg-x-1">
+                                                            <div data-toggle-balloon-id="59fb5912-2d80-47ca-b77a-ed2831cfe090"
+                                                                class="tw-relative">
+                                                                <div data-test-selector="toggle-balloon-wrapper__mouse-enter-detector"
+                                                                    style="display: inherit;"><button
+                                                                        class="tw-button tw-button--hollow"
+                                                                        data-a-target="share-button"><span
+                                                                            class="tw-button__icon tw-button__icon--left">
+                                                                            <figure class="tw-svg"><svg
+                                                                                    class="tw-svg__asset tw-svg__asset--share tw-svg__asset--inherit"
+                                                                                    width="16px" height="16px"
+                                                                                    version="1.1" viewBox="0 0 16 16"
+                                                                                    x="0px" y="0px">
+                                                                                    <path
+                                                                                        d="M5 4v2H3v8h10V6h-2V4h4v12H1V4h4zm2-1H5l3-3 3 3H9v6H7V3z"
+                                                                                        fill-rule="evenodd"></path>
+                                                                                </svg></figure>
+                                                                        </span><span class="tw-button__text"
+                                                                            data-a-target="tw-button-text">Share</span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div data-toggle-balloon-id="b7e4fe19-7abf-44bd-a198-3707135aa2cb"
+                                                            class="tw-relative">
+                                                            <div data-test-selector="toggle-balloon-wrapper__mouse-enter-detector"
+                                                                style="display: inherit;"><button
+                                                                    aria-label="More options"
+                                                                    class="tw-button-icon tw-button-icon--hollow"
+                                                                    data-a-target="channel-info-bar-more-button"><span
+                                                                        class="tw-button-icon__icon">
+                                                                        <figure class="tw-svg"><svg
+                                                                                class="tw-svg__asset tw-svg__asset--more tw-svg__asset--inherit"
+                                                                                width="16px" height="16px" version="1.1"
+                                                                                viewBox="0 0 16 16" x="0px" y="0px">
+                                                                                <path
+                                                                                    d="M7,3 L9,3 L9,5 L7,5 L7,3 Z M7,7 L9,7 L9,9 L7,9 L7,7 Z M7,11 L9,11 L9,13 L7,13 L7,11 Z">
+                                                                                </path>
+                                                                            </svg></figure>
+                                                                    </span></button></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="persistent-player" style="top: 20px; left: 30px; position: absolute; width: 100%; max-width: calc(100% - 60px); max-height: calc(-16rem + 100vh); overflow: hidden; height: auto;">
+                                    <figure class="tw-aspect tw-aspect--16x9 tw-aspect--align-top">
+                                        <div class="video-player" data-test-selector="video-player">
+                                            <iframe class="video-player-iframe" src=""></iframe>
+                                            <div></div>
+                                        </div>
+                                    </figure>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div data-a-target="right-column-chat-bar" class="right-column tw-full-height tw-flex-shrink-0 tw-relative">
+
+        </div>
+    </div>
+</body>
+
+</html>
