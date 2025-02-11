@@ -113,20 +113,25 @@ var injectJSTargets = [];
 switch (location.pathname) {
     case "/":
         injectTarget = runtime.getURL(`html/index.html`);
-        injectJSTargets.push(runtime.getURL('html/src/main.js'));
+        injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
+        injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
+        injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
     break;
 
     case "/search":
         injectTarget = runtime.getURL('html/search.html');
-        injectJSTargets.push(runtime.getURL('html/src/main.js'));
-        injectJSTargets.push(runtime.getURL('html/src/search.js'));
+        injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
+        injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
+        injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
+        injectJSTargets.push(runtime.getURL('html/src/ot-search.js'));
     break;
 
     default:
         injectTarget = runtime.getURL(`html/watch.html`);
-        injectJSTargets.push(runtime.getURL('html/src/main.js'));
-        injectJSTargets.push(runtime.getURL('html/src/watch.js'));
-        injectJSTargets.push('https://player.twitch.tv/js/embed/v1.js')
+        injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
+        injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
+        injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
+        injectJSTargets.push(runtime.getURL('html/src/ot-watch.js'));
     break;
 }
 
@@ -151,8 +156,9 @@ fetch(`${injectTarget}`).then(async data => {
     if (injectJSTargets.length > 0) injectJSTargets.forEach(jsTargets => {
         let srcDoc = document.createElement('script');
         srcDoc.id = 'oldttv-js';
+        srcDoc.async = "";
         srcDoc.src = jsTargets;
-        document.body.append(srcDoc);
+        document.head.append(srcDoc);
     });
 
     // Stop observer

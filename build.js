@@ -18,7 +18,6 @@ if (fs.existsSync('./dist')) {
 
 // Function to copy all the dirs but not REALLY all of them.
 async function copyDir(sourceDir, newDir) {
-    console.log(sourceDir, newDir);
     // Get dirs in the project folder.
     var dirs = fs.readdirSync(sourceDir, { withFileTypes: true });
     fs.mkdirSync(newDir);
@@ -112,7 +111,7 @@ copyDir('./src', firefoxDir).then(async () => {
     firefoxManifest.manifest_version = 2;
     firefoxManifest.background = {
         "scripts": [
-        "src/pt-background.js"
+        "js/ot-background.js"
         ],
         "persistent": false,
         "type": "module"

@@ -2,26 +2,35 @@
     "manifest_version": 3,
     "name": "OldTTV",
     "description": "A browser extension to bring back the old Twitch look",
-    "version": "0.0.1",
+    "version": "0.0.1.1",
 
     "background": {
         "service_worker": "js/ot-background.js"
     },
 
     "permissions": [
-        "storage"
+        "storage",
+        "cookies",
+        "webRequest",
+        "webRequestBlocking"
     ],
 
     "content_scripts": [
+        {
+            "matches": ["*://www.twitch.tv/*"],
+            "exclude_matches": ["*://www.twitch.tv/*?*nooldttv*", "*://www.twitch.tv/p/*", "*://www.twitch.tv/directory/*", "*://www.twitch.tv/embed/*"],
+            "js": ["js/ot-main.js"],
+            "run_at": "document_start"
+        },
+
         {
             "matches": ["*://www.twitch.tv/*?*nooldttv*"],
             "js": ["js/ot-newttv.js"],
             "run_at": "document_end"
         },
         {
-            "matches": ["*://www.twitch.tv/*"],
-            "exclude_matches": ["*://www.twitch.tv/*?*nooldttv*", "*://www.twitch.tv/p/*", "*://www.twitch.tv/directory/*", "*://www.twitch.tv/embed/*"],
-            "js": ["js/ot-main.js"],
+            "matches": ["*://www.twitch.tv/embed/*/chat*"],
+            "js": ["js/ot-chat.js"],
             "run_at": "document_start"
         }
     ],

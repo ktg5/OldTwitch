@@ -1,4 +1,4 @@
-if (navigator.userAgent.includes("Chrome")) browser = chrome; else browser;
+if (navigator.userAgent.includes("Chrome")) browser = chrome;
 var storage = browser.storage.sync;
 var extension = browser.extension;
 var runtime = browser.runtime;
