@@ -39,6 +39,11 @@ async function copyDir(sourceDir, newDir) {
         // Paths
         var sourcePath = path.join(sourceDir, entry.name);
         var newPath = path.join(newDir, entry.name);
+        switch (entry.name) {
+            case "tobethereadme":
+                newPath = path.join(newDir, "README");
+            break;
+        }
 
         // If the file is a TS file, we'll need to find the JS file within the "ts-dist" folder.
         if (entry.name.endsWith('.ts')) {
@@ -92,8 +97,8 @@ copyDir('./src', chromeDir).then(async () => {
         const zip = new Zip();
         const outputDir = `${chromeDir}.zip`;
         zip.addLocalFolder(chromeDir);
-        if (delExtensionFolders) fs.rmSync(chromeDir, { recursive: true });
         zip.writeZip(outputDir);
+        if (delExtensionFolders) fs.rmSync(chromeDir, { recursive: true });
     } catch (e) {
         console.log(`WHAT THE FRICK! ${e}`);
     }
@@ -165,6 +170,7 @@ copyDir('./src', firefoxDir).then(async () => {
         const outputDir = `${firefoxDir}.zip`;
         zip.addLocalFolder(firefoxDir);
         zip.writeZip(outputDir);
+        if (delExtensionFolders) fs.rmSync(firefoxDir, { recursive: true });
     } catch (e) {
         console.log(`WHAT THE FRICK! ${e}`);
     }

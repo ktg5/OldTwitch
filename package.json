@@ -5,8 +5,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "build": "node build.js",
-    "build-github-action": "node build.js del-folders"
+    "start": "node build.js"
   },
   "author": "ktg5",
   "license": "ISC",
