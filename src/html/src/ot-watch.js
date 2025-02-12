@@ -40,17 +40,70 @@ async function setIframeVideo (args) {
                 console.log("streamData: ", streamData);
 
                 // set streamer info
-                // name & pfp
-                document.querySelector(`.channel-header__user .tw-image`).src = streamData.profileImageURL;
-                placeholderToText(document.querySelector(`.channel-header__user .tw-placeholder-wrapper`), streamData.displayName);
-                // ints
-                document.querySelector(`.channel-header__item[data-a-target="followers-channel-header-item"] .channel-header__item-count .tw-font-size-5`).innerHTML = 69;
-                if (streamData.live) {
-                    document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.remove("tw-hide");
-                    document.querySelector(`.tw-stat[data-a-target="total-views-count"] .tw-stat__value`).innerHTML = streamData.stream.viewersCount;
-                } else {
-                    document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.add("tw-hide");
+                function addStremerInfo(funcargs) {
+                    if (funcargs == null || !funcargs.includes("not-first-init")) {
+                        // name & pfp
+                        document.querySelector(`.channel-header__user .tw-image`).src = streamData.profileImageURL;
+                        placeholderToText(document.querySelector(`.channel-header__user .tw-placeholder-wrapper`), streamData.displayName);
+
+                        // panels
+                        let panelsContainer = document.querySelector(`.channel-panels-container`);
+                        streamData.panels.forEach(panel => {
+                            let panelDiv = document.createElement("div");
+                            panelDiv.className = "default-panel"
+                            panelDiv.setAttribute("data-a-target", `panel-${panelsContainer.childElementCount}`);
+                            if (panel.type == "EXTENSION") {
+                                panelDiv.innerHTML = `<kbd>[ OldTwitch ]: An Twitch Extension was detected here, it will not be added because I don't know how to add them yet. This might be temporary, so just keep your hopes up in future updates.</kbd>`
+                            } else {
+                                panelDiv.innerHTML = `
+                                ${panel.title ? `<h3 data-test-selector="title_panel" class="tw-title">${panel.title}</h3>` : ""}
+                                <a data-test-selector="link_url_panel" class="tw-link" rel="noopener noreferrer" target="_blank"${panel.linkURL ? ` href="${panel.linkURL}"` : ""}><img data-test-selector="image_panel"${panel.imageURL ? ` src="${panel.imageURL}"` : ""}></a>
+                                ${panel.description ? `
+                                    <div data-test-selector="description_panel">
+                                        <div class="tw-typeset">
+                                            <div class="panel-description">
+                                                <p>${panel.description}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ` : ""}
+                                `;
+                            }
+
+                            panelsContainer.appendChild(panelDiv);
+                        });
+
+                        // check if user is following streamer
+                        for (const channelInt in channels) {
+                            if (channels[channelInt].type == "RECS_FOLLOWED_SECTION") {
+                                channels[channelInt].items.forEach(channel => {
+                                    if (channel.user.login == args.name) {
+                                        let followButton = document.querySelector(`[data-a-target="follow-button"]`);
+                                        followButton.className = "tw-button--hollow";
+                                        followButton.querySelector(`.tw-button__text`).innerHTML = "Following";
+                                    };
+                                });
+                            };
+                        };
+                    }
+
+                    // ints
+                    document.querySelector(`.channel-header__item[data-a-target="followers-channel-header-item"] .channel-header__item-count .tw-font-size-5`).innerHTML = 69;
+                    if (streamData.live) {
+                        document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.remove("tw-hide");
+                        document.querySelector(`.tw-stat[data-a-target="total-views-count"] .tw-stat__value`).innerHTML = streamData.stream.viewersCount;
+                    } else {
+                        document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.add("tw-hide");
+                    }
                 }
+
+                // add interval to check streamer data
+                let streamerCheck = setInterval(async () => {
+                    streamData = await gql.getStreamInfo(args.name);
+                    addStremerInfo(['not-first-init']);
+                    console.log("streamercheck");
+                }, 60000);
+                addStremerInfo();
             };
             if (gql) {
                 gqlAction();

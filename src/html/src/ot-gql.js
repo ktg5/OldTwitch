@@ -144,8 +144,34 @@ class Gql {
                     watchParty: data[1].data.user.activeWatchParty,
                     chatRules: data[2].data.channel.chatSettings.rules
                 };
-    
-                resolve(cleanData);
+
+                await fetch("https://gql.twitch.tv/gql", {
+                    headers: {
+                        "client-id": this.clientid,
+                    },
+                    body: JSON.stringify({
+                        "operationName": "ChannelPanels",
+                        "variables": {
+                            "id": data[0].data.user.id
+                        },
+                        "extensions": {
+                            "persistedQuery": {
+                                "version": 1,
+                                "sha256Hash": "06d5b518ba3b016ebe62000151c9a81f162f2a1430eb1cf9ad0678ba56d0a768"
+                            }
+                        }
+                    }),
+                    method: "POST"
+                }).then(async rawDataT => {
+                    let dataT = await rawDataT.json();
+
+                    cleanData = {
+                        ...cleanData,
+                        panels: dataT.data.user.panels
+                    }
+
+                    resolve(cleanData);
+                });
             });
         });
     }
@@ -210,6 +236,46 @@ class Gql {
                 } else {
                     resolve(null);
                 }
+            });
+        });
+    }
+
+
+    async search(query) {
+        return new Promise(async (resolve, reject) => {
+            fetch("https://gql.twitch.tv/gql", {
+                "headers": {
+                    "client-id": this.clientid,
+                },
+                "body": JSON.stringify({
+                    "operationName": "SearchResultsPage_SearchResults",
+                    "variables": {
+                        "platform": "web",
+                        "query": query,
+                        "options": {
+                            "targets": null,
+                            "shouldSkipDiscoveryControl": false
+                        },
+                        "requestID": "a0423443-24d1-4ab4-8238-f1bea7d46a77",
+                        "includeIsDJ": true
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "f6c2575aee4418e8a616e03364d8bcdbf0b10a5c87b59f523569dacc963e8da5"
+                        }
+                    }
+                }),
+                "method": "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+                resolve({
+                    channels: data.data.searchFor.channels.edges,
+                    channelsWithTag: data.data.searchFor.channelsWithTag.edges,
+                    games: data.data.searchFor.games.edges,
+                    videos: data.data.searchFor.videos.edges,
+                    relatedLiveChannels: data.data.searchFor.relatedLiveChannels
+                });
             });
         });
     }

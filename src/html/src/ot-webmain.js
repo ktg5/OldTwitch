@@ -112,6 +112,7 @@ if (navbar) {
 }
 // Add sidebar if found
 let sidebar = document.querySelector(".side-nav");
+var channels;
 if (sidebar) {
     fetch(`${extensionLocation}/html/global/sidenav.html`).then(async data => {
         // Inject HTML
@@ -120,7 +121,7 @@ if (sidebar) {
 
 
         // Get channels
-        let channels = await gql.getRecommends(oauth, [localStorage.getItem("oldttv-currentchannel"), localStorage.getItem("oldttv-lastchannel")]);
+        channels = await gql.getRecommends(oauth, [localStorage.getItem("oldttv-currentchannel"), localStorage.getItem("oldttv-lastchannel")]);
         let followsDiv = document.querySelector(".tw-mg-b-1 .channel-list");
         let featuresDiv = document.querySelector(".tw-mg-b-2 .channel-list");
         let streamerFeaturesDiv = document.querySelector(".tw-mg-b-3 .channel-list");
@@ -144,28 +145,37 @@ if (sidebar) {
             }
 
             channelList.items.forEach(channel => {
-                let categoryTxt, viewCountTxt;
-                console.log(channel);
+                let categoryTxt, viewCountTxt = null;
+                // console.log(channel);
                 if (channel.content.game) categoryTxt = channel.content.game.displayName;
                 if (channel.content.viewersCount) viewCountTxt = channel.content.viewersCount;
-                targetDiv.insertAdjacentHTML('beforeend', `
-                    <div class="channel">
-                        <figure class="tw-avatar tw-avatar--size-30">
-                            <div class="tw-overflow-hidden">
-                                <img class="tw-image" src="${channel.user.profileImageURL}">
-                            </div>
-                        </figure>
-                        <div class="channel-info">
-                            <div class="left">
-                                <span class="title">${channel.user.displayName}</span>
-                                ${categoryTxt ? categoryTxt : ""}
-                            </div>
-                            <div class="right">
-                                ${viewCountTxt ? viewCountTxt : ""}
-                            </div>
-                        </div>
+                // console.log(viewCountTxt);
+
+                // make div
+                let channelDiv = document.createElement("div");
+                channelDiv.classList.add("channel");
+                channelDiv.title = channel.content.broadcaster ? channel.content.broadcaster.broadcastSettings.title : "";
+                channelDiv.innerHTML = `
+                <figure class="tw-avatar tw-avatar--size-36">
+                    <div class="tw-overflow-hidden">
+                        <img class="tw-image" src="${channel.user.profileImageURL}">
                     </div>
-                `)
+                </figure>
+                <div class="channel-info">
+                    <div class="left">
+                        <span class="title">${channel.user.displayName}</span>
+                        <span class="category">${categoryTxt ? categoryTxt : ""}</span>
+                    </div>
+                    <div class="right ${viewCountTxt ? "" : "tw-hide"}">
+                        ${viewCountTxt ? viewCountTxt : ""}
+                    </div>
+                </div>
+                `;
+                targetDiv.appendChild(channelDiv);
+
+                channelDiv.addEventListener("click", (e) => {
+                    location.pathname = `/${channel.user.login}`;
+                });
             });
         }
 

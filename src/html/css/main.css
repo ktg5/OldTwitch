@@ -27,19 +27,79 @@ body {
     margin-right: 1rem;
 }
 
-
-.channel-list {
-    padding: 0 1rem;
+.user-info .channel-header__user-avatar {
+    margin-bottom: 0;
 }
+
+
+.channel-list {}
 
 .channel-list .channel {
     display: flex;
+    width: 100%;
     color: #b8b5c0;
-    margin: 1rem 0;
+    padding: .5rem 1rem;
+}
+
+.channel-list .channel:hover {
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.25);
 }
 
 .channel-list .channel .tw-avatar {
     margin-right: 1rem;
+}
+
+.channel-info {
+    position: relative;
+    width: calc(100% - 46px);
+    height: 100%;
+    align-self: center;
+    line-height: 14px;
+    color: #88868e;
+}
+
+.channel-info .left {
+    display: grid;
+}
+
+.channel-info .left .title {
+    position: relative;
+    top: 0;
+    font-size: 16px;
+    color: #b8b5c0;
+}
+
+.channel-info .left .category {
+    position: relative;
+    max-width: 12rem;
+    margin-top: 4px;
+    overflow: hidden;
+    white-space: nowrap;
+    bottom: 0;
+}
+
+.channel-info .right {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.channel-info .right:before {
+    content: '';
+    display: block;
+    background: red;
+    width: 6px;
+    height: 6px;
+    margin-right: 6px;
+    border-radius: 100%;
+}
+
+
+.channel-panels {
+    padding: 6rem 3rem;
 }
 
 
@@ -8115,7 +8175,7 @@ body {
 
 /*!
  * Pikaday
- * Copyright Â© 2014 David Bushell | BSD & MIT license | http://dbushell.com/
+ * Copyright Ã‚Â© 2014 David Bushell | BSD & MIT license | http://dbushell.com/
  */
 .pika-single {
     z-index: 9999;
@@ -8594,7 +8654,7 @@ body {
 
 .anon-front__featured-section {
     background-color: #17141f;
-    background-image: url(chrome-extension://__MSG_@@extension_id__/html/img/homepage_gradient_background.png),url(chrome-extension://__MSG_@@extension_id__/html/img/homepage_player_background.jpg);
+    background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/homepage_gradient_background.png),url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/homepage_player_background.jpg);
     background-repeat: no-repeat;
     background-position: top;
     padding: 2rem 0;
@@ -8603,7 +8663,7 @@ body {
 
 .anon-front__social-container {
     background-color: #fff;
-    background-image: url(chrome-extension://__MSG_@@extension_id__/html/img/homepage_social_background.png);
+    background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/homepage_social_background.png);
     background-repeat: no-repeat;
     background-position: 50%
 }
@@ -10376,7 +10436,7 @@ body {
 }
 
 .crates-holiday-background {
-    background: 50% 3rem/100% url(chrome-extension://__MSG_@@extension_id__/html/img/blue-background.svg) no-repeat
+    background: 50% 3rem/100% url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/blue-background.svg) no-repeat
 }
 
 .owl-2018-introduction__banner-background {
@@ -11187,11 +11247,11 @@ body {
 }
 
 .crate-notification__holiday-background {
-    background: 50% calc(100% + 5.3rem)/150% url(chrome-extension://__MSG_@@extension_id__/html/img/blue-background-adea57802e0be2bedd5a83578f0976c5.svg) no-repeat
+    background: 50% calc(100% + 5.3rem)/150% url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/blue-background-adea57802e0be2bedd5a83578f0976c5.svg) no-repeat
 }
 
 .gift-notification__holiday-background {
-    background: 50% calc(100% + 2rem)/150% url(chrome-extension://__MSG_@@extension_id__/html/img/blue-background-adea57802e0be2bedd5a83578f0976c5.svg) no-repeat
+    background: 50% calc(100% + 2rem)/150% url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/blue-background-adea57802e0be2bedd5a83578f0976c5.svg) no-repeat
 }
 
 .blizzard-account-link__logo {
@@ -11535,13 +11595,13 @@ body {
 }
 
 .commerce-content-item__placeholder {
-    background-image: url(chrome-extension://__MSG_@@extension_id__/html/img/404_boxart-285x380.jpg);
+    background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/404_boxart-285x380.jpg);
     background-size: contain;
     width: 5rem
 }
 
 .commerce-content-item__placeholder--balloon {
-    background-image: url(chrome-extension://__MSG_@@extension_id__/html/img/404_boxart-285x380.jpg);
+    background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/404_boxart-285x380.jpg);
     background-size: contain;
     width: 15rem
 }
@@ -12349,7 +12409,10 @@ body {
 
 .default-panel {
     width: 32rem;
-    min-width: 32rem
+    min-width: 32rem;
+    height: fit-content;
+    margin: 1rem;
+    margin-top: 0;
 }
 
 .default-panel .panel-description {
@@ -12650,7 +12713,10 @@ body {
 }
 
 .channel-panels-container {
-    margin: 0 auto
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: auto;
 }
 
 .channel-page__video-player {

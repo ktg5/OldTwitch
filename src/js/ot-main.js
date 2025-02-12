@@ -152,6 +152,7 @@ fetch(`${injectTarget}`).then(async data => {
     // console.log(htmlText);
     html.innerHTML = htmlText;
 
+
     // Inject JS
     if (injectJSTargets.length > 0) injectJSTargets.forEach(jsTargets => {
         let srcDoc = document.createElement('script');
