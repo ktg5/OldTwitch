@@ -927,5 +927,103 @@
                 "sha256Hash": "06d5b518ba3b016ebe62000151c9a81f162f2a1430eb1cf9ad0678ba56d0a768"
             }
         }
+    },
+    {
+        "operationName": "Directory_DirectoryBanner",
+        "variables": {
+            "slug": "marvel-rivals"
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "822ecf40c2a77568d2b223fd5bc4dfdc9c863f081dd1ca7611803a5330e88277"
+            }
+        }
+    },
+    {
+        "operationName": "DirectoryPage_Game",
+        "variables": {
+            "imageWidth": 50,
+            "slug": "marvel-rivals",
+            "options": {
+                "includeRestricted": [
+                    "SUB_ONLY_LIVE"
+                ],
+                "sort": "RELEVANCE",
+                "__COMMENTED__ sort": "VIEWER_COUNT",
+                "__COMMENTED__ sort": "VIEWER_COUNT_ASC",
+                "__COMMENTED__ sort": "RECENT",
+                "recommendationsContext": {
+                    "platform": "web"
+                },
+                "requestID": "JIRA-VXP-2397",
+                "freeformTags": null,
+                "tags": [],
+                "broadcasterLanguages": [
+                    "EN"
+                ],
+                "systemFilters": []
+            },
+            "sortTypeIsRecency": false,
+            "limit": 30,
+            "includeIsDJ": true
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "c7c9d5aad09155c4161d2382092dc44610367f3536aac39019ec2582ae5065f9"
+            }
+        }
+    },
+    {
+        "operationName": "ChannelRoot_AboutPanel",
+        "variables": {
+            "channelLogin": "inconsiderateraccoon",
+            "skipSchedule": false,
+            "includeIsDJ": true
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "0df42c4d26990ec1216d0b815c92cc4a4a806e25b352b66ac1dd91d5a1d59b80"
+            }
+        }
+    },
+    {
+        "operationName": "ClipsCards__User",
+        "variables": {
+            "login": "taxi2g",
+            "limit": 20,
+            "criteria": {
+                "filter": "LAST_WEEK",
+                "__COMMENTED__ filter": "LAST_MONTH",
+                "__COMMENTED__ filter": "LAST_DAY",
+                "__COMMENTED__ filter": "ALL_TIME",
+                "shouldFilterByDiscoverySetting": true
+            },
+            "cursor": null
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "4eb8f85fc41a36c481d809e8e99b2a32127fdb7647c336d27743ec4a88c4ea44"
+            }
+        }
+    },
+    {
+        "operationName": "FilterableVideoTower_Videos",
+        "variables": {
+            "includePreviewBlur": false,
+            "limit": 30,
+            "channelOwnerLogin": "xqc",
+            "broadcastType": "ARCHIVE",
+            "videoSort": "TIME"
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "acea7539a293dfd30f0b0b81a263134bb5d9a7175592e14ac3f7c77b192de416"
+            }
+        }
     }
 ]

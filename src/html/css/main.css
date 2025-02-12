@@ -6,7 +6,7 @@
 
 
 @font-face {
-    src: url("chrome-extension://__MSG_@@extension_id__/html/css/font/neue.otf");
+    src: url("chrome-extension://__MSG_@@extension_id__/html/css/font/neue-r.otf");
     font-family: "Helvetica Neue";
 }
 
@@ -97,6 +97,30 @@ body {
     border-radius: 100%;
 }
 
+
+.channel-info-bar .tw-card .tw-category-cover {
+    width: 5rem;
+    margin-right: 1rem;
+}
+
+.channel-info-value {
+    display: flex;
+    justify-content: center;
+    margin: 0 .5rem;
+    color: rgb(110 103 121);
+}
+
+.channel-info-value:first-child {
+    margin-left: 0;
+}
+
+.channel-info-value:last-child {
+    margin-right: 0;
+}
+
+.channel-info-value .tw-svg {
+    margin-right: .5rem;
+}
 
 .channel-panels {
     padding: 6rem 3rem;

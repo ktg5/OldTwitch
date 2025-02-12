@@ -36,7 +36,9 @@ async function setIframeVideo (args) {
             }
 
             let gqlAction = async () => {
-                streamData = await gql.getStreamInfo(args.name);
+                streamData = await gql.getChannel(args.name);
+                videosData = await gql.getChannelVideos(args.name);
+                clipsData = await gql.getChannelClips(args.name);
                 console.log("streamData: ", streamData);
 
                 // set streamer info
@@ -87,19 +89,40 @@ async function setIframeVideo (args) {
                         };
                     }
 
+                    // strings
+                    document.querySelector(`[data-a-target="stream-title"]`).innerHTML = streamData.broadcastSettings.title;
+                    if (streamData.broadcastSettings.game) {
+                        document.querySelector(`[data-a-target="category-holder"]`).classList.remove("tw-hide");
+                        document.querySelector(`[data-a-target="category-title"]`).innerHTML = streamData.broadcastSettings.game.displayName;
+                        document.querySelector(`[data-a-target="category-title"]`).parentElement.href = `https://www.twitch.tv/directory/category/${streamData.broadcastSettings.game.slug}`;    
+                    }
+                    if (streamData.primaryTeam) {
+                        document.querySelector(`[data-a-target="team-holder"]`).classList.remove("tw-hide");
+                        document.querySelector(`[data-a-target="team-name"]`).innerHTML = streamData.primaryTeam.displayName;
+                        document.querySelector(`[data-a-target="team-name"]`).parentElement.href = `https://www.twitch.tv/team/${streamData.primaryTeam.name}?nooldttv`;
+                    }
+
+                    // imgs
+                    if (streamData.broadcastSettings.game) {
+                        document.querySelector(`.tw-category-cover`).classList.remove("tw-hide");
+                        document.querySelector(`.tw-category-cover`).src = streamData.broadcastSettings.game.avatarURL;
+                    }
+
                     // ints
-                    document.querySelector(`.channel-header__item[data-a-target="followers-channel-header-item"] .channel-header__item-count .tw-font-size-5`).innerHTML = 69;
+                    document.querySelector(`[aria-describedby="228759886d06d5fdd94e8a05596b023b"]`).parentElement.classList.remove("tw-hide");
+                    document.querySelector(`.channel-header__item[data-a-target="followers-channel-header-item"] .channel-header__item-count span`).innerHTML = streamData.followerCount;
                     if (streamData.live) {
                         document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.remove("tw-hide");
-                        document.querySelector(`.tw-stat[data-a-target="total-views-count"] .tw-stat__value`).innerHTML = streamData.stream.viewersCount;
+                        document.querySelector(`.tw-stat[data-a-target="viewer-count"] .tw-stat__value`).innerHTML = streamData.stream.viewersCount;
                     } else {
                         document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.add("tw-hide");
                     }
+                    if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
                 }
 
                 // add interval to check streamer data
                 let streamerCheck = setInterval(async () => {
-                    streamData = await gql.getStreamInfo(args.name);
+                    streamData = await gql.getChannel(args.name);
                     addStremerInfo(['not-first-init']);
                     console.log("streamercheck");
                 }, 60000);

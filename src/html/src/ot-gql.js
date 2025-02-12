@@ -10,6 +10,8 @@ class Gql {
 
 
     async getUserInfo(Oauth) {
+        if (!Oauth) return console.error("Invaild args");
+
         if (this.oauth != undefined) Oauth = this.oauth;
 
         return new Promise(async (resolve, reject) => {
@@ -39,6 +41,8 @@ class Gql {
 
 
     async getRecommends(Oauth, CurrentPastStreamer) {
+        if (!Oauth || !CurrentPastStreamer) return console.error("Invaild args");
+
         if (this.oauth) Oauth = this.oauth;
         let currentChannel, pastChannel;
         if (CurrentPastStreamer && Array.isArray(CurrentPastStreamer)) {
@@ -89,7 +93,9 @@ class Gql {
     }
     
 
-    async getStreamInfo(name) {
+    async getChannel(name) {
+        if (!name) return console.error("Invaild args");
+
         return new Promise(async (resolve, reject) => {   
             await fetch("https://gql.twitch.tv/gql", {
                 headers: {
@@ -131,6 +137,20 @@ class Gql {
                                 "sha256Hash": "3c445f9a8315fa164f2d3fb12c2f932754c2f2c129f952605b9ec6cf026dd362"
                             }
                         }
+                    },
+                    {
+                        "operationName": "ChannelRoot_AboutPanel",
+                        "variables": {
+                            "channelLogin": name,
+                            "skipSchedule": false,
+                            "includeIsDJ": true
+                        },
+                        "extensions": {
+                            "persistedQuery": {
+                                "version": 1,
+                                "sha256Hash": "0df42c4d26990ec1216d0b815c92cc4a4a806e25b352b66ac1dd91d5a1d59b80"
+                            }
+                        }
                     }
                 ]),
                 method: "POST"
@@ -138,12 +158,21 @@ class Gql {
                 let data = await rawData.json();
                 let isLive = data[0].data.user.stream != null;
 
+                let gameSlug;
+                if (data[0].data.user.broadcastSettings.game) gameSlug = data[0].data.user.broadcastSettings.game.slug;
                 let cleanData = {
                     live: isLive,
                     ...data[0].data.user,
                     watchParty: data[1].data.user.activeWatchParty,
-                    chatRules: data[2].data.channel.chatSettings.rules
+                    chatRules: data[2].data.channel.chatSettings.rules,
+                    description: data[3].data.user.description,
+                    primaryColor: data[3].data.user.primaryColorHex,
+                    followerCount: data[3].data.user.followers.totalCount,
+                    roles: data[3].data.user.roles,
+                    schedule: data[3].data.user.channel.schedule,
+                    primaryTeam: data[3].data.user.primaryTeam
                 };
+                if (gameSlug) cleanData.broadcastSettings.game = await this.getCategory(gameSlug);
 
                 await fetch("https://gql.twitch.tv/gql", {
                     headers: {
@@ -176,7 +205,82 @@ class Gql {
         });
     }
 
+    async getChannelVideos(name) {
+        if (!name) return console.error("Invaild args");
+
+        return new Promise(async (resolve, reject) => {
+            await fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "client-id": this.clientid,
+                },
+                body: JSON.stringify({
+                    "operationName": "FilterableVideoTower_Videos",
+                    "variables": {
+                        "includePreviewBlur": false,
+                        "limit": 100,
+                        "channelOwnerLogin": name,
+                        "broadcastType": "ARCHIVE",
+                        "videoSort": "TIME"
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "acea7539a293dfd30f0b0b81a263134bb5d9a7175592e14ac3f7c77b192de416"
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+                resolve(data.data.user.videos.edges);
+            });
+        });
+    }
+
+    async getChannelClips(name, filter) {
+        if (!name) return console.error("Invaild args");
+
+        // "filter": "LAST_MONTH",
+        // "filter": "LAST_DAY",
+        // "filter": "ALL_TIME",
+        let filterTxt = "LAST_WEEK";
+        if (filter) filterTxt = filter;
+        else console.warn("filter arg not set, going with \"LAST_WEEK\".");
+
+        return new Promise(async (resolve, reject) => {
+            await fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "client-id": this.clientid,
+                },
+                body: JSON.stringify({
+                    "operationName": "ClipsCards__User",
+                    "variables": {
+                        "login": name,
+                        "limit": 100,
+                        "criteria": {
+                            "filter": filterTxt,
+                            "shouldFilterByDiscoverySetting": true
+                        },
+                        "cursor": null
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "4eb8f85fc41a36c481d809e8e99b2a32127fdb7647c336d27743ec4a88c4ea44"
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+                resolve(data.data.user.clips.edges);
+            });
+        });
+    }
+
     async getStreamMetadata(name) {
+        if (!name) return console.error("Invaild args");
+
         return new Promise(async (resolve, reject) => {
             await fetch("https://gql.twitch.tv/gql", {
                 headers: {
@@ -201,7 +305,7 @@ class Gql {
                     resolve(null);
                 } else {
                     let cleanData = {
-                        stream: data.data.user.stream
+                        ...data.data.user.stream
                     };
                     resolve(cleanData);
                 }
@@ -210,6 +314,8 @@ class Gql {
     }
 
     async getStreamPreview(name) {
+        if (!name) return console.error("Invaild args");
+
         return new Promise(async (resolve, reject) => {
             await fetch("https://gql.twitch.tv/gql", {
                 headers: {
@@ -242,12 +348,14 @@ class Gql {
 
 
     async search(query) {
+        if (!query) return console.error("Invaild args");
+
         return new Promise(async (resolve, reject) => {
             fetch("https://gql.twitch.tv/gql", {
-                "headers": {
+                headers: {
                     "client-id": this.clientid,
                 },
-                "body": JSON.stringify({
+                body: JSON.stringify({
                     "operationName": "SearchResultsPage_SearchResults",
                     "variables": {
                         "platform": "web",
@@ -266,7 +374,7 @@ class Gql {
                         }
                     }
                 }),
-                "method": "POST"
+                method: "POST"
             }).then(async rawData => {
                 let data = await rawData.json();
                 resolve({
@@ -277,6 +385,90 @@ class Gql {
                     relatedLiveChannels: data.data.searchFor.relatedLiveChannels
                 });
             });
+        });
+    }
+
+
+    async getCategory(slug) {
+        if (!slug) return console.error("Invaild args");
+
+        return new Promise(async (resolve, reject) => {
+            fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "client-id": this.clientid,
+                },
+                body: JSON.stringify({
+                    "operationName": "Directory_DirectoryBanner",
+                    "variables": {
+                        "slug": slug
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "822ecf40c2a77568d2b223fd5bc4dfdc9c863f081dd1ca7611803a5330e88277"
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+                resolve(data.data.game);
+            })
+        });
+    }
+
+    async getCategoryStreamers(slug, sort) {
+        if (!slug) return console.error("Invaild args");
+
+        // "sort": "VIEWER_COUNT",
+        // "sort": "VIEWER_COUNT_ASC",
+        // "sort": "RECENT",
+        let sortTxt = "RELEVANCE";
+        if (sort) sortTxt = sort;
+        else console.warn("sort arg not set, going with \"RELEVANCE\".");
+
+        return new Promise(async (resolve, reject) => {
+            fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "client-id": this.clientid,
+                },
+                body: JSON.stringify({
+                    "operationName": "DirectoryPage_Game",
+                    "variables": {
+                        "imageWidth": 50,
+                        "slug": slug,
+                        "options": {
+                            "includeRestricted": [
+                                "SUB_ONLY_LIVE"
+                            ],
+                            "sort": sortTxt,
+                            "recommendationsContext": {
+                                "platform": "web"
+                            },
+                            // "requestID": "JIRA-VXP-2397",
+                            "freeformTags": null,
+                            "tags": [],
+                            "broadcasterLanguages": [
+                                "EN"
+                            ],
+                            "systemFilters": []
+                        },
+                        "sortTypeIsRecency": false,
+                        "limit": 30,
+                        "includeIsDJ": true
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "c7c9d5aad09155c4161d2382092dc44610367f3536aac39019ec2582ae5065f9"
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+                resolve(data.data.game.streams.edges);
+            })
         });
     }
 }

@@ -51,6 +51,9 @@
                                 <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="videos-channel-header-item" href="#">
                                     <div class="tw-flex tw-pd-x-2 tw-pd-y-05">
                                         <span class="tw-font-size-5">Videos</span>
+                                        <div class="channel-header__item-count tw-flex tw-mg-l-05">
+                                            <span class="tw-font-size-5"></span>
+                                        </div>
                                     </div>
                                 </a>
                                 <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="clips-channel-header-item" href="#">
@@ -73,11 +76,11 @@
                                         <span class="tw-font-size-5">Events</span>
                                     </div>
                                 </a> -->
-                                <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="followers-channel-header-item" href="#">
+                                <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="followers-channel-header-item">
                                     <div class="tw-flex tw-pd-x-2 tw-pd-y-05">
                                         <span class="tw-font-size-5">Followers</span>
                                         <div class="channel-header__item-count tw-flex tw-mg-l-05">
-                                            <span class="tw-font-size-5">0</span>
+                                            <span class="tw-font-size-5"></span>
                                         </div>
                                     </div>
                                 </a>
@@ -223,22 +226,56 @@
                                             </div>
                                             <div class="channel-info-bar tw-border-t tw-border-r tw-border-b tw-border-l   tw-flex tw-flex-wrap tw-justify-content-between tw-pd-1 tw-lg-pd-t-1 tw-lg-pd-b-0 tw-lg-pd-x-1">
                                                 <div class="tw-overflow-hidden  tw-lg-mg-b-1">
-                                                    <div class="tw-card tw-relative">
+                                                    <div class="tw-card tw-relative tw-flex">
+                                                        <img class="tw-category-cover tw-hide" src="">
                                                         <div class="tw-align-items-center tw-flex tw-flex-row tw-flex-nowrap">
                                                             <div class="tw-card-body tw-overflow-hidden tw-relative">
                                                                 <div class="tw-ellipsis tw-mg-b-05">
                                                                     <span class="tw-font-size-4" data-a-target="stream-title"></span>
                                                                 </div>
-                                                                <div class="tw-flex tw-flex-wrap"></div>
+                                                                <div class="tw-flex tw-flex-wrap">
+                                                                    <div class="channel-info-value tw-hide" data-a-target="category-holder">
+                                                                        <figure class="tw-svg">
+                                                                            <svg class="tw-svg__asset tw-svg__asset--glyphviews tw-svg__asset--inherit" width="24px" height="24px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
+                                                                                <path clip-rule="evenodd" d="M11,13H5L1,9V8V7l4-4h6l4,4v1v1L11,13z M8,5C6.344,5,5,6.343,5,8c0,1.656,1.344,3,3,3c1.657,0,3-1.344,3-3C11,6.343,9.657,5,8,5z M8,9C7.447,9,7,8.552,7,8s0.447-1,1-1s1,0.448,1,1S8.553,9,8,9z" fill-rule="evenodd"></path>
+                                                                            </svg>
+                                                                        </figure>
+                                                                        <a href="">
+                                                                            <span class="tw-font-size-4" data-a-target="category-title"></span>
+                                                                        </a>
+                                                                    </div>
+                                                                    <div class="channel-info-value tw-hide" data-a-target="team-holder">
+                                                                        <figure class="tw-svg">
+                                                                            <svg class="tw-svg__asset tw-svg__asset--glyphviews tw-svg__asset--inherit" width="24px" height="24px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
+                                                                                <path clip-rule="evenodd" d="M11,13H5L1,9V8V7l4-4h6l4,4v1v1L11,13z M8,5C6.344,5,5,6.343,5,8c0,1.656,1.344,3,3,3c1.657,0,3-1.344,3-3C11,6.343,9.657,5,8,5z M8,9C7.447,9,7,8.552,7,8s0.447-1,1-1s1,0.448,1,1S8.553,9,8,9z" fill-rule="evenodd"></path>
+                                                                            </svg>
+                                                                        </figure>
+                                                                        <a href="">
+                                                                            <span class="tw-font-size-4" data-a-target="team-name"></span>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="channel-info-bar__action-container tw-c-text-alt-2 tw-font-size-5  tw-align-items-center tw-flex tw-justify-content-between tw-mg-t-1 tw-pd-t-1 tw-lg-justify-content-end tw-lg-mg-t-0 tw-lg-mg-b-1 tw-lg-pd-t-0">
-                                                    <div class="tw-flex">
-                                                        <div class="tw-c-text-live  tw-inline-flex tw-mg-r-1"></div>
+                                                    <div class="tw-flex tw-hide">
+                                                        <div class="tw-c-text-live  tw-inline-flex tw-mg-r-1">
+                                                            <div class="tw-stat" data-a-target="viewer-count">
+                                                                <span class="tw-stat__icon">
+                                                                    <figure class="tw-svg">
+                                                                        <svg class="tw-svg__asset tw-svg__asset--glyphviews tw-svg__asset--inherit" width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
+                                                                            <path clip-rule="evenodd" d="M11,13H5L1,9V8V7l4-4h6l4,4v1v1L11,13z M8,5C6.344,5,5,6.343,5,8c0,1.656,1.344,3,3,3c1.657,0,3-1.344,3-3C11,6.343,9.657,5,8,5z M8,9C7.447,9,7,8.552,7,8s0.447-1,1-1s1,0.448,1,1S8.553,9,8,9z" fill-rule="evenodd"></path>
+                                                                        </svg>
+                                                                    </figure>
+                                                                </span>
+                                                                <span class="tw-stat__value" data-a-target="tw-stat-value">0</span>
+                                                            </div>
+                                                            <div class="tw-tooltip tw-tooltip--down tw-tooltip--align-center" data-a-target="tw-tooltip-label" role="tooltip" id="228759886d06d5fdd94e8a05596b023b">Current Viewers</div>
+                                                        </div>
                                                         <div class="tw-tooltip-wrapper tw-inline-flex" aria-describedby="228759886d06d5fdd94e8a05596b023b">
-                                                            <div class="tw-stat" data-a-target="total-views-count" style="color: rgb(235 35 35) !important;">
+                                                            <div class="tw-stat" data-a-target="total-views-count">
                                                                 <span class="tw-stat__icon">
                                                                     <figure class="tw-svg">
                                                                         <svg class="tw-svg__asset tw-svg__asset--glyphviews tw-svg__asset--inherit" width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
