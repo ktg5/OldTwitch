@@ -110,20 +110,28 @@ if (html) {
 // First, let's see what page we're working with.
 var injectTarget = '';
 var injectJSTargets = [];
-switch (location.pathname) {
-    case "/":
+switch (true) {
+    case location.pathname == "/":
         injectTarget = runtime.getURL(`html/index.html`);
         injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
         injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
         injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
     break;
 
-    case "/search":
+    case location.pathname.startsWith("/search"):
         injectTarget = runtime.getURL('html/search.html');
         injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
         injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
         injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
         injectJSTargets.push(runtime.getURL('html/src/ot-search.js'));
+    break;
+
+    case location.pathname.startsWith("/directory"):
+        injectTarget = runtime.getURL('html/directory.html');
+        injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
+        injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
+        injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
+        injectJSTargets.push(runtime.getURL('html/src/ot-directory.js'));
     break;
 
     default:
@@ -164,4 +172,8 @@ fetch(`${injectTarget}`).then(async data => {
 
     // Stop observer
     blockingObserver.disconnect();
+
+
+    // Check config
+    if (userConfig.darkMode == true) html.classList.add(`tw-theme--dark`);
 });

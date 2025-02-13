@@ -20,7 +20,7 @@
 
             <main class="twilight-main tw-full-width tw-full-height tw-overflow-hidden tw-flex tw-flex-column tw-flex-grow-1 tw-relative">
                 <div class="">
-                    <div class="channel-header tw-flex-shrink-0" style="position: relative;">
+                    <div class="channel-header tw-flex-shrink-0 tw-hide" style="position: relative;">
                         <div class="tw-hide-accessible">
                             <div class="channel-banner">
                                 <span class="tw-placeholder-wrapper" data-test-selector="channel-banner__placeholder">
@@ -173,21 +173,35 @@
                                     </div>
                                 </div>
                             </div>
-                            <div data-target="channel-header-right"
-                                class="channel-header__right tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
-                                <div class="channel-header__follow-button tw-align-items-stretch tw-flex tw-mg-l-1">
-                                    <button aria-label="Follow" class="tw-button" data-a-target="follow-button"><span
-                                            class="tw-button__icon tw-button__icon--left">
-                                            <figure class="tw-svg"><svg
-                                                    class="tw-svg__asset tw-svg__asset--heart tw-svg__asset--inherit"
-                                                    width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px"
-                                                    y="0px">
+                            <div data-target="channel-header-right" class="channel-header__right tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
+                                <div class="channel-header__follow-button tw-align-items-stretch tw-flex tw-mg-l-1 tw-hide">
+                                    <button aria-label="Follow" class="tw-button" data-a-target="follow-button">
+                                        <span class="tw-button__icon tw-button__icon--left">
+                                            <figure class="tw-svg">
+                                                <svg class="tw-svg__asset tw-svg__asset--heart tw-svg__asset--inherit" width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
                                                     <path clip-rule="evenodd"
                                                         d="M8,14L1,7V4l2-2h3l2,2l2-2h3l2,2v3L8,14z" fill-rule="evenodd">
                                                     </path>
-                                                </svg></figure>
-                                        </span><span class="tw-button__text"
-                                            data-a-target="tw-button-text">Follow</span></button></div>
+                                                </svg>
+                                            </figure>
+                                        </span>
+                                        <span class="tw-button__text" data-a-target="tw-button-text">Follow</span>
+                                    </button>
+                                </div>
+                                <a class="channel-header__subscribe-button tw-align-items-stretch tw-flex tw-mg-l-1 tw-hide" href>
+                                    <button aria-label="Subscribe" class="tw-button" data-a-target="subscribe-button">
+                                        <span class="tw-button__icon tw-button__icon--left">
+                                            <figure class="tw-svg">
+                                                <svg class="tw-svg__asset tw-svg__asset--heart tw-svg__asset--inherit" width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
+                                                    <path clip-rule="evenodd"
+                                                        d="M8,14L1,7V4l2-2h3l2,2l2-2h3l2,2v3L8,14z" fill-rule="evenodd">
+                                                    </path>
+                                                </svg>
+                                            </figure>
+                                        </span>
+                                        <span class="tw-button__text" data-a-target="tw-button-text">Subscribe</span>
+                                    </button>
+                                </a>
                                 <div class="tw-mg-l-1"></div>
                             </div>
                         </div>
@@ -231,7 +245,7 @@
                                                         <div class="tw-align-items-center tw-flex tw-flex-row tw-flex-nowrap">
                                                             <div class="tw-card-body tw-overflow-hidden tw-relative">
                                                                 <div class="tw-ellipsis tw-mg-b-05">
-                                                                    <span class="tw-font-size-4" data-a-target="stream-title"></span>
+                                                                    <span class="tw-font-size-4" data-a-target="video-title"></span>
                                                                 </div>
                                                                 <div class="tw-flex tw-flex-wrap">
                                                                     <div class="channel-info-value tw-hide" data-a-target="category-holder">
@@ -415,7 +429,7 @@
                                 </div>
                                 <div class="persistent-player" style="top: 20px; left: 30px; position: absolute; width: 100%; max-width: calc(100% - 60px); max-height: calc(-16rem + 100vh); overflow: hidden; height: auto;">
                                     <figure class="tw-aspect tw-aspect--16x9 tw-aspect--align-top">
-                                        <div id="stream-insert" class="video-player" data-test-selector="video-player"></div>
+                                        <div id="iframe-insert" class="video-player" data-test-selector="video-player"></div>
                                     </figure>
                                 </div>
                             </div>
@@ -424,7 +438,7 @@
                 </div>
             </main>
 
-            <div data-a-target="right-column-chat-bar" class="right-column tw-full-height tw-flex-shrink-0 tw-relative">
+            <div data-a-target="right-column-chat-bar" class="right-column tw-full-height tw-flex-shrink-0 tw-relative tw-hide">
                 <iframe class="chat-iframe channel-page__right-column tw-full-height" src=""></iframe>
                 <button data-a-target="right-column__toggle-collapse-btn" class="right-column__toggle-visibility tw-z-above tw-block tw-flex-grow-0 tw-flex-shrink-0 tw-absolute">
                     <span class="right-column__toggle-visibility-icon tw-absolute">

@@ -13,12 +13,34 @@
 
 body {
     display: block !important;
-    font-family: "Helvetica Neue"
+    font-family: "Helvetica Neue";
 }
 
 
 .twilight-main {
     min-height: 100vh;
+}
+
+
+.horizontal-carousel-player__details--overlay .streamer-name,
+.horizontal-carousel-player__details--overlay .streamer-category
+{
+    font-size: 1.4rem;
+}
+
+.horizontal-carousel-player__details--overlay .streamer-tags {
+    word-break: break-all;
+    white-space: normal;
+}
+
+.horizontal-carousel-player__details--overlay .streamer-tags .search-tag {
+    margin: 0 .5rem;
+}
+.horizontal-carousel-player__details--overlay .streamer-tags .search-tag:first-child {
+    margin-left: 0;
+}
+.horizontal-carousel-player__details--overlay .streamer-tags .search-tag:last-child {
+    margin-right: 0;
 }
 
 
@@ -39,6 +61,7 @@ body {
     width: 100%;
     color: #b8b5c0;
     padding: .5rem 1rem;
+    text-decoration: none;
 }
 
 .channel-list .channel:hover {
@@ -131,6 +154,7 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
+    max-height: calc(-16rem + 100vh);
 }
 
 
@@ -8681,6 +8705,7 @@ body {
     background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/homepage_gradient_background.png),url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/homepage_player_background.jpg);
     background-repeat: no-repeat;
     background-position: top;
+    color: #b8b5c0;
     padding: 2rem 0;
     min-width: 98rem
 }

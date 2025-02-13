@@ -37,7 +37,7 @@ if (document.cookie.split('auth-token=')[1]) {
 // Do stuff with gql
 if (oauth != null) {
     let gqlAction = async () => {
-        userData = await gql.getUserInfo(oauth);
+        userData = await gql.getCurrentUser(oauth);
         console.log(`userData: `, userData);
     
         if (userData != null) {
@@ -147,14 +147,17 @@ if (sidebar) {
             channelList.items.forEach(channel => {
                 let categoryTxt, viewCountTxt = null;
                 // console.log(channel);
-                if (channel.content.game) categoryTxt = channel.content.game.displayName;
-                if (channel.content.viewersCount) viewCountTxt = channel.content.viewersCount;
+                if (channel.content) {
+                    if (channel.content.game) categoryTxt = channel.content.game.displayName;
+                    if (channel.content.viewersCount) viewCountTxt = channel.content.viewersCount;
+                }
                 // console.log(viewCountTxt);
 
                 // make div
-                let channelDiv = document.createElement("div");
+                let channelDiv = document.createElement("a");
                 channelDiv.classList.add("channel");
-                channelDiv.title = channel.content.broadcaster ? channel.content.broadcaster.broadcastSettings.title : "";
+                channelDiv.href = `/${channel.user.login}`;
+                if (channel.content) channelDiv.title = channel.content.broadcaster ? channel.content.broadcaster.broadcastSettings.title : "";
                 channelDiv.innerHTML = `
                 <figure class="tw-avatar tw-avatar--size-36">
                     <div class="tw-overflow-hidden">
@@ -172,10 +175,6 @@ if (sidebar) {
                 </div>
                 `;
                 targetDiv.appendChild(channelDiv);
-
-                channelDiv.addEventListener("click", (e) => {
-                    location.pathname = `/${channel.user.login}`;
-                });
             });
         }
 
@@ -185,3 +184,76 @@ if (sidebar) {
         });
     });
 }
+
+
+// Set side stuff clicks
+let sideNavArrow = document.querySelector(`[data-a-target="side-nav-arrow"]`);
+if (sideNavArrow) {}
+
+
+// Check if the current page is just the index page.
+window.addEventListener('load', async () => {
+    if (location.pathname == "/") {
+
+        // Do home apge stuff
+        let homePageData = await gql.getHomePage("en"); // todo: allow user to change lang to whatever they want
+        console.log('homePageData: ', homePageData);
+    
+        // Set first featured stream
+        let featuredStreams = homePageData.featuredStreams;
+        let featuredStreamFigure = document.querySelector(`.anon-front__featured-section figure`);
+        featuredStreamFigure.id = "iframe-insert";
+        featuredStreamFigure.innerHTML = '';
+        let featuredStreamIframe;
+        vodExec = () => {
+
+            function setHeaderStream(i) {
+                // reset iframe
+                document.querySelector(`#iframe-insert`).innerHTML = "";
+                
+                // iframe
+                featuredStreamIframe = new Twitch.Player("iframe-insert", {
+                    channel: featuredStreams[i].broadcaster.login,
+                    muted: false
+                });
+
+                // channel details
+                document.querySelector(`.streamer-pfp`).innerHTML = `<img class="tw-image" src="${featuredStreams[i].broadcaster.profileImageURL}">`;
+                document.querySelector(`.streamer-name`).innerHTML = featuredStreams[0].broadcaster.displayName;
+                document.querySelector(`.streamer-category`).innerHTML = `<a href="/directory/category/${featuredStreams[i].game.slug}">${featuredStreams[i].game.displayName}</a>`;
+                document.querySelector(`.streamer-desc`).innerHTML = "";
+                document.querySelector(`.streamer-tags`).innerHTML = "";
+                featuredStreams[i].freeformTags.forEach(streamTag => {
+                    document.querySelector(`.streamer-tags`).innerHTML += `<a class="search-tag" href="/directory/all/tags/${streamTag.name}">${streamTag.name}</a>`;
+                });
+            }
+
+            // channelssesese
+            for (let i = 0; i < featuredStreams.length; i++) {
+                const featuredStream = featuredStreams[i];
+                
+                let targetDiv = document.querySelector(`.tw-flex.tw-flex-nowrap.tw-pd-x-05.tw-pd-y-1`).children[i];
+                targetDiv.style.cursor = "pointer";
+                targetDiv.innerHTML = `<img class="tw-image" src="${featuredStream.previewImageURL}">`;
+                targetDiv.addEventListener('click', (e) => {
+                    setHeaderStream(i);
+                });
+            }
+
+            // set default
+            setHeaderStream(0);
+
+        };
+        if (Twitch !== undefined) {
+            vodExec();
+        } else {
+            let tempInit = setInterval(() => {
+                if (Twitch) {
+                    vodExec();
+                    clearInterval(tempInit);
+                };
+            }, 50);
+        };
+
+    };
+});

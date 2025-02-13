@@ -29,10 +29,10 @@
             "run_at": "document_end"
         },
         {
-            "matches": ["*://www.twitch.tv/embed/*"],
+            "matches": ["*://www.twitch.tv/embed/*", "*://clips.twitch.tv/embed*"],
             "js": ["js/ot-embed.js"],
             "all_frames": true,
-            "run_at": "document_start"
+            "run_at": "document_end"
         },
         {
             "matches": ["*://player.twitch.tv/*"],

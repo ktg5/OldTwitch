@@ -169,23 +169,6 @@
         }
     },
     {
-        "operationName": "AdRequestHandling",
-        "variables": {
-            "isLive": true,
-            "login": "inconsiderateraccoon",
-            "isVOD": false,
-            "vodID": "",
-            "isCollection": false,
-            "collectionID": ""
-        },
-        "extensions": {
-            "persistedQuery": {
-                "version": 1,
-                "sha256Hash": "61a5ecca6da3d924efa9dbde811e051b8a10cb6bd0fe22c372c2f4401f3e88d1"
-            }
-        }
-    },
-    {
         "operationName": "NielsenContentMetadata",
         "variables": {
             "isCollectionContent": false,
@@ -820,22 +803,6 @@
             }
         }
     }, {
-        "operationName": "AdRequestHandling",
-        "variables": {
-            "isLive": true,
-            "login": "6arakin",
-            "isVOD": false,
-            "vodID": "",
-            "isCollection": false,
-            "collectionID": ""
-        },
-        "extensions": {
-            "persistedQuery": {
-                "version": 1,
-                "sha256Hash": "61a5ecca6da3d924efa9dbde811e051b8a10cb6bd0fe22c372c2f4401f3e88d1"
-            }
-        }
-    }, {
         "operationName": "NielsenContentMetadata",
         "variables": {
             "isCollectionContent": false,
@@ -1023,6 +990,138 @@
             "persistedQuery": {
                 "version": 1,
                 "sha256Hash": "acea7539a293dfd30f0b0b81a263134bb5d9a7175592e14ac3f7c77b192de416"
+            }
+        }
+    },
+    {
+        "operationName": "ChannelVideoCore",
+        "variables": {
+            "videoID": "2378926034"
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "cf1ccf6f5b94c94d662efec5223dfb260c9f8bf053239a76125a58118769e8e2"
+            }
+        }
+    },
+    {
+        "operationName": "VideoCommentsByOffsetOrCursor",
+        "variables": {
+            "videoID": "2378926034",
+            "contentOffsetSeconds": 0
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "b70a3591ff0f4e0313d126c6a1502d79a1c02baebb288227c582044aa76adf6a"
+            }
+        }
+    },
+    {
+        "operationName": "ShareClipRenderStatus",
+        "variables": {
+            "slug": "TenaciousBoredCormorant4Head-Bn074VA5hDObDRD-"
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "f130048a462a0ac86bb54d653c968c514e9ab9ca94db52368c1179e97b0f16eb"
+            }
+        }
+    },
+    {
+        "operationName": "FeaturedContentCarouselStreams",
+        "variables": {
+            "language": "en",
+            "first": 8,
+            "acceptedMature": true
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "663a12a5bcf38aa3f6f566e328e9e7de44986746101c0ad10b50186f768b41b7"
+            }
+        }
+    },
+    {
+        "operationName": "Shelves",
+        "variables": {
+            "imageWidth": 50,
+            "itemsPerRow": 8,
+            "langWeightedCCU": true,
+            "platform": "web",
+            "limit": 3,
+            "requestID": "",
+            "includeIsDJ": true,
+            "context": {
+                "clientApp": "twilight",
+                "location": "home",
+                "referrerDomain": "",
+                "viewportHeight": 1081,
+                "viewportWidth": 1697
+            },
+            "verbose": false
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "96e73675b8cf36556ca3b06c51fe8804667bfaf594d05e503c7c7ff5176723fe"
+            }
+        }
+    },
+    {
+        "operationName": "Shelves",
+        "variables": {
+            "imageWidth": 50,
+            "after": "JX8DAQEGY3Vyc29yAf+AAAEBAQxTZWVuU2VjdGlvbnMB/4IAAAAW/4ECAQEIW11zdHJpbmcB/4IAAQwAAP+F/4ABAzRwcm92aWRlci10b3AtbGl2ZS1jaGFubmVscy15b3UtbWF5LWxpa2UtbG9nZ2VkLW91dC0xLXByb3ZpZGVyLWp1c3QtY2hhdHRpbmctaXJsLXN0cmVhbXMtbG8tZml4ZWQtMRxwcm92aWRlci10b3AtZ2FtZXMtZm9yLXlvdS0xAA==",
+            "itemsPerRow": 8,
+            "limit": 6,
+            "langWeightedCCU": true,
+            "platform": "web",
+            "requestID": "",
+            "includeIsDJ": true,
+            "context": {
+                "clientApp": "twilight",
+                "location": "home",
+                "referrerDomain": "",
+                "viewportHeight": 1159,
+                "viewportWidth": 1738
+            },
+            "verbose": false
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "96e73675b8cf36556ca3b06c51fe8804667bfaf594d05e503c7c7ff5176723fe"
+            }
+        }
+    },
+    {
+        "operationName": "BrowsePage_Popular",
+        "variables": {
+            "imageWidth": 50,
+            "limit": 30,
+            "platformType": "all",
+            "options": {
+                "sort": "RELEVANCE",
+                "freeformTags": [
+                    "Loud"
+                ],
+                "tags": [],
+                "recommendationsContext": {
+                    "platform": "web"
+                },
+                "requestID": "",
+                "broadcasterLanguages": []
+            },
+            "sortTypeIsRecency": false,
+            "includeIsDJ": true
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "75a4899f0a765cc08576125512f710e157b147897c06f96325de72d4c5a64890"
             }
         }
     }
