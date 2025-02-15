@@ -1,4 +1,6 @@
 here's how we're gonna do this:
+ - version checking
+
  - figure out how to get the video-swap script to work (CAN NOT FIGURE THIS SHIT OUT FOR THE LIFE OF ME) 
 
  - add the whole 2018 & 2015 twitch site
@@ -10,8 +12,8 @@ here's how we're gonna do this:
 
  - get an api key or something to get the user's stats, such as following, recommends, etc. and also use for streamer stats. ✅
 
- - stream page
- - follow & unfollow
+ - stream page ✅
+ - follow & unfollow (will work on next update)
 
  - get channel list working ✅
  - vods & clips ✅
@@ -26,4 +28,3 @@ here's how we're gonna do this:
  - finish home page ✅
 
  - make scripts & css for embedded video & chat.
- - version checking
