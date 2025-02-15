@@ -107,73 +107,95 @@ if (html) {
 };
 
 
-// First, let's see what page we're working with.
-var injectTarget = '';
-var injectJSTargets = [];
-switch (true) {
-    case location.pathname == "/":
-        injectTarget = runtime.getURL(`html/index.html`);
-        injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
-        injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
-        injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
-    break;
+let firstInit = false;
+async function handlePageChange () {
+    // First, let's see what page we're working with.
+    var injectTarget = '';
+    var injectJSTargets = [];
+    switch (true) {
+        case location.pathname == "/":
+            injectTarget = runtime.getURL(`html/index.html`);
+            injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
+            injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
+            injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
+        break;
 
-    case location.pathname.startsWith("/search"):
-        injectTarget = runtime.getURL('html/search.html');
-        injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
-        injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
-        injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
-        injectJSTargets.push(runtime.getURL('html/src/ot-search.js'));
-    break;
+        case location.pathname.startsWith("/search"):
+            injectTarget = runtime.getURL('html/search.html');
+            injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
+            injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
+            injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
+            injectJSTargets.push(runtime.getURL('html/src/ot-search.js'));
+        break;
 
-    case location.pathname.startsWith("/directory"):
-        injectTarget = runtime.getURL('html/directory.html');
-        injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
-        injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
-        injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
-        injectJSTargets.push(runtime.getURL('html/src/ot-directory.js'));
-    break;
+        case location.pathname.startsWith("/directory"):
+            if (location.pathname.startsWith("/directory/category")) injectTarget = runtime.getURL('html/directory/category.html');
+            else injectTarget = runtime.getURL('html/directory/index.html');
+            injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
+            injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
+            injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
+            injectJSTargets.push(runtime.getURL('html/src/ot-directory.js'));
+        break;
 
-    default:
-        injectTarget = runtime.getURL(`html/watch.html`);
-        injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
-        injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
-        injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
-        injectJSTargets.push(runtime.getURL('html/src/ot-watch.js'));
-    break;
+        default:
+            injectTarget = runtime.getURL(`html/watch.html`);
+            injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
+            injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
+            injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
+            injectJSTargets.push(runtime.getURL('html/src/ot-watch.js'));
+        break;
+    }
+
+    // Now it's time to inject our own HTML
+    fetch(`${injectTarget}`).then(async data => {
+        // Inject HTML
+        let htmlText = await data.text();
+        htmlText = htmlText.replace('<body', `<body oldttv="${extensionLocation}"`);
+        htmlText = htmlText.replace(/__([a-zA-Z0-9_]+)__/g, (match, key) => {
+            switch (key) {
+                case "EXTENSION_URL":
+                return extensionLocation;
+
+                default:
+                return match;
+            }
+        });
+
+        if (firstInit == false) {
+            // First time inject - replace all
+            html.innerHTML = htmlText;
+            firstInit = true;
+        } else {
+            // Subsequent time inject - get the ".twilight-main" in both the current & incoming HTML and replace the innerHTML
+            let currentMain = document.querySelector(".twilight-main");
+            let newMain = html.querySelector(".twilight-main");
+            currentMain.innerHTML = newMain.innerHTML;
+        }
+
+
+        // Check for any script elements with the "oldttv-js" id; if found, remove them
+        let oldttvJS = document.querySelectorAll('script[id="oldttv-js"]');
+        if (oldttvJS.length > 0) {
+            oldttvJS.forEach(e => e.remove());
+        };
+
+        // Inject JS
+        if (injectJSTargets.length > 0) injectJSTargets.forEach(jsTargets => {
+            let srcDoc = document.createElement('script');
+            srcDoc.id = 'oldttv-js';
+            srcDoc.async = "";
+            srcDoc.src = jsTargets;
+            document.head.append(srcDoc);
+        });
+
+        // Stop observer
+        blockingObserver.disconnect();
+
+
+        // Check config
+        if (userConfig.darkMode == true || window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) html.classList.add(`tw-theme--dark`);
+    });
 }
 
-// Now it's time to inject our own HTML
-fetch(`${injectTarget}`).then(async data => {
-    // Inject HTML
-    let htmlText = await data.text();
-    htmlText = htmlText.replace('<body', `<body oldttv="${extensionLocation}"`);
-    htmlText = htmlText.replace(/__([a-zA-Z0-9_]+)__/g, (match, key) => {
-        switch (key) {
-            case "EXTENSION_URL":
-            return extensionLocation;
-
-            default:
-            return match;
-        }
-    });
-    // console.log(htmlText);
-    html.innerHTML = htmlText;
-
-
-    // Inject JS
-    if (injectJSTargets.length > 0) injectJSTargets.forEach(jsTargets => {
-        let srcDoc = document.createElement('script');
-        srcDoc.id = 'oldttv-js';
-        srcDoc.async = "";
-        srcDoc.src = jsTargets;
-        document.head.append(srcDoc);
-    });
-
-    // Stop observer
-    blockingObserver.disconnect();
-
-
-    // Check config
-    if (userConfig.darkMode == true) html.classList.add(`tw-theme--dark`);
-});
+// Initial injection when the page first loads
+handlePageChange();

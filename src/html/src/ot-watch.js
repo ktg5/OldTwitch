@@ -11,7 +11,7 @@ async function setIframeVideo (args) {
     async function notFirstInit() {
         // name & pfp
         document.querySelector(`.channel-header__user .tw-image`).src = channelData.profileImageURL;
-        placeholderToText(document.querySelector(`.channel-header__user .tw-placeholder-wrapper`), channelData.displayName);
+        document.querySelector(`.channel-header__user-avatar-name`).innerHTML = `<span class="tw-font-size-5">${channelData.displayName}</span>`;
 
         // check if user is following streamer
         for (const channelInt in channels) {
@@ -28,24 +28,29 @@ async function setIframeVideo (args) {
 
         // check if channel name is the same as the current user
         if (channelData.displayName != userData.displayName) document.querySelector(`[data-a-target="follow-button"]`).parentElement.classList.remove("tw-hide");
-        if (channelData.roles.isAffiliate || channelData.roles.isPartner) document.querySelector(`[data-a-target="subscribe-button"]`).parentElement.classList.remove("tw-hide");
+        let subButton = document.querySelector(`[data-a-target="subscribe-button"]`).parentElement;
+        console.log(subButton);
+        if (channelData.roles.isAffiliate || channelData.roles.isPartner) {
+            subButton.classList.remove("tw-hide");
+            subButton.href = `https://www.twitch.tv/subs/${channelData.login}`;
+        }
     }
 
     switch (args.type) {
         case "stream":
-            if (!args.name) return "Invalid args";
+            if (!args.channel) return "Invalid args";
 
             // Enable divs
             document.querySelector(`[data-a-target="right-column-chat-bar"]`).classList.remove("tw-hide");
             document.querySelector(`.channel-header`).classList.remove("tw-hide");
 
             localStorage.setItem("oldttv-lastchannel", localStorage.getItem("oldttv-currentchannel"));
-            localStorage.setItem("oldttv-currentchannel", args.name);
+            localStorage.setItem("oldttv-currentchannel", args.channel);
 
             // set stream
             vodExec = () => {
                 new Twitch.Player("iframe-insert", {
-                    channel: args.name,
+                    channel: args.channel,
                     muted: false
                 });
             }
@@ -61,9 +66,9 @@ async function setIframeVideo (args) {
             }
 
             gqlAction = async () => {
-                channelData = await gql.getChannel(args.name);
-                videosData = await gql.getChannelVideos(args.name);
-                clipsData = await gql.getChannelClips(args.name);
+                channelData = await gql.getChannel(args.channel);
+                videosData = await gql.getChannelVods(args.channel);
+                clipsData = await gql.getChannelClips(args.channel);
                 console.log("channelData: ", channelData);
 
                 // set streamer info
@@ -135,9 +140,8 @@ async function setIframeVideo (args) {
 
                 // add interval to check streamer data
                 let streamerCheck = setInterval(async () => {
-                    channelData = await gql.getChannel(args.name);
+                    channelData = await gql.getChannel(args.channel);
                     addStremerInfo(['not-first-init']);
-                    console.log("streamercheck");
                 }, 60000);
                 addStremerInfo();
             };
@@ -154,7 +158,7 @@ async function setIframeVideo (args) {
 
 
             // set chat
-            chatIframe.src = `https://www.twitch.tv/embed/${args.name}/chat?parent=twitch.tv`;
+            chatIframe.src = `https://www.twitch.tv/embed/${args.channel}/chat?parent=twitch.tv`;
         break;
     
         case "video":
@@ -186,7 +190,7 @@ async function setIframeVideo (args) {
                 vodData = await gql.getVodInfo(args.id);
                 console.log("vodData: ", vodData);
                 channelData = await gql.getChannel(vodData.owner.login);
-                videosData = await gql.getChannelVideos(vodData.owner.login);
+                videosData = await gql.getChannelVods(vodData.owner.login);
                 clipsData = await gql.getChannelClips(vodData.owner.login);
                 console.log("channelData: ", channelData);
 
@@ -250,7 +254,7 @@ async function setIframeVideo (args) {
                 clipData = await gql.getClipInfo(args.slug);
                 console.log("clipData: ", clipData);
                 channelData = await gql.getChannel(clipData.broadcaster.login);
-                videosData = await gql.getChannelVideos(clipData.broadcaster.login);
+                videosData = await gql.getChannelVods(clipData.broadcaster.login);
                 clipsData = await gql.getChannelClips(clipData.broadcaster.login);
                 console.log("channelData: ", channelData);
 
@@ -312,6 +316,6 @@ switch (true) {
         arg1 = pathname.split("/")[1];
         if (arg1.includes("?")) arg1 = arg1.split("?")[0];
         if (pathname.split("/").length > 1 && pathname.includes("/clip/")) setIframeVideo({ type: "clip", slug: pathname.split("clip/").pop(), channel: arg1 })
-        else setIframeVideo({ type: "stream", name: arg1 });
+        else setIframeVideo({ type: "stream", channel: arg1 });
     break;
 }

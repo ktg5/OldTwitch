@@ -1124,5 +1124,70 @@
                 "sha256Hash": "75a4899f0a765cc08576125512f710e157b147897c06f96325de72d4c5a64890"
             }
         }
+    },
+    {
+        "operationName": "DirectoryVideos_Game",
+        "variables": {
+            "includePreviewBlur": true,
+            "slug": "slug",
+            "videoLimit": 100,
+            "languages": ["en"],
+            "videoSort": "VIEWS",
+            "cursor": null
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "f19b861ed9c767a1c231be8f757958005cd537a6e9730bc01c6b4735c2eaf211"
+            }
+        }
+    },
+    {
+        "operationName": "ClipsCards__Game",
+        "variables": {
+            "categorySlug": "slug",
+            "limit":  100,
+            "criteria": {
+                "languages": ["en"],
+                "filter": "LAST_WEEK",
+                "shouldFilterByDiscoverySetting": true
+            },
+            "cursor": null
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "ebcf54afb9aa5d6cec8aad2c35b84e2737a109dac5b184308aae73a27d176707"
+            }
+        }
+    },
+    {
+        "operationName": "FollowButton_UnfollowUser",
+        "variables": {
+            "input": {
+                "targetID": "694541343"
+            }
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "f7dae976ebf41c755ae2d758546bfd176b4eeb856656098bb40e0a672ca0d880"
+            }
+        }
+    },
+    {
+        "operationName": "FollowButton_FollowUser",
+        "variables": {
+            "input": {
+                "disableNotifications": false,
+                "targetID": "694541343"
+            }
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "800e7346bdf7e5278a3c1d3f21b2b56e2639928f86815677a7126b093b2fdd08"
+            }
+        }
     }
 ]

@@ -28,19 +28,79 @@ body {
     font-size: 1.4rem;
 }
 
-.horizontal-carousel-player__details--overlay .streamer-tags {
-    word-break: break-all;
+.anon-front__content-section .streamer-tags {
+    word-break: break-word;
     white-space: normal;
 }
 
-.horizontal-carousel-player__details--overlay .streamer-tags .search-tag {
+.anon-front__content-section .streamer-tags .search-tag {
     margin: 0 .5rem;
 }
-.horizontal-carousel-player__details--overlay .streamer-tags .search-tag:first-child {
+.anon-front__content-section .streamer-tags .search-tag:first-child {
     margin-left: 0;
 }
-.horizontal-carousel-player__details--overlay .streamer-tags .search-tag:last-child {
+.anon-front__content-section .streamer-tags .search-tag:last-child {
     margin-right: 0;
+}
+
+.channel-select .tw-flex-grow-1.tw-mg-x-05.channel-selected {
+    filter: none;
+}
+
+.channel-select .tw-flex-grow-1.tw-mg-x-05 {
+    filter: grayscale(1);
+}
+
+.channel-select .tw-flex-grow-1.tw-mg-x-05:hover {
+    filter: none;
+}
+
+.anon-front__content-section .tw-grid .tw-aspect {
+    cursor: pointer;
+}
+
+.anon-front__content-section .game-title a {
+    color: #434343;
+}
+
+.tw-theme--dark .anon-front__content-section .game-title a {
+    color: #c4c4c4;
+}
+
+.anon-front__content-section .game-tags {
+    color: #939393;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.anon-front__content-section .game-tags .game-tag {
+    margin: 0 .5rem;
+}
+.anon-front__content-section .game-tags .game-tag:first-child {
+    margin-left: 0;
+}
+.anon-front__content-section .game-tags .game-tag:last-child {
+    margin-right: 0;
+}
+
+.tw-tower .tw-mg-b-2 {
+    display: none;
+}
+.tw-tower[force-all] .tw-mg-b-2,
+.tw-tower .tw-mg-b-2:nth-child(-n + 6)
+{
+    display: block;
+}
+
+.tw-tower .tw-mg-b-2 .streamer-name {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+}
+
+.tw-tower .tw-mg-b-2 .streamer-viewers {
+    color: #939393;
 }
 
 
@@ -54,10 +114,12 @@ body {
 }
 
 
-.channel-list {}
+.channel-list {
+    position: relative;
+}
 
 .channel-list .channel {
-    display: flex;
+    display: none;
     width: 100%;
     color: #b8b5c0;
     padding: .5rem 1rem;
@@ -69,14 +131,31 @@ body {
     background: rgba(255, 255, 255, 0.25);
 }
 
+.channel-list .channel:nth-child(-n + 10),
+.channel-list[force-all] .channel
+{
+    display: flex !important;
+}
+
+.side-nav--collapsed .channel-list .channel * {
+    display: none;
+}
+
 .channel-list .channel .tw-avatar {
-    margin-right: 1rem;
+    background: none;
+}
+
+.side-nav--collapsed .channel-list .channel .tw-avatar,
+.side-nav--collapsed .channel-list .channel .tw-avatar *
+{
+    display: block;
 }
 
 .channel-info {
     position: relative;
     width: calc(100% - 46px);
     height: 100%;
+    margin-left: 1rem;
     align-self: center;
     line-height: 14px;
     color: #88868e;
@@ -89,14 +168,14 @@ body {
 .channel-info .left .title {
     position: relative;
     top: 0;
-    font-size: 16px;
+    font-size: 14px;
     color: #b8b5c0;
 }
 
 .channel-info .left .category {
     position: relative;
     max-width: 12rem;
-    margin-top: 4px;
+    margin-top: 2px;
     overflow: hidden;
     white-space: nowrap;
     bottom: 0;
@@ -118,6 +197,25 @@ body {
     height: 6px;
     margin-right: 6px;
     border-radius: 100%;
+}
+
+.channel-list-force-all {
+    position: sticky;
+    width: fit-content;
+    margin: 0 .5rem;
+    padding: .5rem;
+    cursor: pointer;
+    color: #88868e;
+    left: 100%;
+}
+
+.side-nav--collapsed .channel-list-force-all {
+    display: none;
+}
+
+
+.right-column--collapsed iframe {
+    display: none;
 }
 
 
@@ -8223,7 +8321,7 @@ body {
 
 /*!
  * Pikaday
- * Copyright Ã‚Â© 2014 David Bushell | BSD & MIT license | http://dbushell.com/
+ * Copyright ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© 2014 David Bushell | BSD & MIT license | http://dbushell.com/
  */
 .pika-single {
     z-index: 9999;
@@ -8702,7 +8800,7 @@ body {
 
 .anon-front__featured-section {
     background-color: #17141f;
-    background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/homepage_gradient_background.png),url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/homepage_player_background.jpg);
+    background-image: url(chrome-extension://__MSG_@@extension_id__/html/img/homepage_gradient_background.png),url(chrome-extension://__MSG_@@extension_id__/html/img/homepage_player_background.jpg);
     background-repeat: no-repeat;
     background-position: top;
     color: #b8b5c0;
@@ -8712,7 +8810,7 @@ body {
 
 .anon-front__social-container {
     background-color: #fff;
-    background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/homepage_social_background.png);
+    background-image: url(chrome-extension://__MSG_@@extension_id__/html/img/homepage_social_background.png);
     background-repeat: no-repeat;
     background-position: 50%
 }
@@ -10485,7 +10583,7 @@ body {
 }
 
 .crates-holiday-background {
-    background: 50% 3rem/100% url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/blue-background.svg) no-repeat
+    background: 50% 3rem/100% url(chrome-extension://__MSG_@@extension_id__/html/img/blue-background.svg) no-repeat
 }
 
 .owl-2018-introduction__banner-background {
@@ -11296,11 +11394,11 @@ body {
 }
 
 .crate-notification__holiday-background {
-    background: 50% calc(100% + 5.3rem)/150% url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/blue-background-adea57802e0be2bedd5a83578f0976c5.svg) no-repeat
+    background: 50% calc(100% + 5.3rem)/150% url(chrome-extension://__MSG_@@extension_id__/html/img/blue-background-adea57802e0be2bedd5a83578f0976c5.svg) no-repeat
 }
 
 .gift-notification__holiday-background {
-    background: 50% calc(100% + 2rem)/150% url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/blue-background-adea57802e0be2bedd5a83578f0976c5.svg) no-repeat
+    background: 50% calc(100% + 2rem)/150% url(chrome-extension://__MSG_@@extension_id__/html/img/blue-background-adea57802e0be2bedd5a83578f0976c5.svg) no-repeat
 }
 
 .blizzard-account-link__logo {
@@ -11644,13 +11742,13 @@ body {
 }
 
 .commerce-content-item__placeholder {
-    background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/404_boxart-285x380.jpg);
+    background-image: url(chrome-extension://__MSG_@@extension_id__/html/img/404_boxart-285x380.jpg);
     background-size: contain;
     width: 5rem
 }
 
 .commerce-content-item__placeholder--balloon {
-    background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/404_boxart-285x380.jpg);
+    background-image: url(chrome-extension://__MSG_@@extension_id__/html/img/404_boxart-285x380.jpg);
     background-size: contain;
     width: 15rem
 }
@@ -13282,7 +13380,9 @@ body {
 }
 
 .directory-header__avatar {
-    border: 2px solid #fff
+    border: 2px solid #fff;
+    width: 8rem;
+    height: 11.2rem;
 }
 
 .directory-header__overlay {
@@ -15854,6 +15954,7 @@ h6,p {
 }
 
 .tw-mg-b-4 {
+    display: block;
     margin-bottom: 4rem!important
 }
 

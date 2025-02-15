@@ -18,8 +18,6 @@ class Gql {
      *                            Logs an error if the OAuth token is invalid.
      */
     async getCurrentUser(Oauth) {
-        if (!Oauth) return console.error("Invaild args");
-
         if (this.oauth != undefined) Oauth = this.oauth;
 
         return new Promise(async (resolve, reject) => {
@@ -50,12 +48,26 @@ class Gql {
     }
 
 
-    async getHomePage(lang, streamsAmount) {
+    /**
+     * Fetches the home page data from the Twitch GraphQL API.
+     *
+     * @param {string} lang - The language in which to fetch the data.
+     * @param {number} streamsAmount - Optional. The number of streams to fetch. Maximum is 10 within GQL. Defaults to 6 if not provided.
+     * @param {number} shelvesItemAmount - Optional. The number of streams to fetch. Defaults to 12 if not provided.
+     * @returns {Promise<Object>} A promise that resolves to an object containing featured streams and shelf data.
+     *                            Logs any errors if encountered during the fetch.
+     */
+    async getHomePage(lang, streamsAmount, shelvesItemAmount) {
         // if (!lang) return console.error("Invaild args");
 
         if (!streamsAmount) {
             streamsAmount = 6;
-            console.warn("amount arg not set, going with \"8\".");
+            console.warn("streams amount arg not set, going with \"8\".");
+        }
+
+        if (!shelvesItemAmount) {
+            shelvesItemAmount = 12;
+            console.warn("shelves amount arg not set, going with \"8\".");
         }
 
         return new Promise(async (resolve, reject) => {
@@ -68,7 +80,7 @@ class Gql {
                     {
                         "operationName": "FeaturedContentCarouselStreams",
                         "variables": {
-                            "language": "en",
+                            "language": lang,
                             "first": streamsAmount,
                             "acceptedMature": true
                         },
@@ -83,7 +95,7 @@ class Gql {
                         "operationName": "Shelves",
                         "variables": {
                             "imageWidth": 50,
-                            "itemsPerRow": streamsAmount,
+                            "itemsPerRow": shelvesItemAmount,
                             "langWeightedCCU": true,
                             "platform": "web",
                             "limit": 3,
@@ -110,19 +122,26 @@ class Gql {
             }).then(async rawData => {
                 let data = await rawData.json();
 
+                data.forEach(element => {
+                    if (element.errors) {
+                        console.error(`gql.getHomePage erorr:`, element.errors);
+                        resolve({ errors: element.errors });
+                    }
+                });
+
                 let featuredStreamsData = [];
                 data[0].data.featuredStreams.forEach(stream => {
                     featuredStreamsData.push(stream.stream);
                 });
 
-                let shelvesData = [];
+                let shelvesData = {};
                 data[1].data.shelves.edges.forEach(shelf => {
                     let shelfData = [];
                     shelf.node.content.edges.forEach(edge => {
                         shelfData.push(edge.node);
                     });
 
-                    shelvesData.push(JSON.parse(`{"${shelf.node.title.key}":${JSON.stringify(shelfData)}}`));
+                    shelvesData[shelf.node.title.key] = shelfData;
                 });
 
                 if (data.errors) resolve({ errors: data.errors });
@@ -138,19 +157,27 @@ class Gql {
     /**
      * Fetches recommended channels based on the current and past streamers.
      *
-     * @param {string} Oauth - The OAuth token for authentication.
+     * @param {string} Oauth - Optional for personal recommendations, detects if current GQL instance has a OAuth defined.
+     * The OAuth token for authentication to use for personal recommendations.
      * @param {Array} [CurrentPastStreamer] - Optional. An array containing the current and past channel names.
      * @returns {Promise<Object>} A promise that resolves to the personal recommendations data.
      */
     async getRecommends(Oauth, CurrentPastStreamer) {
-        if (!Oauth || !CurrentPastStreamer) return console.error("Invaild args");
+        if (!CurrentPastStreamer) return console.error(`"CurrentPastStreamer" is required but returned null.`);
 
         if (this.oauth) Oauth = this.oauth;
+        if (Oauth) Oauth = `OAuth ${Oauth}`;
         let currentChannel, pastChannel;
         if (CurrentPastStreamer && Array.isArray(CurrentPastStreamer)) {
             currentChannel = CurrentPastStreamer[0];
             pastChannel = CurrentPastStreamer[1];
         }
+
+        let Headers = {
+            "client-id": this.clientid,
+            "x-device-id": "0"
+        }
+        if (Oauth) Headers.authorization = Oauth;
 
         let Body = {
             "operationName": "PersonalSections",
@@ -188,11 +215,7 @@ class Gql {
 
         return new Promise(async (resolve, reject) => {
             await fetch("https://gql.twitch.tv/gql", {
-                headers: {
-                    "authorization": `OAuth ${Oauth}`,
-                    "client-id": this.clientid,
-                    "x-device-id": "0",
-                },
+                headers: Headers,
                 body: JSON.stringify(Body),
                 method: "POST"
             }).then(async rawData => {
@@ -226,7 +249,7 @@ class Gql {
      * - broadcastSettings.game: The game that the channel is streaming.
      */
     async getChannel(name) {
-        if (!name) return console.error("Invaild args");
+        if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {   
             await fetch("https://gql.twitch.tv/gql", {
@@ -288,53 +311,57 @@ class Gql {
                 method: "POST"
             }).then(async rawData => {
                 let data = await rawData.json();
-                let isLive = data[0].data.user.stream != null;
-
-                let gameSlug;
-                if (data[0].data.user.broadcastSettings.game) gameSlug = data[0].data.user.broadcastSettings.game.slug;
-                let cleanData = {
-                    live: isLive,
-                    ...data[0].data.user,
-                    watchParty: data[1].data.user.activeWatchParty,
-                    chatRules: data[2].data.channel.chatSettings.rules,
-                    description: data[3].data.user.description,
-                    primaryColor: data[3].data.user.primaryColorHex,
-                    followerCount: data[3].data.user.followers.totalCount,
-                    roles: data[3].data.user.roles,
-                    schedule: data[3].data.user.channel.schedule,
-                    primaryTeam: data[3].data.user.primaryTeam
-                };
-                if (gameSlug) cleanData.broadcastSettings.game = await this.getCategory(gameSlug);
 
                 if (data.errors) resolve({ errors: data.errors });
-                else await fetch("https://gql.twitch.tv/gql", {
-                    headers: {
-                        "client-id": this.clientid,
-                    },
-                    body: JSON.stringify({
-                        "operationName": "ChannelPanels",
-                        "variables": {
-                            "id": data[0].data.user.id
+                else {
+                    console.log(data[0].data);
+                    let isLive = data[0].data.user.stream != null;
+
+                    let gameSlug;
+                    if (data[0].data.user.broadcastSettings.game) gameSlug = data[0].data.user.broadcastSettings.game.slug;
+                    let cleanData = {
+                        live: isLive,
+                        ...data[0].data.user,
+                        watchParty: data[1].data.user.activeWatchParty,
+                        chatRules: data[2].data.channel.chatSettings.rules,
+                        description: data[3].data.user.description,
+                        primaryColor: data[3].data.user.primaryColorHex,
+                        followerCount: data[3].data.user.followers.totalCount,
+                        roles: data[3].data.user.roles,
+                        schedule: data[3].data.user.channel.schedule,
+                        primaryTeam: data[3].data.user.primaryTeam
+                    };
+                    if (gameSlug) cleanData.broadcastSettings.game = await this.getCategory(gameSlug);
+
+                    await fetch("https://gql.twitch.tv/gql", {
+                        headers: {
+                            "client-id": this.clientid,
                         },
-                        "extensions": {
-                            "persistedQuery": {
-                                "version": 1,
-                                "sha256Hash": "06d5b518ba3b016ebe62000151c9a81f162f2a1430eb1cf9ad0678ba56d0a768"
+                        body: JSON.stringify({
+                            "operationName": "ChannelPanels",
+                            "variables": {
+                                "id": data[0].data.user.id
+                            },
+                            "extensions": {
+                                "persistedQuery": {
+                                    "version": 1,
+                                    "sha256Hash": "06d5b518ba3b016ebe62000151c9a81f162f2a1430eb1cf9ad0678ba56d0a768"
+                                }
                             }
+                        }),
+                        method: "POST"
+                    }).then(async rawDataT => {
+                        let dataT = await rawDataT.json();
+
+                        cleanData = {
+                            ...cleanData,
+                            panels: dataT.data.user.panels
                         }
-                    }),
-                    method: "POST"
-                }).then(async rawDataT => {
-                    let dataT = await rawDataT.json();
 
-                    cleanData = {
-                        ...cleanData,
-                        panels: dataT.data.user.panels
-                    }
-
-                    if (data.errors) resolve({ errors: data.errors });
-                    else resolve(cleanData);
-                });
+                        if (data.errors) resolve({ errors: data.errors });
+                        else resolve(cleanData);
+                    });
+                }
             });
         });
     }
@@ -345,8 +372,8 @@ class Gql {
      * @param {number} [limit=100] Optional. The limit of videos to get. Defaults to `100`.
      * @returns {Promise.<Array.<Object>>} A promise that resolves to an array of video objects.
      */
-    async getChannelVideos(name, limit) {
-        if (!name) return console.error("Invaild args");
+    async getChannelVods(name, limit) {
+        if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
             await fetch("https://gql.twitch.tv/gql", {
@@ -387,7 +414,7 @@ class Gql {
      * @returns {Promise<Array<Object>>} A promise that resolves with an array of clips.
      */
     async getChannelClips(name, filter, limit) {
-        if (!name) return console.error("Invaild args");
+        if (!name) return console.error(`"name" is required but returned null.`);
 
         // "filter": "LAST_MONTH",
         // "filter": "LAST_DAY",
@@ -435,7 +462,7 @@ class Gql {
      * @returns {Promise<Object|null>} A promise that resolves with the stream metadata if the stream is live, otherwise resolves to `null`.
      */
     async getStreamMetadata(name) {
-        if (!name) return console.error("Invaild args");
+        if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
             await fetch("https://gql.twitch.tv/gql", {
@@ -480,7 +507,7 @@ class Gql {
      * Logs an error if the channel name is invalid.
      */
     async getStreamPreview(name) {
-        if (!name) return console.error("Invaild args");
+        if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
             await fetch("https://gql.twitch.tv/gql", {
@@ -514,6 +541,47 @@ class Gql {
         });
     }
 
+    /**
+     * @description Follows a stream by its ID.
+     * @param {string} id - The ID of the stream to follow.
+     * @param {boolean} notifications - Whether to receive notifications for the stream.
+     * @returns {Promise<Object>} Returns a object of the "followUser" object, containing the user followed & possible errors.
+     * Logs an error if the stream ID is invalid or if the notifications argument is not a boolean.
+     */
+    async followStreamId(id, notifications) {
+        if (!id) return console.error(`"id" is required but returned null.`);
+        if (typeof notifications !== 'boolean') return console.error(`"notifications" must be a boolean.`);
+
+        return new Promise(async (resolve, reject) => {
+            await fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "client-id": this.clientid,
+                },
+                body: JSON.stringify({
+                    "operationName": "FollowButton_FollowUser",
+                    "variables": {
+                        "input": {
+                            "disableNotifications": notifications ? notifications : false,
+                            "targetID": id
+                        }
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "800e7346bdf7e5278a3c1d3f21b2b56e2639928f86815677a7126b093b2fdd08"
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+
+                if (data.errors) resolve({ errors: data.errors });
+                else resolve(data.data.followUser);
+            });
+        });
+    }
+
 
     /**
      * @description Searches for streams, games, videos, channels, and related live channels based on a given query.
@@ -522,7 +590,7 @@ class Gql {
      * Logs an error if the query is invalid.
      */
     async search(query) {
-        if (!query) return console.error("Invaild args");
+        if (!query) return console.error(`"query" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
             fetch("https://gql.twitch.tv/gql", {
@@ -565,6 +633,156 @@ class Gql {
     }
 
 
+    
+    /**
+     * @description Fetches the category information, streamers, videos and clips for a given category slug.
+     * @param {string} slug - The slug of the category to fetch information for.
+     * @param {Object} [args] - Optional. An object containing the following optional properties:
+     * - streamSort: The sort type of the streamers. Defaults to `RELEVANCE`. Other values are `VIEWER_COUNT`, `VIEWER_COUNT_ASC`, and `RECENT`
+     * - vodSort: The sort type of the videos and clips. Defaults to `VIEWS`. Other values are just `TIME`.
+     * - clipSort: The sort type of the clips. Defaults to `LAST_WEEK`. Other values are `LAST_DAY`, `LAST_MONTH`, and `ALL_TIME`.
+     * - tags: An array of strings containing the tags to filter the streamers by.
+     * - languages: An array of strings containing the languages to filter the streamers by.
+     * - filters: An array of strings containing the filters to apply on the streamers.
+     * - limit: The number of streamers to fetch. Defaults to 100.
+     * @returns {Promise<Object>} A promise that resolves to an object containing the category information, streamers, videos and clips.
+     * Logs an error if the slug is invalid.
+     */
+    async getAllCategoryData(slug, args) {
+        if (!slug) return console.error(`"slug" is required but returned null.`);
+
+        let argStreamSort = "RELEVANCE";
+        let argVodSort = "VIEWS";
+        let argClipSort = "LAST_WEEK";
+        let argTags, argLang, argFilters, argLimit;
+
+        if (args) {
+            if (args instanceof Object) return console.error(`"args" must be an object.`);
+
+            if (args.streamSort) argStreamSort = args.streamSort;
+            else console.warn("sort arg not set, going with \"RELEVANCE\".");
+            if (args.vodSort) argVodSort = args.vodSort;
+            else console.warn("sort arg not set, going with \"VIEWS\".");
+            if (args.vodSort) argVodSort = args.vodSort;
+            else console.warn("sort arg not set, going with \"LAST_WEEK\".");
+            if (args.tags) argTags = args.tags;
+            if (args.languages) argLang = args.languages;
+            if (args.filters) argFilters = args.filters;
+            if (args.limit) argLimit = args.limit;
+            else console.warn("limit arg not set, going with 100.");
+        }
+
+        return new Promise(async (resolve, reject) => {
+            fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "client-id": this.clientid,
+                },
+                body: JSON.stringify([
+                    {
+                        "operationName": "Directory_DirectoryBanner",
+                        "variables": {
+                            "slug": slug
+                        },
+                        "extensions": {
+                            "persistedQuery": {
+                                "version": 1,
+                                "sha256Hash": "822ecf40c2a77568d2b223fd5bc4dfdc9c863f081dd1ca7611803a5330e88277"
+                            }
+                        }
+                    },
+                    {
+                        "operationName": "DirectoryPage_Game",
+                        "variables": {
+                            "imageWidth": 50,
+                            "slug": slug,
+                            "options": {
+                                "includeRestricted": [
+                                    "SUB_ONLY_LIVE"
+                                ],
+                                "sort": argStreamSort,
+                                "recommendationsContext": {
+                                    "platform": "web"
+                                },
+                                "freeformTags": null,
+                                "tags": argTags ? argTags : [],
+                                "broadcasterLanguages": argLang ? argLang : [],
+                                "systemFilters": argFilters ? argFilters : []
+                            },
+                            "sortTypeIsRecency": false,
+                            "limit": argLimit ? argLimit : 100,
+                            "includeIsDJ": true
+                        },
+                        "extensions": {
+                            "persistedQuery": {
+                                "version": 1,
+                                "sha256Hash": "c7c9d5aad09155c4161d2382092dc44610367f3536aac39019ec2582ae5065f9"
+                            }
+                        }
+                    },
+                    {
+                        "operationName": "DirectoryVideos_Game",
+                        "variables": {
+                            "includePreviewBlur": true,
+                            "slug": slug,
+                            "videoLimit": argLimit ? argLimit : 100,
+                            "languages": argLang,
+                            "videoSort": argVodSort
+                        },
+                        "extensions": {
+                            "persistedQuery": {
+                                "version": 1,
+                                "sha256Hash": "f19b861ed9c767a1c231be8f757958005cd537a6e9730bc01c6b4735c2eaf211"
+                            }
+                        }
+                    },
+                    {
+                        "operationName": "ClipsCards__Game",
+                        "variables": {
+                            "categorySlug": slug,
+                            "limit": argLimit ? argLimit : 100,
+                            "criteria": {
+                                "languages": argLang ? argLang : [],
+                                "filter": argClipSort,
+                                "shouldFilterByDiscoverySetting": true
+                            }
+                        },
+                        "extensions": {
+                            "persistedQuery": {
+                                "version": 1,
+                                "sha256Hash": "ebcf54afb9aa5d6cec8aad2c35b84e2737a109dac5b184308aae73a27d176707"
+                            }
+                        }
+                    }
+                ]),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+
+                if (data.errors) resolve({ errors: data.errors });
+                else {
+                    let streamsData = [], videosData = [], clipsData = [];
+                    data[1].data.game.streams.edges.forEach(stream => {
+                        streamsData.push(stream.node);
+                    });
+                    data[2].data.game.videos.edges.forEach(video => {
+                        videosData.push(video.node);
+                    });
+                    data[3].data.game.clips.edges.forEach(clip => {
+                        clipsData.push(clip.node);
+                    });
+
+                    let cleanData = {
+                        ...data[0].data.game,
+                        streams: streamsData,
+                        videos: videosData,
+                        clips: clipsData
+                    };
+                    resolve(cleanData);
+                }
+            })
+        });
+    }
+
     /**
      * Fetches the category information for a given slug.
      *
@@ -573,7 +791,7 @@ class Gql {
      * Logs an error if the slug is invalid.
      */
     async getCategory(slug) {
-        if (!slug) return console.error("Invaild args");
+        if (!slug) return console.error(`"slug" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
             fetch("https://gql.twitch.tv/gql", {
@@ -604,27 +822,34 @@ class Gql {
 
 
     /**
-     * Fetches streamers for a given category.
+     * Fetches the streamers for a given category.
      *
-     * @param {string} slug - The category slug.
-     * @param {string} [sort] - Optional. The sort type. Defaults to "RELEVANCE".
-     * @param {{
-     *     tags: string[],
-     *     languages: string[],
-     *     filters: string[],
-     *     limit: number
-     * }} [args] - Optional. Args for the query.
-     * @returns {Promise<Array<Object>>} - The streamers.
+     * @param {string} slug - The slug of the category to fetch streamers for.
+     * @param {Object} [args] - Optional. An object containing the following optional properties:
+     * - sort: The sort type of the streamers. Defaults to `RELEVANCE`. Other values are `VIEWER_COUNT`, `VIEWER_COUNT_ASC`, and `RECENT`.
+     * - tags: An array of strings containing the tags to filter the streamers by.
+     * - languages: An array of strings containing the languages to filter the streamers by.
+     * - filters: An array of strings containing the filters to apply on the streamers.
+     * - limit: The number of streamers to fetch. Defaults to 100.
+     * @returns {Promise<Array<Object>>} A promise that resolves to an array of streamer objects.
      */
-    async getCategoryStreamers(slug, sort, args) {
-        if (!slug) return console.error("Invaild args");
+    async getCategoryStreamers(slug, args) {
+        if (!slug) return console.error(`"slug" is required but returned null.`);
 
-        // "sort": "VIEWER_COUNT",
-        // "sort": "VIEWER_COUNT_ASC",
-        // "sort": "RECENT",
-        let sortTxt = "RELEVANCE";
-        if (sort) sortTxt = sort;
-        else console.warn("sort arg not set, going with \"RELEVANCE\".");
+        let argSort = "RELEVANCE";
+        let argTags, argLang, argFilters, argLimit;
+
+        if (args) {
+            if (args instanceof Object) return console.error(`"args" must be an object.`);
+
+            if (args.sort) argSort = args.sort;
+            else console.warn("sort arg not set, going with \"RELEVANCE\".");
+            if (args.tags) argTags = args.tags;
+            if (args.languages) argLang = args.languages;
+            if (args.filters) argFilters = args.filters;
+            if (args.limit) argLimit = args.limit;
+            else console.warn("limit arg not set, going with 100.");
+        }
 
         return new Promise(async (resolve, reject) => {
             fetch("https://gql.twitch.tv/gql", {
@@ -640,17 +865,17 @@ class Gql {
                             "includeRestricted": [
                                 "SUB_ONLY_LIVE"
                             ],
-                            "sort": sortTxt,
+                            "sort": argSort,
                             "recommendationsContext": {
                                 "platform": "web"
                             },
                             "freeformTags": null,
-                            "tags": args.tags ? args.tags : [],
-                            "broadcasterLanguages": args.languages ? args.languages : [],
-                            "systemFilters": args.filters ? args.filters : []
+                            "tags": argTags ? argTags : [],
+                            "broadcasterLanguages": argLang ? argLang : [],
+                            "systemFilters": argFilters ? argFilters : []
                         },
                         "sortTypeIsRecency": false,
-                        "limit": args.limit ? args.limit : 100,
+                        "limit": argLimit ? argLimit : 100,
                         "includeIsDJ": true
                     },
                     "extensions": {
@@ -665,7 +890,14 @@ class Gql {
                 let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
-                else resolve(data.data.game.streams.edges);
+                else {
+                    let cleanData = [];
+                    data.data.game.streams.edges.forEach(stream => {
+                        cleanData.push(stream.node);
+                    });
+
+                    resolve(cleanData);
+                };
             });
         });
     }
@@ -674,11 +906,11 @@ class Gql {
      * Fetches streamers for a given tag.
      *
      * @param {string | <Array<string>>} tags - Either a list of tags or just a single tag.
-     * @returns {Promise<Array<Object>>} - The streamers.
-     * Logs an error if the tag is invalid.
+     * @returns {Promise<Array<Object>>} - A list of objects with the streamers within the tags provided.
+     * - Logs & returns an error if the tag is invalid.
      */
     async getTagStreamers(tags) {
-        if (!tags) return console.error("Invaild args");
+        if (!tags) return console.error(`"tags" is required but returned null.`);
         if (!Array.isArray(tags)) tags = [tags]; 
 
         return new Promise((resolve, reject) => {
@@ -729,6 +961,8 @@ class Gql {
      * @returns {Promise<Object>} - An object containing the VOD info, or an object with an errors property if an error occurred.
      */
     async getVodInfo(id) {
+        if (!id) return console.error(`"id" is required but returned null.`);
+
         return new Promise(async (resolve, reject) => {
             fetch("https://gql.twitch.tv/gql", {
                 headers: {
@@ -791,6 +1025,8 @@ class Gql {
      * objects, each containing the comment's ID, timestamp, body, and author's login.
      */
     async getVodMessages(id) {
+        if (!id) return console.error(`"id" is required but returned null.`);
+
         return new Promise((resolve, reject) => {
             fetch("https://gql.twitch.tv/gql", {
                 headers: {
@@ -825,6 +1061,8 @@ class Gql {
      * @returns {Promise<Object>} - A promise that resolves to an object containing the clip's information. The object will contain the following properties:
      */
     async getClipInfo(slug) {
+        if (!slug) return console.error(`"slug" is required but returned null.`);
+
         return new Promise(async (resolve, reject) => {
             fetch("https://gql.twitch.tv/gql", {
                 headers: {
