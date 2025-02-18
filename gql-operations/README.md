@@ -2,6 +2,7 @@
 
 * all requests require a client id, which is either the user's id, or this: `kimne78kx3ncx6brgo4mv6wki5h1ko`
     * must be put in the headers as `client-id`
+* some requests such as following (and possibly more but i haven't checked) require a `client-integrity` header. these integrity tokens expire every 13 hours or when a token is used.
 * requests that have data about the current user logged in require the `auth-token` that is located in the browser's cookies.
     * header: `authorization`
 * a body is required to get the data you want, i've been making a list of all the `operationName`'s that i can find from gql requests under the `operations.json` file. test the bodies yourself and look for the data you want.

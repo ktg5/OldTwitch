@@ -1,0 +1,79 @@
+/* PLAYER BASE */
+
+.player-controls {
+    background: none !important;
+}
+
+.tw-transition {
+    transition: none !important;
+}
+
+.Layout-sc-1xcs6mc-0.iNwAOC {
+    margin: 0 !important;
+}
+
+[data-a-target="player-controls"] {
+    background: none;
+}
+
+#channel-player {
+    background: linear-gradient(rgb(82 82 82), rgb(30 30 30));
+    border-bottom: 1px solid black;
+    border-top: 1px solid #686868;
+    margin: 0 !important;
+}
+
+/* ################################# */
+
+/* BUTTONS */
+
+#channel-player [aria-haspopup="menu"] svg {
+    color: #b5b5b5;
+}
+
+figure.ffz-player-icon {
+    color: #b5b5b5;
+}
+
+/* VOLUME CONTROL */
+
+.ScRangeFillContainer-sc-q01wc3-2 .jcNjiR {
+    background: linear-gradient(rgb(219 182 237), rgb(173 120 253));
+    height: 8px;
+}
+
+.ScRangeFillContainer-sc-q01wc3-2.cfANnE {
+    background: black;
+    height: 8px;
+}
+
+.ScTransitionBase-sc-eg1bd7-0.tw-transition.volume-slider__slider-container {
+    width: 100px;
+    opacity: 1;
+}
+
+/* ################################# */
+
+/* VIEWING VODS */
+
+.Layout-sc-nxg1ff-0.fcSUKA {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+}
+
+.Layout-sc-nxg1ff-0.dHrscT.vod-seekbar-time-labels {
+    display: none !important;
+}
+
+.InjectLayout-sc-588ddc-0.seekbar-interaction-area {
+    padding-bottom: 0px !important;
+    padding-top: 0px !important;
+}
+
+.Layout-sc-nxg1ff-0.seekbar-bar {
+    background: rgb(32 32 32);
+}
+
+.Layout-sc-nxg1ff-0.vod-seekbar-time-labels {
+    display: none !important;
+}

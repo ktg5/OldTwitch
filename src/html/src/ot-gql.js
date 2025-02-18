@@ -2,6 +2,10 @@ let anonId = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 class Gql {
     clientid = "";
     oauth = "";
+    integToken = {
+        token: "",
+        expiration: 0
+    };
 
     constructor(clientid, oauth) {
         this.clientid = clientid;
@@ -10,20 +14,54 @@ class Gql {
 
 
     /**
+     * **STILL WIP**
+     * 
+     * Runs the integrity request on the GQL API. The token that gets returned is used for some requests and it'll be saved to the current Gql class.
+     * @param {string} oauth - The OAuth token used for authentication. If not provided, the instance's OAuth token will be used.
+     * @returns {Promise<Object>} A promise that resolves to the integrity check data.
+     *                            Logs an error if the OAuth token is invalid.
+     */
+    async getClientInteg(oauth) {
+        if (this.oauth != undefined) oauth = this.oauth;
+
+        return new Promise(async (resolve, reject) => {
+            await fetch("https://gql.twitch.tv/integrity", {
+                "headers": {
+                    "authorization": `OAuth ${oauth}`,
+                    "client-id": this.clientid,
+                    "x-device-id": "0",
+                },
+                "body": null,
+                "method": "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+
+                if (data.errors) resolve({ errors: data.errors });
+                else {
+                    this.integToken.token = data.token;
+                    this.integToken.expiration = data.expiration;
+                    resolve(data);
+                }
+            })
+        });
+    }
+
+
+    /**
      * Fetches the current user information from the Twitch GraphQL API.
      *
-     * @param {string} Oauth - The OAuth token used for authentication. If not provided, 
+     * @param {string} oauth - The OAuth token used for authentication. If not provided, 
      *                         the instance's OAuth token will be used.
      * @returns {Promise<Object>} A promise that resolves to the current user data.
      *                            Logs an error if the OAuth token is invalid.
      */
-    async getCurrentUser(Oauth) {
-        if (this.oauth != undefined) Oauth = this.oauth;
+    async getCurrentUser(oauth) {
+        if (this.oauth != undefined) oauth = this.oauth;
 
         return new Promise(async (resolve, reject) => {
             await fetch("https://gql.twitch.tv/gql", {
                 headers: {
-                    "authorization": `OAuth ${Oauth}`,
+                    "authorization": `OAuth ${oauth}`,
                     "client-id": this.clientid,
                     "x-device-id": "0",
                 },
@@ -157,16 +195,16 @@ class Gql {
     /**
      * Fetches recommended channels based on the current and past streamers.
      *
-     * @param {string} Oauth - Optional for personal recommendations, detects if current GQL instance has a OAuth defined.
+     * @param {string} oauth - Optional for personal recommendations, detects if current GQL instance has a OAuth defined.
      * The OAuth token for authentication to use for personal recommendations.
      * @param {Array} [CurrentPastStreamer] - Optional. An array containing the current and past channel names.
      * @returns {Promise<Object>} A promise that resolves to the personal recommendations data.
      */
-    async getRecommends(Oauth, CurrentPastStreamer) {
+    async getRecommends(oauth, CurrentPastStreamer) {
         if (!CurrentPastStreamer) return console.error(`"CurrentPastStreamer" is required but returned null.`);
 
-        if (this.oauth) Oauth = this.oauth;
-        if (Oauth) Oauth = `OAuth ${Oauth}`;
+        if (this.oauth) oauth = this.oauth;
+        if (oauth) oauth = `OAuth ${oauth}`;
         let currentChannel, pastChannel;
         if (CurrentPastStreamer && Array.isArray(CurrentPastStreamer)) {
             currentChannel = CurrentPastStreamer[0];
@@ -177,7 +215,7 @@ class Gql {
             "client-id": this.clientid,
             "x-device-id": "0"
         }
-        if (Oauth) Headers.authorization = Oauth;
+        if (oauth) Headers.authorization = oauth;
 
         let Body = {
             "operationName": "PersonalSections",
@@ -314,7 +352,6 @@ class Gql {
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
-                    console.log(data[0].data);
                     let isLive = data[0].data.user.stream != null;
 
                     let gameSlug;
@@ -544,24 +581,35 @@ class Gql {
     /**
      * @description Follows a stream by its ID.
      * @param {string} id - The ID of the stream to follow.
-     * @param {boolean} notifications - Whether to receive notifications for the stream.
+     * @param {boolean} disableNotifs - Whether to receive disableNotifs for the stream.
      * @returns {Promise<Object>} Returns a object of the "followUser" object, containing the user followed & possible errors.
-     * Logs an error if the stream ID is invalid or if the notifications argument is not a boolean.
+     * Logs an error if the stream ID is invalid or if the disableNotifs arg is not a boolean.
      */
-    async followStreamId(id, notifications) {
+    async followChannelId(oauth, id, disableNotifs) {
+        if (this.oauth != undefined) oauth = this.oauth;
         if (!id) return console.error(`"id" is required but returned null.`);
-        if (typeof notifications !== 'boolean') return console.error(`"notifications" must be a boolean.`);
+        if (disableNotifs && typeof disableNotifs !== 'boolean') return console.error(`"disableNotifs" must be a boolean.`);
+        else if (!disableNotifs) console.warn(`"disableNotifs" arg not set, going with false.`);
 
         return new Promise(async (resolve, reject) => {
+            if (this.integToken.token == "" ||
+                this.integToken.token != "" && Date.now() > this.integToken.expiration)
+            {
+                await this.getClientInteg(oauth);
+            }
+
             await fetch("https://gql.twitch.tv/gql", {
                 headers: {
+                    "authorization": `OAuth ${oauth}`,
                     "client-id": this.clientid,
+                    "client-integrity": this.integToken.token,
+                    "x-device-id": "0",
                 },
                 body: JSON.stringify({
                     "operationName": "FollowButton_FollowUser",
                     "variables": {
                         "input": {
-                            "disableNotifications": notifications ? notifications : false,
+                            "disableNotifications": disableNotifs ? disableNotifs : false,
                             "targetID": id
                         }
                     },
@@ -578,6 +626,57 @@ class Gql {
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.followUser);
+            });
+        });
+    }
+
+    
+    /**
+     * Unfollows a stream for a given OAuth token and stream ID.
+     * @param {string} oauth - The OAuth token used for what user is unfollowing. If not provided, the instance's OAuth token will be used.
+     * @param {string} id - The ID of the stream to unfollow.
+     * @returns {Promise<Object>} Returns a object of the "followUser" object, containing the user followed & possible errors.
+     * Logs an error if the stream ID is invalid or if the OAuth token is invalid.
+     */
+    async unfollowChannelId(oauth, id) {
+        if (this.oauth != undefined) oauth = this.oauth;
+        if (!id) return console.error(`"id" is required but returned null.`);
+
+        return new Promise(async (resolve, reject) => {
+            if (this.integToken.token == "" ||
+                this.integToken.token != "" && Date.now() > this.integToken.expiration)
+            {
+                await this.getClientInteg(oauth);
+            }
+
+            await fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "authorization": `OAuth ${oauth}`,
+                    "client-id": this.clientid,
+                    "client-integrity": this.integToken.token,
+                    "x-device-id": "0",
+                },
+                body: JSON.stringify({
+                    "operationName": "FollowButton_UnfollowUser",
+                    "variables": {
+                        "input": {
+                            "targetID": id
+                        }
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "f7dae976ebf41c755ae2d758546bfd176b4eeb856656098bb40e0a672ca0d880"
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+                console.log(data);
+
+                if (data.errors) resolve({ errors: data.errors });
+                else resolve(data.data.unfollowUser);
             });
         });
     }

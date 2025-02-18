@@ -14,17 +14,31 @@ async function setIframeVideo (args) {
         document.querySelector(`.channel-header__user-avatar-name`).innerHTML = `<span class="tw-font-size-5">${channelData.displayName}</span>`;
 
         // check if user is following streamer
+        let followButton = document.querySelector(`[data-a-target="follow-button"]`);
         for (const channelInt in channels) {
             if (channels[channelInt].type == "RECS_FOLLOWED_SECTION") {
                 channels[channelInt].items.forEach(channel => {
                     if (channel.user.login == args.channel) {
-                        let followButton = document.querySelector(`[data-a-target="follow-button"]`);
                         followButton.className = "tw-button--hollow";
                         followButton.querySelector(`.tw-button__text`).innerHTML = "Following";
                     };
                 });
             };
         };
+        // add event listener to follow button to follow & unfollow
+        followButton.addEventListener("click", () => {
+            if (followButton.classList.contains("tw-button--hollow")) {
+                // Following, so unfollow
+                gql.unfollowChannelId(oauth, channelData.id);
+                followButton.classList.remove("tw-button--hollow");
+                followButton.classList.add("tw-button");
+            } else {
+                // Not following, so follow
+                gql.followChannelId(oauth, channelData.id, false);
+                followButton.classList.remove("tw-button");
+                followButton.classList.add("tw-button--hollow");
+            }
+        });
 
         // check if channel name is the same as the current user
         if (channelData.displayName != userData.displayName) document.querySelector(`[data-a-target="follow-button"]`).parentElement.classList.remove("tw-hide");
@@ -127,13 +141,15 @@ async function setIframeVideo (args) {
                     }
 
                     // ints
-                    document.querySelector(`[aria-describedby="228759886d06d5fdd94e8a05596b023b"]`).parentElement.classList.remove("tw-hide");
+                    // document.querySelector(`[data-a-target="total-views-count"]`).parentElement.parentElement.classList.remove("tw-hide");
                     document.querySelector(`.channel-header__item[data-a-target="followers-channel-header-item"] .channel-header__item-count span`).innerHTML = channelData.followerCount;
                     if (channelData.live) {
+                        document.querySelector(`.channel-info-bar__action-container .tw-flex`).classList.remove("tw-hide");
                         document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.remove("tw-hide");
                         document.querySelector(`.tw-stat[data-a-target="viewer-count"] .tw-stat__value`).innerHTML = channelData.stream.viewersCount;
                     } else {
                         document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.add("tw-hide");
+                        document.querySelector(`.tw-stat[data-a-target="viewer-count"]`).parentElement.classList.add("tw-hide");
                     }
                     if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
                 }
@@ -216,8 +232,8 @@ async function setIframeVideo (args) {
                     }
 
                     // ints
+                    document.querySelector(`.channel-info-bar__action-container .tw-flex`).classList.remove("tw-hide");
                     document.querySelector(`[data-a-target="total-views-count"]`).parentElement.parentElement.classList.remove("tw-hide");
-                    document.querySelector(`[data-a-target="total-views-count"]`).parentElement.classList.remove("tw-hide");
                     document.querySelector(`.channel-header__item[data-a-target="followers-channel-header-item"] .channel-header__item-count span`).innerHTML = channelData.followerCount;
                     if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
 
@@ -278,8 +294,8 @@ async function setIframeVideo (args) {
                     }
 
                     // ints
+                    document.querySelector(`.channel-info-bar__action-container .tw-flex`).classList.remove("tw-hide");
                     document.querySelector(`[data-a-target="total-views-count"]`).parentElement.parentElement.classList.remove("tw-hide");
-                    document.querySelector(`[data-a-target="total-views-count"]`).parentElement.classList.remove("tw-hide");
                     document.querySelector(`.channel-header__item[data-a-target="followers-channel-header-item"] .channel-header__item-count span`).innerHTML = channelData.followerCount;
                     if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
 

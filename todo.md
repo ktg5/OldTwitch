@@ -13,7 +13,7 @@ here's how we're gonna do this:
  - get an api key or something to get the user's stats, such as following, recommends, etc. and also use for streamer stats. ✅
 
  - stream page ✅
- - follow & unfollow (will work on next update)
+ - follow & unfollow (might not be possible cuz of `client-integrity`)
 
  - get channel list working ✅
  - vods & clips ✅
