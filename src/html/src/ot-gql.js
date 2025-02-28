@@ -203,7 +203,6 @@ class Gql {
     async getRecommends(oauth, CurrentPastStreamer) {
         if (!CurrentPastStreamer) return console.error(`"CurrentPastStreamer" is required but returned null.`);
 
-        if (this.oauth) oauth = this.oauth;
         if (oauth) oauth = `OAuth ${oauth}`;
         let currentChannel, pastChannel;
         if (CurrentPastStreamer && Array.isArray(CurrentPastStreamer)) {
@@ -216,6 +215,7 @@ class Gql {
             "x-device-id": "0"
         }
         if (oauth) Headers.authorization = oauth;
+        console.log(Headers);
 
         let Body = {
             "operationName": "PersonalSections",

@@ -26,7 +26,7 @@ var styles3 = [
     , 'box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 5px 3px -5px rgba(0, 0, 0, 0.5), 0 -13px 5px -10px rgba(255, 255, 255, 0.4) inset'
 ].join(';');
 console.log(`%cOldTwitch is up and running!`, styles1)
-console.log(`%cIf you enabled some of the debug stuff, or wanna look at what the extension is doing, search for "pt-" in the console to get everything!`, styles2)
+console.log(`%cIf you enabled some of the debug stuff, or wanna look at what the extension is doing, search for "ot-" in the console to get everything!`, styles2)
 
 // Shortcuts
 if (navigator.userAgent.includes("Chrome")) browser = chrome;
@@ -137,6 +137,14 @@ async function handlePageChange () {
             injectJSTargets.push(runtime.getURL('html/src/ot-directory.js'));
         break;
 
+        case location.pathname.startsWith("/settings"):
+            injectTarget = runtime.getURL('html/oldtwitch.html');
+            injectJSTargets.push(runtime.getURL('lib/coloris.min.js'));
+            injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
+            injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
+            injectJSTargets.push(runtime.getURL('html/src/ot-settings.js'));
+        break;
+
         default:
             injectTarget = runtime.getURL(`html/watch.html`);
             injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
@@ -148,9 +156,11 @@ async function handlePageChange () {
 
     // Now it's time to inject our own HTML
     fetch(`${injectTarget}`).then(async data => {
+        let currentVersion = await fetch(runtime.getURL('ver.txt')).then(res => res.text());
+
         // Inject HTML
         let htmlText = await data.text();
-        htmlText = htmlText.replace('<body', `<body oldttv="${extensionLocation}"`);
+        htmlText = htmlText.replace('<body', `<body oldttv="${extensionLocation}" oldttv-ver="${currentVersion}">`);
         htmlText = htmlText.replace(/__([a-zA-Z0-9_]+)__/g, (match, key) => {
             switch (key) {
                 case "EXTENSION_URL":

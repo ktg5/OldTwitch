@@ -1,0 +1,102 @@
+h2 {
+    margin-bottom: 4rem;
+}
+
+.oldtwitch-settings {
+    margin: 2rem auto;
+    width: 80%;
+}
+
+
+.settings-options {
+    position: relative;
+    width: 75%;
+}
+
+.settings-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.settings-option .settings-option-title {
+    font-size: 16px;
+}
+
+
+.settings-option .settings-option-toggle {
+    display: flex;
+    background: #ffffff;
+    border: 2px solid #bebebe;
+    border-radius: 4px;
+    transition: all .25s;
+    position: absolute;
+    cursor: pointer;
+    height: calc(100% - (2px * 2));
+    width: 4rem;
+    right: 0;
+    box-sizing: unset;
+    padding-block: 0;
+    padding-inline: 0;
+    margin: auto 0;
+    align-items: anchor-center;
+}
+
+.settings-option .settings-option-toggle .light {
+    content: '';
+    display: block;
+    position: relative;
+    background: #787878;
+    border-radius: 4px;
+    width: 100%;
+    left: 0;
+    height: 92%;
+    transition: all .25s;
+}
+
+.settings-option .settings-option-toggle .light.undefined::after {
+    content: '';
+    display: block;
+    position: relative;
+    border: 5px solid;
+    border-radius: 4px;
+    width: 100%;
+    height: 90%;
+    top: -4.5px;
+    left: -5px;
+    transition: all .25s;
+    animation: alertButtonBorder 3s linear infinite;
+}
+
+.settings-option .settings-option-toggle .light.true {
+    left: 50%;
+    width: 50%;
+}
+
+.settings-option .settings-option-toggle .light.false {
+    width: 50%;
+}
+
+
+.settings-option .settings-option-color-container {
+    position: absolute;
+    right: 0;
+}
+
+.settings-option-color-container .clr-field input {
+    width: 10rem;
+}
+
+
+@keyframes alertButtonBorder {
+    0% {border-color: rgb(255, 200, 0);}
+    50% {border-color: rgba(0, 0, 0, 0);}
+    100% {border-color: rgb(255, 200, 0);}
+}
+
+
+@media (max-width: 1600px) {
+    .settings-options {
+        width: 100%;
+    }
+}

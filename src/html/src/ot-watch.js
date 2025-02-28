@@ -18,7 +18,7 @@ async function setIframeVideo (args) {
         for (const channelInt in channels) {
             if (channels[channelInt].type == "RECS_FOLLOWED_SECTION") {
                 channels[channelInt].items.forEach(channel => {
-                    if (channel.user.login == args.channel) {
+                    if (channel.user.login.toLowerCase() == args.channel.toLowerCase()) {
                         followButton.className = "tw-button--hollow";
                         followButton.querySelector(`.tw-button__text`).innerHTML = "Following";
                     };
@@ -43,7 +43,6 @@ async function setIframeVideo (args) {
         // check if channel name is the same as the current user
         if (channelData.displayName != userData.displayName) document.querySelector(`[data-a-target="follow-button"]`).parentElement.classList.remove("tw-hide");
         let subButton = document.querySelector(`[data-a-target="subscribe-button"]`).parentElement;
-        console.log(subButton);
         if (channelData.roles.isAffiliate || channelData.roles.isPartner) {
             subButton.classList.remove("tw-hide");
             subButton.href = `https://www.twitch.tv/subs/${channelData.login}`;

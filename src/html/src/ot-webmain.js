@@ -15,6 +15,48 @@ async function textToHtml(text, element) {
     element.innerHTML = text;
 }
 
+
+// Make a notification on the top of the page
+function makeNotification(text, actions) {
+    document.querySelector('body').insertAdjacentHTML('afterbegin', `
+        <div class="oldttv-notifi">
+            <div class="content">${text}</div>
+            <div class="actions"></div>
+        </div>
+    `);
+    let notification = document.querySelector('.oldttv-notifi');
+    let actionsDiv = document.querySelector('.oldttv-notifi .actions');
+
+    if (actions) {
+        console.log(actions);
+        for (const action of actions) {
+            actionsDiv.innerHTML += `
+            <div class="tw-mg-r-1">
+                <button class="tw-button" data-a-target="oldtwitch-notifi-${action.key}-button">
+                    <span class="tw-button__text" data-a-target="tw-button-text">${action.text}</span>
+                </button>
+            </div>
+            `;
+
+            document.querySelector(`[data-a-target="oldtwitch-notifi-${action.key}-button"]`).addEventListener('click', () => {
+                action.callback();
+                notification.remove();
+            });
+        }
+    }
+    actionsDiv.innerHTML += `
+    <div class="tw-mg-r-1">
+        <button class="tw-button" data-a-target="oldtwitch-notifi-close-button">
+            <span class="tw-button__text" data-a-target="tw-button-text">Close</span>
+        </button>
+    </div>
+    `;
+    document.querySelector('[data-a-target="oldtwitch-notifi-close-button"]').addEventListener('click', () => {
+        notification.remove();
+    });
+}
+
+
 // Get current user info
 // Get Oauth
 var userData, oauth;
@@ -39,7 +81,7 @@ if (oauth != null) {
                 document.querySelector('[data-a-target="signup-button"]').parentElement.remove();
                 // name & pfp
                 let targetCard = document.querySelector(`[data-a-target="user-card"]`).insertAdjacentHTML('beforeend', `
-                    <div class="user-info">
+                    <a class="user-info" href="https://www.twitch.tv/${userData.displayName}">
                         <div class="tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
                             <div class="channel-header__user-avatar channel-header__user-avatar--active tw-align-items-stretch tw-flex tw-flex-shrink-0 tw-mg-r-1">
                                 <div class="tw-relative">
@@ -56,7 +98,7 @@ if (oauth != null) {
                                 </span>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 `);
             }
             if (loginButton) {
@@ -196,7 +238,61 @@ if (sidebar) {
 
 
 // On load
+var currentVersion;
 window.addEventListener('load', async () => {
+    currentVersion = document.body.getAttribute(`oldttv-ver`);
+    console.log("currentVersion: ", currentVersion);
+    let currentDevBuild;
+    let isDev = false;
+    if (document.body.getAttribute(`oldttv-ver`).includes("dev")) {
+        isDev = true;
+        currentDevBuild = currentVersion.split("dev")[1].split(":")[0];
+        currentVersion = currentVersion.split(":").pop();
+    }
+    // Pull latest version from GitHub files
+    let latestVersion = await fetch(`https://raw.githubusercontent.com/ktg5/oldttv/refs/heads/main/ver.txt`).then(res => res.text());
+    console.log("latestVersion: ", latestVersion);
+    let latestDevBuild;
+    let latestIsDev = false;
+    if (latestVersion.includes("dev")) {
+        latestIsDev = true;
+        latestDevBuild = latestVersion.split("dev")[1].split(":")[0];
+        latestVersion = latestVersion.split(":").pop();
+    }
+    // Basic checking
+    let latestParts = latestVersion.split(".").map(Number);;
+    let currentParts = currentVersion.split(".").map(Number);;
+    // console.log(isDev && latestIsDev);
+    // console.log(latestDevBuild, currentDevBuild);
+    // console.log(latestParts, currentParts);
+    if (!isDev && !latestIsDev || isDev && latestIsDev || isDev && !latestIsDev) {
+        // Check differences between versions
+        for (let i = 0; i < Math.max(currentParts.length, latestParts.length); i++) {
+            if (isDev && latestIsDev || !isDev && !latestIsDev || isDev && !latestIsDev) {
+                let selectCurrent = currentParts[i] || 0;  // Default to 0 if version1 is shorter
+                let selectLatest = latestParts[i] || 0;  // Default to 0 if version2 is shorter
+                // console.log(selectCurrent, selectLatest);
+
+                if (selectCurrent > selectLatest) return;
+                if (selectCurrent < selectLatest) return updateNotification("public");
+                else if (selectCurrent < selectLatest && currentDevBuild < latestDevBuild) return updateNotification("dev build");
+            }
+        }
+    }
+
+    // Make update notification
+    function updateNotification(debug) {
+        if (debug) console.log(debug);
+        makeNotification(`The current version of OldTwitch you're on is out-of-date. Click the "Update" button to go to the latest update.`, [
+            {
+                key: "update",
+                text: "Update",
+                action: () => location.href = "https://github.com/ktg5/oldttv/releases/latest"
+            }
+        ]);
+    }
+
+
     let channelListDiv = document.querySelector(".channel-list");
     // Set side stuff clicks
     // Left
@@ -230,10 +326,12 @@ window.addEventListener('load', async () => {
 
     // Show all buttons in left sidebar
     let showAllButton = document.querySelector(`.channel-list-force-all`);
-    showAllButton.addEventListener('click', (e) => {
-        if (channelListDiv.getAttribute('force-all')) channelListDiv.removeAttribute('force-all');
-        else channelListDiv.setAttribute('force-all', 'true');
-    });
+    if (showAllButton) {
+        showAllButton.addEventListener('click', (e) => {
+            if (channelListDiv.getAttribute('force-all')) channelListDiv.removeAttribute('force-all');
+            else channelListDiv.setAttribute('force-all', 'true');
+        });
+    }
 
 
     // If index page, do index page things

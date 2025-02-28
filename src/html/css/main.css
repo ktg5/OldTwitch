@@ -17,8 +17,47 @@ body {
 }
 
 
+.oldttv-notifi {
+    align-items: center;
+    background: #641b1b;
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 5rem;
+    z-index: 2000;
+}
+
+.oldttv-notifi .content {
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 1rem;
+}
+
+.oldttv-notifi .actions {
+    position: absolute;
+    display: flex;
+    right: 0;
+}
+
+.oldttv-notifi .actions .tw-button {
+    background: #af3535;
+}
+
+.oldttv-notifi .actions .tw-button:hover {
+    background: #dc3434;
+    border-color: #dc3434;
+}
+
+.oldttv-notifi ~ .twilight-root {
+    top: 10rem;
+}
+
 .twilight-main {
     min-height: 100vh;
+}
+
+.oldttv-notifi ~ .twilight-root .top-nav {
+    top: 5rem !important;
 }
 
 

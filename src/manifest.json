@@ -18,7 +18,7 @@
     "content_scripts": [
         {
             "matches": ["*://www.twitch.tv/*"],
-            "exclude_matches": ["*://www.twitch.tv/*?*nooldttv*", "*://www.twitch.tv/p/*", "*://www.twitch.tv/subs/*", "*://www.twitch.tv/embed/*"],
+            "exclude_matches": ["*://www.twitch.tv/*?*nooldttv*", "*://www.twitch.tv/p/*", "*://www.twitch.tv/subs/*", "*://www.twitch.tv/embed/*", "*://www.twitch.tv/popout/*"],
             "js": ["js/ot-main.js"],
             "run_at": "document_start"
         },
@@ -44,6 +44,6 @@
 
     "web_accessible_resources": [{
         "matches": ["*://*.twitch.tv/*"],
-        "resources": ["html/*", "js/*", "css/*", "lib/*"]
+        "resources": ["html/*", "js/*", "css/*", "lib/*", "ver.txt"]
     }]
 }

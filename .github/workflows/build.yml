@@ -36,18 +36,9 @@ jobs:
       - name: Install NPM packages
         run: npm install
 
-      # Get the ability to unzip.
-      - name: Install action-zip
-        uses: montudor/action-zip@v1.0.0
-
       # Run the "build.js" script through our newly acquired Node.js environment.
       - name: Run the build node script
         run: npm start del-folders
-
-      # Unzip stuffs.
-      - name: Unzip extension
-        run: unzip -qq dist/OldTTV-Chrome.zip -d OldTTV-Chrome; unzip -qq dist/OldTTV-Firefox.zip -d OldTTV-Firefox
-        working-directory: ${{ github.workspace }}
 
       # Upload the ZIP files to the "Artifacts" tab on this action's page.
       ## Firefox
@@ -55,10 +46,10 @@ jobs:
         uses: actions/upload-artifact@v4.3.4
         with:
           name: OldTwitch Firefox Build
-          path: ${{ github.workspace }}/OldTTV-Firefox
+          path: ${{ github.workspace }}/dist/OldTTV-Firefox
       ## Chrome
       - name: Upload the Chromium build to the "Artifacts" tab
         uses: actions/upload-artifact@v4.3.4
         with:
           name: OldTwitch Chromium Build
-          path: ${{ github.workspace }}/OldTTV-Chrome
+          path: ${{ github.workspace }}/dist/OldTTV-Chrome
