@@ -5,13 +5,13 @@
     <title>Twitch</title>
 
     <link rel="shortcut icon" crossorigin="anonymous" href="__EXTENSION_URL__/html/img/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" crossorigin="anonymous" href="__EXTENSION_URL__/html/css/main.css">
+    <link rel="stylesheet" crossorigin="anonymous" href="__EXTENSION_URL__/html/css/2018.css">
 
     <script src="https://github.com/pixeltris/TwitchAdSolutions/raw/refs/heads/master/video-swap-new/video-swap-new.user.js"></script>
 </head>
 
 
-<body style="display: none;">
+<body>
     <div class="twilight-root tw-right-0 tw-bottom-0 tw-left-0 tw-overflow-hidden tw-flex tw-flex-column tw-flex-nowrap tw-absolute">
         <nav class="top-nav tw-top-0 tw-full-width tw-fixed"></nav>
 
@@ -30,7 +30,7 @@
                         </div>
                         <div class="tw-full-height tw-flex tw-flex-nowrap tw-justify-content-between tw-mg-x-3">
                             <div data-target="channel-header-left" class="tw-align-items-stretch tw-flex tw-flex-shrink-0 tw-flex-nowrap">
-                                <div class="channel-header__banner-toggle channel-header__user channel-header__user--selected tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap tw-pd-r-2 tw-pd-y-05" data-target="channel-header__channel-link" data-a-target="user-channel-header-item">
+                                <div class="channel-header__user channel-header__user--selected tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap tw-pd-r-2 tw-pd-y-05" data-target="channel-header-item" data-a-target="user-channel-header-item">
                                     <div class="tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
                                         <div class="channel-header__user-avatar channel-header__user-avatar--active tw-align-items-stretch tw-flex tw-flex-shrink-0 tw-mg-r-1">
                                             <div class="tw-relative">
@@ -48,7 +48,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="videos-channel-header-item" href="#">
+                                <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="videos-channel-header-item" href="#videos">
                                     <div class="tw-flex tw-pd-x-2 tw-pd-y-05">
                                         <span class="tw-font-size-5">Videos</span>
                                         <div class="channel-header__item-count tw-flex tw-mg-l-05">
@@ -56,12 +56,12 @@
                                         </div>
                                     </div>
                                 </a>
-                                <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="clips-channel-header-item" href="#">
+                                <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="clips-channel-header-item" href="#clips">
                                     <div class="tw-flex tw-pd-x-2 tw-pd-y-05">
                                         <span class="tw-font-size-5">Clips</span>
                                     </div>
                                 </a>
-                                <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="schedule-channel-header-item" href="#">
+                                <a class="channel-header__item tw-align-items-center tw-flex-shrink-0" data-target="channel-header-item" data-a-target="schedule-channel-header-item" href="#schedule">
                                     <div class="tw-flex tw-pd-x-2 tw-pd-y-05">
                                         <span class="tw-font-size-5">Schedule</span>
                                     </div>
@@ -325,9 +325,9 @@
                                                                     <div class="tw-border-t tw-border-r tw-border-b tw-border-l tw-elevation-1 tw-border-radius-small tw-c-background  ">
                                                                         <div class="tw-pd-1">
                                                                             <div class="tw-flex tw-justify-content-between tw-pd-t-1 tw-pd-b-1">
-                                                                                <div class="social-button ">
+                                                                                <!-- <div class="social-button" data-share-button="twitter">
                                                                                     <div class="tw-tooltip-wrapper tw-inline-flex" aria-describedby="95726a3032c96e46e883f22dc3acdc96">
-                                                                                        <a href="https://web.archive.org/web/20180223043605/https://www.twitter.com/share?text=&amp;url=https%3A%2F%2Fwww.twitch.tv%2Fxqcow" target="_blank" class="social-button__link social-button__link--twitter" data-a-target="twitter-share-button">
+                                                                                        <a href="https://www.twitter.com/share?text=&amp;url=https%3A%2F%2Fwww.twitch.tv%2Fxqcow" target="_blank" class="social-button__link social-button__link--twitter" data-a-target="twitter-share-button">
                                                                                             <div class="social-button__icon social-button__icon--twitter ">
                                                                                                 <figure class="tw-svg">
                                                                                                     <svg class="tw-svg__asset tw-svg__asset--twitter tw-svg__asset--inherit" width="30px" height="30px" version="1.1" viewBox="0 0 32 32" x="0px" y="0px">
@@ -338,8 +338,8 @@
                                                                                         </a>
                                                                                         <div class="tw-tooltip tw-tooltip--up tw-tooltip--align-center" data-a-target="tw-tooltip-label" role="tooltip" id="95726a3032c96e46e883f22dc3acdc96">Twitter</div>
                                                                                     </div>
-                                                                                </div>
-                                                                                <div class="social-button ">
+                                                                                </div> -->
+                                                                                <!-- <div class="social-button" data-share-button="facebook">
                                                                                     <div class="tw-tooltip-wrapper tw-inline-flex" aria-describedby="aa4b5f50df45f5ddbcfd9c1b9d7fa54c">
                                                                                         <a href="https://web.archive.org/web/20180223043605/https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.twitch.tv%2Fxqcow" target="_blank" class="social-button__link social-button__link--facebook" data-a-target="facebook-share-button">
                                                                                             <div class="social-button__icon social-button__icon--facebook ">
@@ -352,8 +352,8 @@
                                                                                         </a>
                                                                                         <div class="tw-tooltip tw-tooltip--up tw-tooltip--align-center" data-a-target="tw-tooltip-label" role="tooltip" id="aa4b5f50df45f5ddbcfd9c1b9d7fa54c">Facebook</div>
                                                                                     </div>
-                                                                                </div>
-                                                                                <div class="social-button ">
+                                                                                </div> -->
+                                                                                <!-- <div class="social-button" data-share-button="vkontakte">
                                                                                     <div class="tw-tooltip-wrapper tw-inline-flex" aria-describedby="cdb23edbb5d90ef4629cb65ef95ef47c">
                                                                                         <a href="https://web.archive.org/web/20180223043605/https://vk.com/share.php?url=https%3A%2F%2Fwww.twitch.tv%2Fxqcow" target="_blank" class="social-button__link social-button__link--vkontakte" data-a-target="vkontakte-share-button">
                                                                                             <div class="social-button__icon social-button__icon--vkontakte ">
@@ -366,8 +366,8 @@
                                                                                         </a>
                                                                                         <div class="tw-tooltip tw-tooltip--up tw-tooltip--align-center" data-a-target="tw-tooltip-label" role="tooltip" id="cdb23edbb5d90ef4629cb65ef95ef47c">VKontakte</div>
                                                                                     </div>
-                                                                                </div>
-                                                                                <div class="social-button ">
+                                                                                </div> -->
+                                                                                <!-- <div class="social-button" data-share-button="reddit">
                                                                                     <div class="tw-tooltip-wrapper tw-inline-flex" aria-describedby="228759886d06d5fdd94e8a05596b023b">
                                                                                         <a href="https://web.archive.org/web/20180223043605/https://www.reddit.com/submit?title=&amp;url=https%3A%2F%2Fwww.twitch.tv%2Fxqcow" target="_blank" class="social-button__link social-button__link--reddit" data-a-target="reddit-share-button">
                                                                                             <div class="social-button__icon social-button__icon--reddit ">
@@ -380,9 +380,9 @@
                                                                                         </a>
                                                                                         <div class="tw-tooltip tw-tooltip--up tw-tooltip--align-center" data-a-target="tw-tooltip-label" role="tooltip" id="228759886d06d5fdd94e8a05596b023b">Reddit</div>
                                                                                     </div>
-                                                                                </div>
-                                                                                <div class="social-button ">
-                                                                                    <div class="tw-tooltip-wrapper tw-inline-flex" aria-describedby="91831306f663b8562dfb1aa80677475c">
+                                                                                </div> -->
+                                                                                <div class="social-button" data-share-button="clipboard">
+                                                                                    <div class="tw-tooltip-wrapper tw-inline-flex" aria-describedby="">
                                                                                         <button class="social-button__link social-button__link--copy" data-a-target="copy-link-share-button">
                                                                                             <div class="social-button__icon social-button__icon--copy ">
                                                                                                 <figure class="tw-svg">
@@ -395,18 +395,18 @@
                                                                                                 </figure>
                                                                                             </div>
                                                                                         </button>
-                                                                                        <div class="tw-tooltip tw-tooltip--up tw-tooltip--align-center" data-a-target="tw-tooltip-label" role="tooltip" id="91831306f663b8562dfb1aa80677475c">Copy to clipboard</div>
+                                                                                        <div class="tw-tooltip tw-tooltip--up tw-tooltip--align-center" data-a-target="tw-tooltip-label" role="tooltip" id="">Copy to clipboard</div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="">
-                                                                                <div class="tw-pd-t-1">
+                                                                                <div class="tw-pd-t-1" data-share-text="embed-channel">
                                                                                     <p class="">Embed Channel</p>
                                                                                     <div class="tw-relative">
                                                                                         <input type="text" class="tw-input " autocapitalize="off" autocorrect="off" data-a-target="tw-input" readonly="" value="">
                                                                                     </div>
                                                                                 </div>
-                                                                                <div class="tw-pd-t-1">
+                                                                                <div class="tw-pd-t-1" data-share-text="embed-chat">
                                                                                     <p class="">Embed Chat</p>
                                                                                     <div class="tw-relative">
                                                                                         <input type="text" class="tw-input " autocapitalize="off" autocorrect="off" data-a-target="tw-input" readonly="" value="">

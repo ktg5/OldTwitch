@@ -1,6 +1,8 @@
 var stream;
 var channelData;
 
+var channelTabs = ["videos", "clips"];
+
 // Main function
 async function setIframeVideo (args) {
     if (typeof(args) != "object") return "Invalid args";
@@ -40,6 +42,51 @@ async function setIframeVideo (args) {
             }
         });
 
+
+        function goToMain() {
+            document.querySelectorAll('.channel-header__item--selected').forEach(item => item.classList.remove("channel-header__item--selected"));
+
+            document.querySelector(`[data-a-target="user-channel-header-item"]`).classList.add("channel-header__user--selected");
+            playerRoot.classList.remove("player-popout");
+            location.hash = "";
+        }
+        // Make topbar buttons worky
+        // use class "player-popout" on "root-scrollable__wrapper" when clicking on topbar buttons
+        // to set the topbar button as active, use "channel-header__item--selected" for normal stuff & "channel-header__user--selected" for main
+        let playerRoot = document.querySelector(".root-scrollable__wrapper");
+        document.addEventListener("click", async (e) => {
+            let currentClickedTab = document.querySelector('.channel-header__item--selected');
+            if (currentClickedTab == null) currentClickedTab = document.querySelector('.channel-header__user--selected'); 
+            let closestTarget = e.target.closest(`[data-target="channel-header-item"]`);
+
+            if (closestTarget) {
+                // remove active tab
+                if (currentClickedTab) {
+                    currentClickedTab.classList.remove("channel-header__item--selected");
+                    currentClickedTab.classList.remove("channel-header__user--selected");
+                }
+
+                // if the clicked tab is the user tab
+                if (closestTarget.getAttribute("data-a-target") == "user-channel-header-item") goToMain();
+                // else if a normal tab
+                else if (closestTarget.href) {
+                    closestTarget.classList.add("channel-header__item--selected");
+                    playerRoot.classList.add("player-popout");
+                }
+            }
+        });
+
+
+        // Make popout stream work
+        document.addEventListener("click", async (e) => {
+            if (playerRoot.classList.contains("player-popout")) {
+                if (e.target.closest(`.persistent-player`)) {
+                    goToMain();
+                }
+            }
+        });
+
+
         // check if channel name is the same as the current user
         if (channelData.displayName != userData.displayName) document.querySelector(`[data-a-target="follow-button"]`).parentElement.classList.remove("tw-hide");
         let subButton = document.querySelector(`[data-a-target="subscribe-button"]`).parentElement;
@@ -47,6 +94,27 @@ async function setIframeVideo (args) {
             subButton.classList.remove("tw-hide");
             subButton.href = `https://www.twitch.tv/subs/${channelData.login}`;
         }
+
+        // make share button work
+        let shareButton = document.querySelector(`[data-a-target="share-button"]`);
+        let shareButtonBalloon = document.querySelector(`[data-a-target="share-balloon"]`);
+        document.addEventListener("click", (e) => {
+            if (e.target.closest(`[data-a-target="share-button"]`)) return shareButtonBalloon.classList.toggle("tw-hide");
+            else if (e.target.closest(`[data-a-target="share-balloon"]`)) return;
+            else shareButtonBalloon.classList.add("tw-hide");
+        });
+        // buttons
+        let clipBoardButton = document.querySelector(`[data-share-button="clipboard"]`);
+        clipBoardButton.addEventListener("click", () => {
+            navigator.clipboard.writeText(`https://www.twitch.tv/${channelData.login}`);
+            clipBoardButton.querySelector(`.tw-tooltip`).innerHTML = "Copied to clipboard";
+        });
+        clipBoardButton.addEventListener("mouseout", () => {
+            clipBoardButton.querySelector(`.tw-tooltip`).innerHTML = "Copy to clipboard";
+        });
+        // text boxes
+        document.querySelector(`[data-share-text="embed-channel"] .tw-input`).value = `<iframe src="https://player.twitch.tv/?channel=${channelData.login}&parent=localhost" frameborder="0" allowfullscreen="true" scrolling="no" height="315" width="100%"></iframe>`;
+        document.querySelector(`[data-share-text="embed-chat"] .tw-input`).value = `<iframe src="https://www.twitch.tv/embed/${channelData.login}/chat?parent=localhost" frameborder="0" scrolling="no" height="315" width="100%"></iframe>`;
     }
 
     switch (args.type) {
@@ -93,6 +161,10 @@ async function setIframeVideo (args) {
                         // panels
                         let panelsContainer = document.querySelector(`.channel-panels-container`);
                         channelData.panels.forEach(panel => {
+                            // check if the current panel is a blank panel
+                            if (panel.description == null && panel.title == null && panel.imageURL == null && panel.linkURL == null) return;
+
+                            // insert panel
                             let panelDiv = document.createElement("div");
                             panelDiv.className = "default-panel"
                             panelDiv.setAttribute("data-a-target", `panel-${panelsContainer.childElementCount}`);
@@ -182,11 +254,16 @@ async function setIframeVideo (args) {
             // Enable divs
             document.querySelector(`.channel-header`).classList.remove("tw-hide");
 
+            // Get possible timecode args
+            let timecode = "0h0m0s";
+            if (location.search.includes("&t=")) timecode = location.search.split("&t=").pop();
+
             // set stream
             vodExec = () => {
                 new Twitch.Player("iframe-insert", {
                     video: args.id,
-                    muted: false
+                    muted: false,
+                    time: timecode
                 });
             }
             if (Twitch !== undefined) {

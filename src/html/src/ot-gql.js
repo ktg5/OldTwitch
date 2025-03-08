@@ -215,7 +215,6 @@ class Gql {
             "x-device-id": "0"
         }
         if (oauth) Headers.authorization = oauth;
-        console.log(Headers);
 
         let Body = {
             "operationName": "PersonalSections",
@@ -574,6 +573,37 @@ class Gql {
                 } else {
                     resolve(null);
                 }
+            });
+        });
+    }
+
+    async getStreamStatus(name) {
+        if (!name) return console.error(`"name" is required but returned null.`);
+
+        return new Promise(async (resolve, reject) => {
+            await fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "client-id": this.clientid,
+                },
+                body: JSON.stringify({
+                    "operationName": "StreamRefetchManager",
+                    "variables": {
+                        "channel": name
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "ecdcb724b0559d49689e6a32795e6a43bba4b2071b5e762a4d1edf2bb42a6789"
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+
+                if (data.errors) resolve({ errors: data.errors });
+                if (data.data.user.stream != null) resolve(true);
+                else resolve(false);
             });
         });
     }

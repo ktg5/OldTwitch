@@ -1,4 +1,5 @@
 var extensionLocation = document.querySelector('body').getAttribute('oldttv');
+var latestVersionUrl = `https://raw.githubusercontent.com/ktg5/oldttv/refs/heads/main/src/ver.txt`;
 
 
 // Inject requested text to element's innerhtml
@@ -228,18 +229,13 @@ if (sidebar) {
                 targetDiv.appendChild(channelDiv);
             });
         }
-
-        // On click handlers
-        document.querySelector('button.side-nav__toggle-visibility').addEventListener('click', (e) => {
-            
-        });
     });
 }
 
 
 // On load
 var currentVersion;
-window.addEventListener('load', async () => {
+setTimeout(async () => {
     currentVersion = document.body.getAttribute(`oldttv-ver`);
     console.log("currentVersion: ", currentVersion);
     let currentDevBuild;
@@ -250,7 +246,7 @@ window.addEventListener('load', async () => {
         currentVersion = currentVersion.split(":").pop();
     }
     // Pull latest version from GitHub files
-    let latestVersion = await fetch(`https://raw.githubusercontent.com/ktg5/oldttv/refs/heads/main/ver.txt`).then(res => res.text());
+    let latestVersion = await fetch(latestVersionUrl).then(res => res.text());
     console.log("latestVersion: ", latestVersion);
     let latestDevBuild;
     let latestIsDev = false;
@@ -437,4 +433,4 @@ window.addEventListener('load', async () => {
         }
 
     };
-});
+}, 150);
