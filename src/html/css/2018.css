@@ -52,12 +52,17 @@ body {
     top: 10rem;
 }
 
-.twilight-main {
-    min-height: 100vh;
-}
-
 .oldttv-notifi ~ .twilight-root .top-nav {
     top: 5rem !important;
+}
+
+.watch-container {
+    position: relative;
+}
+
+.twilight-main {
+    min-height: 100vh;
+    top: 0;
 }
 
 
@@ -267,6 +272,7 @@ body {
     width: 30% !important;
     left: calc(100% - 40rem) !important;
     top: 74vh !important;
+    z-index: 1;
 }
 
 .player-popout .persistent-player:hover:before {

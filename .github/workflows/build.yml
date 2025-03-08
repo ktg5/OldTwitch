@@ -38,7 +38,7 @@ jobs:
 
       # Run the "build.js" script through our newly acquired Node.js environment.
       - name: Run the build node script
-        run: npm start del-folders
+        run: npm start del-zip
 
       # Upload the ZIP files to the "Artifacts" tab on this action's page.
       ## Firefox

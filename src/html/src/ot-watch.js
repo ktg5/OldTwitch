@@ -9,6 +9,7 @@ async function setIframeVideo (args) {
     if (!args.type) return "Invalid args";
 
     let chatIframe = document.querySelector(".chat-iframe");
+    let playerRoot = document.querySelector(`[data-a-target="main-root"] .root-scrollable__wrapper`);
 
     async function notFirstInit() {
         // name & pfp
@@ -20,7 +21,7 @@ async function setIframeVideo (args) {
         for (const channelInt in channels) {
             if (channels[channelInt].type == "RECS_FOLLOWED_SECTION") {
                 channels[channelInt].items.forEach(channel => {
-                    if (channel.user.login.toLowerCase() == args.channel.toLowerCase()) {
+                    if (channel.user.login.toLowerCase() == channelData.login.toLowerCase()) {
                         followButton.className = "tw-button--hollow";
                         followButton.querySelector(`.tw-button__text`).innerHTML = "Following";
                     };
@@ -43,6 +44,36 @@ async function setIframeVideo (args) {
         });
 
 
+        // Load the desired data of a streamer on watch page
+        function loadStreamerSidePage(sideargs) {
+            if (!sideargs.elmnt) return alert("Invalid element");
+            if (!sideargs.tab) return alert("Invalid tab");
+
+            let currentClickedTab = document.querySelector('.channel-header__user--selected');
+            if (currentClickedTab == null) currentClickedTab = document.querySelector('.channel-header__item--selected');
+            // remove active tab
+            if (currentClickedTab) {
+                currentClickedTab.classList.remove("channel-header__user--selected");
+                currentClickedTab.classList.remove("channel-header__item--selected");
+            }
+
+            sideargs.elmnt.classList.add("channel-header__item--selected");
+            playerRoot.classList.add("player-popout");
+
+            let sidePageRoot = document.querySelector(`[data-a-target="watch-side-page"]`);
+
+            switch (sideargs.tab) {
+                case "videos":
+                    sidePageRoot.classList.remove("tw-hide");
+                break;
+            
+                case "clips":
+                    sidePageRoot.classList.remove("tw-hide");
+                break;
+            }
+        }
+
+        // Go to main page on watch page
         function goToMain() {
             document.querySelectorAll('.channel-header__item--selected').forEach(item => item.classList.remove("channel-header__item--selected"));
 
@@ -50,31 +81,46 @@ async function setIframeVideo (args) {
             playerRoot.classList.remove("player-popout");
             location.hash = "";
         }
-        // Make topbar buttons worky
-        // use class "player-popout" on "root-scrollable__wrapper" when clicking on topbar buttons
-        // to set the topbar button as active, use "channel-header__item--selected" for normal stuff & "channel-header__user--selected" for main
-        let playerRoot = document.querySelector(".root-scrollable__wrapper");
-        document.addEventListener("click", async (e) => {
-            let currentClickedTab = document.querySelector('.channel-header__item--selected');
-            if (currentClickedTab == null) currentClickedTab = document.querySelector('.channel-header__user--selected'); 
-            let closestTarget = e.target.closest(`[data-target="channel-header-item"]`);
 
-            if (closestTarget) {
-                // remove active tab
-                if (currentClickedTab) {
-                    currentClickedTab.classList.remove("channel-header__item--selected");
-                    currentClickedTab.classList.remove("channel-header__user--selected");
-                }
+        
+        // only go for stream type
+        if (args.type == "stream") {
+            // go to tab if found
+            if (location.hash.length > 0) {
+                let tab = location.hash.split("#")[1];
+                let elmnt = document.querySelector(`[data-a-target="${tab}-channel-header-item"]`);
 
-                // if the clicked tab is the user tab
-                if (closestTarget.getAttribute("data-a-target") == "user-channel-header-item") goToMain();
-                // else if a normal tab
-                else if (closestTarget.href) {
-                    closestTarget.classList.add("channel-header__item--selected");
-                    playerRoot.classList.add("player-popout");
-                }
+                if (elmnt) loadStreamerSidePage({elmnt: elmnt, tab: tab});
             }
-        });
+
+            // Make topbar buttons worky
+            // use class "player-popout" on "root-scrollable__wrapper" when clicking on topbar buttons
+            // to set the topbar button as active, use "channel-header__item--selected" for normal stuff & "channel-header__user--selected" for main
+            document.addEventListener("click", async (e) => {
+                let closestTarget = e.target.closest(`[data-target="channel-header-item"]`);
+    
+                if (closestTarget) {
+                    // if the clicked tab is the user tab
+                    if (closestTarget.getAttribute("data-a-target") == "user-channel-header-item") goToMain();
+                    // else if a normal tab
+                    else if (closestTarget.href) {
+                        loadStreamerSidePage({elmnt: closestTarget, tab: closestTarget.getAttribute('data-a-target').split('-channel-header-item')[0]});
+                    }
+                }
+            });
+        } else {
+            document.addEventListener("click", async (e) => {
+                let closestTarget = e.target.closest(`[data-target="channel-header-item"]`);
+
+                if (closestTarget) {
+                    setTimeout(() => {
+                        // change location.href
+                        // location.href = `${location.origin}/${channelData.login}${location.search ? `${location.search}` : ""}${location.hash ? `${location.hash}` : ""}`;
+                        location.href = `${location.origin}/${channelData.login}${location.hash ? `${location.hash}` : ""}`;
+                    }, 10);
+                }
+            });
+        }
 
 
         // Make popout stream work

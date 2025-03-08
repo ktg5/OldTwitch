@@ -1189,5 +1189,36 @@
                 "sha256Hash": "800e7346bdf7e5278a3c1d3f21b2b56e2639928f86815677a7126b093b2fdd08"
             }
         }
+    },
+    {
+        "operationName": "GuestStarBatchCollaborationQuery",
+        "variables": {
+            "options": {
+                "channelIDs": [
+                    "73463218",
+                    "49482254",
+                    "51065352",
+                    "936171791",
+                    "173397905",
+                    "30104304",
+                    "46708418",
+                    "49207184",
+                    "694541343",
+                    "1076747193",
+                    "105458682",
+                    "31239503",
+                    "217198106",
+                    "126719801"
+                ]
+            },
+            "canDropInFlagEnabled": false,
+            "openCallingFlagEnabled": true
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "096d50357df5e938f4fa83fe2acf25cb0f4886149aa81ddb9754eae98c05f2dd"
+            }
+        }
     }
 ]
