@@ -1,5 +1,4 @@
-var stream;
-var channelData;
+var stream, channelData, videosData, clipsData;
 
 var channelTabs = ["videos", "clips"];
 
@@ -9,7 +8,7 @@ async function setIframeVideo (args) {
     if (!args.type) return "Invalid args";
 
     let chatIframe = document.querySelector(".chat-iframe");
-    let playerRoot = document.querySelector(`[data-a-target="main-root"] .root-scrollable__wrapper`);
+    let playerRoot = document.querySelector(`[data-target="main-root"]`);
 
     async function notFirstInit() {
         // name & pfp
@@ -44,10 +43,15 @@ async function setIframeVideo (args) {
         });
 
 
+        let sidePageRoot = document.querySelector(`[data-target="watch-side-page"]`);
         // Load the desired data of a streamer on watch page
-        function loadStreamerSidePage(sideargs) {
+        async function loadStreamerSidePage(sideargs) {
             if (!sideargs.elmnt) return alert("Invalid element");
             if (!sideargs.tab) return alert("Invalid tab");
+
+            // clear old data
+            let divInject = document.querySelector(`[data-a-target="directory-data-container"] .tw-tower`);
+            divInject.innerHTML = "";
 
             let currentClickedTab = document.querySelector('.channel-header__user--selected');
             if (currentClickedTab == null) currentClickedTab = document.querySelector('.channel-header__item--selected');
@@ -56,19 +60,67 @@ async function setIframeVideo (args) {
                 currentClickedTab.classList.remove("channel-header__user--selected");
                 currentClickedTab.classList.remove("channel-header__item--selected");
             }
-
+            // make player popout
             sideargs.elmnt.classList.add("channel-header__item--selected");
             playerRoot.classList.add("player-popout");
 
-            let sidePageRoot = document.querySelector(`[data-a-target="watch-side-page"]`);
 
+            // set data
+            function setTabData(data) {
+                if (!data) return alert("Invalid data");
+                if (data.length < 1) return divInject.innerHTML = `<h4 style="max-width: 100%; width: 100%;">There doesn't seem to be anything here...</h4>`;
+
+                data.forEach(item => {
+                    console.log(item);
+                    // href
+                    let itemHref, itemType;
+                    if (item.__typename == "Clip") { itemHref = `https://www.twitch.tv/${channelData.login}/clips/${item.slug}`; itemType = "clip"; }
+                    else if (item.__typename == "Video") { itemHref = `https://www.twitch.tv/videos/${item.id}`; itemType = "video"; }
+
+                    // subtext - game category
+                    let itemSubtext = `<a href="https://www.twitch.tv/directory/category/${item.game.slug}">${item.game.displayName ? item.game.displayName : item.game.name}</a>`;
+
+                    // subtext 2
+                    let itemSubtext2;
+                    if (itemType == "clip") itemSubtext2 = `<p class="item-subtext tw-font-size-7">Clipped by <a href="https://www.twitch.tv/${item.curator.login}">${item.curator.displayName}</a></p>`;
+
+                    let streamerDiv = document.createElement('div');
+                    streamerDiv.className = "directory-item";
+                    streamerDiv.innerHTML = `
+                    <div class="tw-mg-b-2">
+                        <div class="tw-mg-b-05">
+                            <figure class="tw-aspect tw-aspect--16x9 tw-aspect--align-top">
+                                <a href="${itemHref}">
+                                    <img class="tw-image" src="${item.animatedPreviewURL ? item.animatedPreviewURL : item.thumbnailURL}">
+                                </a>
+                            </figure>
+                        </div>
+                        <div class="item-info">
+                            <a href="https://www.twitch.tv/directory/category/${item.game.slug}" style="display: contents;"><img class="tw-image item-category-img" src="${item.game.boxArtURL}"></a>
+                            <div class="item-text">
+                                <p class="item-name"><a href="${itemHref}">${item.title}</a></p>
+                                <p class="item-subtext tw-font-size-7">${itemSubtext}</p>
+                                ${itemSubtext2}
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                    divInject.appendChild(streamerDiv);
+                });
+            }
+
+            // check tab type & go to the set data function
             switch (sideargs.tab) {
                 case "videos":
                     sidePageRoot.classList.remove("tw-hide");
+                    setTabData(videosData);
                 break;
             
                 case "clips":
                     sidePageRoot.classList.remove("tw-hide");
+
+                    if (!clipsData) clipsData = await gql.getChannelClips(args.channel);
+                    setTabData(clipsData);
                 break;
             }
         }
@@ -79,6 +131,7 @@ async function setIframeVideo (args) {
 
             document.querySelector(`[data-a-target="user-channel-header-item"]`).classList.add("channel-header__user--selected");
             playerRoot.classList.remove("player-popout");
+            sidePageRoot.classList.add("tw-hide");
             location.hash = "";
         }
 
@@ -94,8 +147,6 @@ async function setIframeVideo (args) {
             }
 
             // Make topbar buttons worky
-            // use class "player-popout" on "root-scrollable__wrapper" when clicking on topbar buttons
-            // to set the topbar button as active, use "channel-header__item--selected" for normal stuff & "channel-header__user--selected" for main
             document.addEventListener("click", async (e) => {
                 let closestTarget = e.target.closest(`[data-target="channel-header-item"]`);
     
@@ -115,7 +166,6 @@ async function setIframeVideo (args) {
                 if (closestTarget) {
                     setTimeout(() => {
                         // change location.href
-                        // location.href = `${location.origin}/${channelData.login}${location.search ? `${location.search}` : ""}${location.hash ? `${location.hash}` : ""}`;
                         location.href = `${location.origin}/${channelData.login}${location.hash ? `${location.hash}` : ""}`;
                     }, 10);
                 }
@@ -195,7 +245,6 @@ async function setIframeVideo (args) {
             gqlAction = async () => {
                 channelData = await gql.getChannel(args.channel);
                 videosData = await gql.getChannelVods(args.channel);
-                clipsData = await gql.getChannelClips(args.channel);
                 console.log("channelData: ", channelData);
 
                 // set streamer info
@@ -329,7 +378,6 @@ async function setIframeVideo (args) {
                 console.log("vodData: ", vodData);
                 channelData = await gql.getChannel(vodData.owner.login);
                 videosData = await gql.getChannelVods(vodData.owner.login);
-                clipsData = await gql.getChannelClips(vodData.owner.login);
                 console.log("channelData: ", channelData);
 
                 // set streamer info
@@ -393,7 +441,6 @@ async function setIframeVideo (args) {
                 console.log("clipData: ", clipData);
                 channelData = await gql.getChannel(clipData.broadcaster.login);
                 videosData = await gql.getChannelVods(clipData.broadcaster.login);
-                clipsData = await gql.getChannelClips(clipData.broadcaster.login);
                 console.log("channelData: ", channelData);
 
                 // set streamer info

@@ -25,6 +25,24 @@
 
 /* ################################# */
 
+/* SEEKER */
+
+[data-a-target="player-controls"] .Layout-sc-1xcs6mc-0.kqEiLc {
+    padding: 0 !important;
+}
+
+[data-a-target="player-seekbar"].seekbar-interaction-area {
+    padding-bottom: 0 !important;
+}
+
+.seekbar-bar,
+.seekbar-segment
+{
+    height: 8px !important;
+}
+
+/* ################################# */
+
 /* BUTTONS */
 
 #channel-player [aria-haspopup="menu"] svg {

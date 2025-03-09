@@ -22,7 +22,7 @@ let gqlAction = async () => {
         let divInject = document.querySelector(`[data-a-target="directory-root-scroller"] .tw-tower`);
         categoryData.streams.forEach(stream => {
             let streamerDiv = document.createElement('div');
-            streamerDiv.className = "directory-streamer";
+            streamerDiv.className = "directory-item";
             streamerDiv.innerHTML = `
             <div class="tw-mg-b-2">
                 <div class="tw-mg-b-05">
@@ -32,8 +32,8 @@ let gqlAction = async () => {
                         </a>
                     </figure>
                 </div>
-                <p class="streamer-name"><a href="/${stream.broadcaster.login}">${stream.title}</a></p>
-                <p class="streamer-viewers tw-font-size-7">${stream.viewersCount} viewers on ${stream.broadcaster.displayName}</p>
+                <p class="item-name"><a href="/${stream.broadcaster.login}">${stream.title}</a></p>
+                <p class="item-subtext tw-font-size-7">${stream.viewersCount} viewers on ${stream.broadcaster.displayName}</p>
             </div>
             `;
             divInject.appendChild(streamerDiv);

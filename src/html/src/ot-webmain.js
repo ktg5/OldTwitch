@@ -256,22 +256,17 @@ setTimeout(async () => {
         latestVersion = latestVersion.split(":").pop();
     }
     // Basic checking
-    let latestParts = latestVersion.split(".").map(Number);;
-    let currentParts = currentVersion.split(".").map(Number);;
-    // console.log(isDev && latestIsDev);
-    // console.log(latestDevBuild, currentDevBuild);
-    // console.log(latestParts, currentParts);
+    let latestParts = latestVersion.split(".").map(Number);
+    let currentParts = currentVersion.split(".").map(Number);
     if (!isDev && !latestIsDev || isDev && latestIsDev || isDev && !latestIsDev) {
         // Check differences between versions
         for (let i = 0; i < Math.max(currentParts.length, latestParts.length); i++) {
             if (isDev && latestIsDev || !isDev && !latestIsDev || isDev && !latestIsDev) {
                 let selectCurrent = currentParts[i] || 0;  // Default to 0 if version1 is shorter
                 let selectLatest = latestParts[i] || 0;  // Default to 0 if version2 is shorter
-                // console.log(selectCurrent, selectLatest);
 
-                if (selectCurrent > selectLatest) return;
-                if (selectCurrent < selectLatest) return updateNotification("public");
-                else if (selectCurrent < selectLatest && currentDevBuild < latestDevBuild) return updateNotification("dev build");
+                if (selectCurrent < selectLatest) updateNotification("public");
+                else if ((selectCurrent && selectLatest) !== 0 && selectCurrent <= selectLatest && currentDevBuild < latestDevBuild) updateNotification("dev build");;
             }
         }
     }
@@ -357,7 +352,7 @@ setTimeout(async () => {
 
                 // channel details
                 document.querySelector(`.streamer-pfp`).innerHTML = `<a href="/${featuredStreams[i].broadcaster.login}"><img class="tw-image" src="${featuredStreams[i].broadcaster.profileImageURL}"></a>`;
-                document.querySelector(`.streamer-name`).innerHTML = `<a style="color: #b8b5c0;" href="/${featuredStreams[i].broadcaster.login}">${featuredStreams[i].broadcaster.displayName}</a>`;
+                document.querySelector(`.item-name`).innerHTML = `<a style="color: #b8b5c0;" href="/${featuredStreams[i].broadcaster.login}">${featuredStreams[i].broadcaster.displayName}</a>`;
                 document.querySelector(`.streamer-category`).innerHTML = `<a href="/directory/category/${featuredStreams[i].game.slug}">${featuredStreams[i].game.displayName}</a>`;
                 document.querySelector(`.streamer-desc`).innerHTML = "";
                 document.querySelector(`.streamer-tags`).innerHTML = "";
@@ -426,9 +421,9 @@ setTimeout(async () => {
                 // covert art
                 topStreamersGrid.children[i].querySelector(`figure`).innerHTML = `<a href="/${channel.broadcaster.login}"><img class="tw-image" src="${channel.previewImageURL}"></a>`;
                 // title
-                topStreamersGrid.children[i].querySelector(`.streamer-name`).innerHTML = `<a href="/${channel.broadcaster.login}">${channel.broadcaster.displayName}</a>`;
+                topStreamersGrid.children[i].querySelector(`.item-name`).innerHTML = `<a href="/${channel.broadcaster.login}">${channel.broadcaster.displayName}</a>`;
                 // viewers
-                topStreamersGrid.children[i].querySelector(`.streamer-viewers`).innerHTML = `${channel.viewersCount} viewers on ${channel.broadcaster.displayName}`;
+                topStreamersGrid.children[i].querySelector(`.item-subtext`).innerHTML = `${channel.viewersCount} viewers on ${channel.broadcaster.displayName}`;
             }
         }
 

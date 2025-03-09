@@ -435,9 +435,14 @@ class Gql {
                 method: "POST"
             }).then(async rawData => {
                 let data = await rawData.json();
-
                 if (data.errors) resolve({ errors: data.errors });
-                else resolve(data.data.user.videos.edges);
+
+                let cleanData = [];
+                for (let i = 0; i < data.data.user.videos.edges.length; i++) {
+                    const element = data.data.user.videos.edges[i];
+                    cleanData[i] = element.node;
+                }
+                resolve(cleanData);
             });
         });
     }
@@ -487,7 +492,13 @@ class Gql {
                 let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
-                else resolve(data.data.user.clips.edges);
+
+                let cleanData = [];
+                for (let i = 0; i < data.data.user.clips.edges.length; i++) {
+                    const element = data.data.user.clips.edges[i];
+                    cleanData[i] = element.node;
+                }
+                resolve(cleanData);
             });
         });
     }
