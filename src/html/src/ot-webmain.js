@@ -1,5 +1,5 @@
 var extensionLocation = document.querySelector('body').getAttribute('oldttv');
-var latestVersionUrl = `https://raw.githubusercontent.com/ktg5/oldttv/refs/heads/main/src/ver.txt`;
+var latestVersionUrl = `https://raw.githubusercontent.com/ktg5/OldTwitch/refs/heads/main/src/ver.txt`;
 
 
 // Inject requested text to element's innerhtml
@@ -278,7 +278,7 @@ setTimeout(async () => {
             {
                 key: "update",
                 text: "Update",
-                action: () => location.href = "https://github.com/ktg5/oldttv/releases/latest"
+                action: () => location.href = "https://github.com/ktg5/OldTwitch/releases/latest"
             }
         ]);
     }

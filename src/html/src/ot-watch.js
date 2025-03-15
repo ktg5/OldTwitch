@@ -257,7 +257,7 @@ async function setIframeVideo (args) {
                         let panelsContainer = document.querySelector(`.channel-panels-container`);
                         channelData.panels.forEach(panel => {
                             // check if the current panel is a blank panel
-                            if (panel.description == null && panel.title == null && panel.imageURL == null && panel.linkURL == null) return;
+                            if (panel.type !== "EXTENSION") if (panel.description == null && panel.title == null && panel.imageURL == null && panel.linkURL == null) return;
 
                             // insert panel
                             let panelDiv = document.createElement("div");
