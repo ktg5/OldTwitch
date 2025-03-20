@@ -27,7 +27,7 @@ Screenshots taken from dev3:0.0.4
     <br>
     <img src="docs/ss-4.jpg" style="max-width: 75%;">
     <br>
-    <i>The Twitch category page, showing streams, videos (known as VODs) & clips of the Twitch category, "Software and Game Development".</i>
+    <i>The Twitch discovery page, showing categories that the current user follows & other categories that Twitch recommends.</i>
 </div>
 
 ## Todo
