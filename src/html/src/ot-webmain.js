@@ -58,8 +58,15 @@ function makeNotification(text, actions) {
 }
 
 
-// Get current user info
-// Get Oauth
+// Get Oauth token via the user's cookies.
+// 
+// If you're looking at this and worried about security, you can read through
+// all the functions & fetches in the `ot-gql.js` file. All the fetches that
+// pass through your OAuth token are within that file and take the argument
+// name `oauth`. I don't want your account, I have nothing to do with your
+// account, and if I did you won't be able to install this extension in the
+// first place. (That is if you downloaded the extension from a browser
+// extension store)
 var userData, oauth;
 if (document.cookie.split('auth-token=')[1]) {
     oauth = document.cookie.split('auth-token=')[1].split(";")[0];
@@ -80,9 +87,12 @@ if (oauth != null) {
                 // remove login & signup buttons
                 loginButton.parentElement.remove();
                 document.querySelector('[data-a-target="signup-button"]').parentElement.remove();
+
                 // name & pfp
-                let targetCard = document.querySelector(`[data-a-target="user-card"]`).insertAdjacentHTML('beforeend', `
-                    <a class="user-info" href="https://www.twitch.tv/${userData.displayName}">
+                let targetCard = document.createElement('div');
+                targetCard.classList.add("user-info", "tw-relative");
+                targetCard.insertAdjacentHTML('beforeend', `
+                    <button>
                         <div class="tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
                             <div class="channel-header__user-avatar channel-header__user-avatar--active tw-align-items-stretch tw-flex tw-flex-shrink-0 tw-mg-r-1">
                                 <div class="tw-relative">
@@ -99,8 +109,38 @@ if (oauth != null) {
                                 </span>
                             </div>
                         </div>
-                    </a>
+                    </button>
+
+                    <div class="tw-balloon tw-balloon--sm tw-balloon--down tw-balloon--right tw-block tw-absolute tw-hide" data-a-target="overflow-menu">
+                        <div class="tw-balloon__tail tw-overflow-hidden tw-absolute">
+                            <div class="tw-balloon__tail-symbol tw-border-t tw-border-r tw-border-b tw-border-l tw-border-radius-small tw-c-background  tw-absolute"></div>
+                        </div>
+                        <div class="tw-border-t tw-border-r tw-border-b tw-border-l tw-elevation-1 tw-border-radius-small tw-c-background">
+                            <div class="tw-pd-1">
+                                <a href="https://www.twitch.tv/${userData.displayName}" class="tw-interactable" data-a-target="channel-link">
+                                    <div class="tw-pd-x-1 tw-pd-y-05">Channel</div>
+                                </a>
+                                <a href="https://dashboard.twitch.tv/u/${userData.displayName}/home" class="tw-interactable" data-a-target="dashboard-link">
+                                    <div class="tw-pd-x-1 tw-pd-y-05">Creator Dashboard</div>
+                                </a>
+                                <a href="https://www.twitch.tv/subscriptions" class="tw-interactable" data-a-target="subscriptions-link">
+                                    <div class="tw-pd-x-1 tw-pd-y-05">Subscriptions</div>
+                                </a>
+                                <a href="https://www.twitch.tv/inventory" class="tw-interactable" data-a-target="inventory-link">
+                                    <div class="tw-pd-x-1 tw-pd-y-05">Drops & Inventory</div>
+                                </a>
+                                <a href="https://www.twitch.tv/oldtwitch" class="tw-interactable" data-a-target="oldtwitch-settings-link">
+                                    <div class="tw-pd-x-1 tw-pd-y-05">OldTwitch Configuration</div>
+                                </a>
+                                <a href="https://www.twitch.tv/settings" class="tw-interactable" data-a-target="settings-link">
+                                    <div class="tw-pd-x-1 tw-pd-y-05">Settings</div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 `);
+
+                document.querySelector(`[data-a-target="user-card"]`).appendChild(targetCard);
             }
             if (loginButton) {
                 actionAfterHtmlInit();
@@ -112,7 +152,16 @@ if (oauth != null) {
                     }
                 }, 50);
             }
-        }  
+        }
+
+        // Set balloon toggles
+        document.querySelectorAll('.tw-balloon').forEach(balloon => {
+            let balloonToggler = balloon.parentElement.children[0];
+            document.addEventListener('click', (e) => {
+                if (e.target === balloonToggler || balloonToggler.contains(e.target)) return balloon.classList.remove('tw-hide');
+                else balloon.classList.add('tw-hide');
+            });
+        });
     }
     if (gql) {
         gqlAction();

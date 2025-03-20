@@ -137,7 +137,7 @@ async function handlePageChange () {
             injectJSTargets.push(runtime.getURL('html/src/ot-directory.js'));
         break;
 
-        case location.pathname.startsWith("/settings"):
+        case location.pathname.startsWith("/oldtwitch"):
             injectTarget = runtime.getURL('html/oldtwitch.html');
             injectJSTargets.push(runtime.getURL('lib/coloris.min.js'));
             injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));

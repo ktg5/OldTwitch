@@ -23,6 +23,7 @@ class Gql {
      */
     async getClientInteg(oauth) {
         if (this.oauth != undefined) oauth = this.oauth;
+        if (!oauth) return console.error(`"oauth" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
             await fetch("https://gql.twitch.tv/integrity", {
@@ -57,6 +58,7 @@ class Gql {
      */
     async getCurrentUser(oauth) {
         if (this.oauth != undefined) oauth = this.oauth;
+        if (!oauth) return console.error(`"oauth" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
             await fetch("https://gql.twitch.tv/gql", {
@@ -191,19 +193,78 @@ class Gql {
         });
     }
 
+    /**
+     * Gets the directory index for the front page.
+     * @param {string} oauth - Optional. The OAuth token for authentication to use for personal recommendations.
+     * Can be left blank if the current GQL instance has a OAuth defined.
+     * @param {number} [limit] - The limit of items to get. Defaults to 30.
+     * @returns {Promise.<Array.<Object>>} A promise that resolves to an array of directory objects.
+     */
+    async getDirectoryIndex(oauth, limit) {
+        let Headers = {
+            "client-id": this.clientid,
+            "x-device-id": "0"
+        }
+        if (this.oauth != undefined) oauth = this.oauth;
+        if (oauth) Headers.authorization = `OAuth ${oauth}`;
+
+        if (!limit) {
+            limit = 30;
+            console.warn("limit arg not set, going with \"30\".");
+        }
+
+        return new Promise(async (resolve, reject) => {
+            await fetch("https://gql.twitch.tv/gql", {
+                headers: Headers,
+                body: JSON.stringify({
+                    "operationName": "BrowsePage_AllDirectories",
+                    "variables": {
+                        "limit": 30,
+                        "options": {
+                            "recommendationsContext": {
+                            "platform": "web"
+                            },
+                            // "requestID": "JIRA-VXP-2397",
+                            "sort": "RELEVANCE",
+                            "tags": []
+                        }
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "2f67f71ba89f3c0ed26a141ec00da1defecb2303595f5cda4298169549783d9e"
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+
+                if (data.errors || data.error) resolve({ errors: data.errors ? data.errors : data.message });
+                else {
+                    let cleanData = [];
+
+                    data.data.directoriesWithTags.edges.forEach(edge => {
+                        cleanData.push(edge.node);
+                    });
+                    resolve(cleanData);
+                }
+            })
+        });
+    }
+
 
     /**
      * Fetches recommended channels based on the current and past streamers.
      *
-     * @param {string} oauth - Optional for personal recommendations, detects if current GQL instance has a OAuth defined.
-     * The OAuth token for authentication to use for personal recommendations.
+     * @param {string} oauth - Optional. The OAuth token for authentication to use for personal recommendations.
+     * Can be left blank if the current GQL instance has a OAuth defined.
      * @param {Array} [CurrentPastStreamer] - Optional. An array containing the current and past channel names.
      * @returns {Promise<Object>} A promise that resolves to the personal recommendations data.
      */
     async getRecommends(oauth, CurrentPastStreamer) {
         if (!CurrentPastStreamer) return console.error(`"CurrentPastStreamer" is required but returned null.`);
 
-        if (oauth) oauth = `OAuth ${oauth}`;
         let currentChannel, pastChannel;
         if (CurrentPastStreamer && Array.isArray(CurrentPastStreamer)) {
             currentChannel = CurrentPastStreamer[0];
@@ -214,7 +275,8 @@ class Gql {
             "client-id": this.clientid,
             "x-device-id": "0"
         }
-        if (oauth) Headers.authorization = oauth;
+        if (this.oauth != undefined) oauth = this.oauth;
+        if (oauth) Headers.authorization = `OAuth ${oauth}`;
 
         let Body = {
             "operationName": "PersonalSections",
@@ -621,6 +683,8 @@ class Gql {
 
     /**
      * @description Follows a stream by its ID.
+     * @param {string} oauth - The user's OAuth token to use for the request.
+     * Can be left blank if the current GQL instance has a OAuth defined.
      * @param {string} id - The ID of the stream to follow.
      * @param {boolean} disableNotifs - Whether to receive disableNotifs for the stream.
      * @returns {Promise<Object>} Returns a object of the "followUser" object, containing the user followed & possible errors.
@@ -628,6 +692,7 @@ class Gql {
      */
     async followChannelId(oauth, id, disableNotifs) {
         if (this.oauth != undefined) oauth = this.oauth;
+        if (!oauth) return console.error(`"oauth" is required but returned null.`);
         if (!id) return console.error(`"id" is required but returned null.`);
         if (disableNotifs && typeof disableNotifs !== 'boolean') return console.error(`"disableNotifs" must be a boolean.`);
         else if (!disableNotifs) console.warn(`"disableNotifs" arg not set, going with false.`);
@@ -674,13 +739,15 @@ class Gql {
     
     /**
      * Unfollows a stream for a given OAuth token and stream ID.
-     * @param {string} oauth - The OAuth token used for what user is unfollowing. If not provided, the instance's OAuth token will be used.
+     * @param {string} oauth - The user's OAuth token to use for the request.
+     * Can be left blank if the current GQL instance has a OAuth defined.
      * @param {string} id - The ID of the stream to unfollow.
      * @returns {Promise<Object>} Returns a object of the "followUser" object, containing the user followed & possible errors.
      * Logs an error if the stream ID is invalid or if the OAuth token is invalid.
      */
     async unfollowChannelId(oauth, id) {
         if (this.oauth != undefined) oauth = this.oauth;
+        if (!oauth) return console.error(`"oauth" is required but returned null.`);
         if (!id) return console.error(`"id" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {

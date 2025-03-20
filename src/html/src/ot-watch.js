@@ -71,7 +71,6 @@ async function setIframeVideo (args) {
                 if (data.length < 1) return divInject.innerHTML = `<h4 style="max-width: 100%; width: 100%;">There doesn't seem to be anything here...</h4>`;
 
                 data.forEach(item => {
-                    console.log(item);
                     // href
                     let itemHref, itemType;
                     if (item.__typename == "Clip") { itemHref = `https://www.twitch.tv/${channelData.login}/clips/${item.slug}`; itemType = "clip"; }
@@ -81,7 +80,7 @@ async function setIframeVideo (args) {
                     let itemSubtext = `<a href="https://www.twitch.tv/directory/category/${item.game.slug}">${item.game.displayName ? item.game.displayName : item.game.name}</a>`;
 
                     // subtext 2
-                    let itemSubtext2;
+                    let itemSubtext2 = "";
                     if (itemType == "clip") itemSubtext2 = `<p class="item-subtext tw-font-size-7">Clipped by <a href="https://www.twitch.tv/${item.curator.login}">${item.curator.displayName}</a></p>`;
 
                     let streamerDiv = document.createElement('div');
@@ -191,14 +190,6 @@ async function setIframeVideo (args) {
             subButton.href = `https://www.twitch.tv/subs/${channelData.login}`;
         }
 
-        // make share button work
-        let shareButton = document.querySelector(`[data-a-target="share-button"]`);
-        let shareButtonBalloon = document.querySelector(`[data-a-target="share-balloon"]`);
-        document.addEventListener("click", (e) => {
-            if (e.target.closest(`[data-a-target="share-button"]`)) return shareButtonBalloon.classList.toggle("tw-hide");
-            else if (e.target.closest(`[data-a-target="share-balloon"]`)) return;
-            else shareButtonBalloon.classList.add("tw-hide");
-        });
         // buttons
         let clipBoardButton = document.querySelector(`[data-share-button="clipboard"]`);
         clipBoardButton.addEventListener("click", () => {
