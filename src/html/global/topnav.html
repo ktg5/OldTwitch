@@ -114,24 +114,14 @@
                             <div
                                 class="tw-border-t tw-border-r tw-border-b tw-border-l tw-elevation-1 tw-border-radius-small tw-c-background  ">
                                 <div tabindex="0">
-                                    <div
-                                        class="search-results-panel search-results-panel--active search-results-panel--closed tw-elevation-5 tw-c-background  tw-overflow-hidden tw-flex tw-flex-column tw-flex-nowrap">
-                                        <div data-a-target="nav-search-title-bar"
-                                            class="search-title-bar  tw-border-b tw-c-background-alt-2  tw-z-above tw-align-items-center tw-flex tw-relative">
-                                            <div
-                                                class="search-title-bar__back-container tw-align-content-stretch tw-flex">
-                                                <button aria-label="Back button"
-                                                    class="tw-button-icon tw-button-icon--secondary tw-button-icon--large"
-                                                    data-ts_selectable="false"
-                                                    data-a-target="nav-search-back">
+                                    <div class="search-results-panel search-results-panel--active tw-elevation-5 tw-c-background tw-full-height tw-overflow-hidden tw-flex tw-flex-column tw-flex-nowrap">
+                                        <div data-a-target="nav-search-title-bar" class="search-title-bar  tw-border-b tw-c-background-alt-2  tw-z-above tw-align-items-center tw-flex tw-relative">
+                                            <div class="search-title-bar__back-container tw-align-content-stretch tw-flex">
+                                                <button aria-label="Back button" class="tw-button-icon tw-button-icon--secondary tw-button-icon--large" data-ts_selectable="false" data-a-target="nav-search-back">
                                                     <span class="tw-button-icon__icon">
                                                         <figure class="tw-svg">
-                                                            <svg class="tw-svg__asset tw-svg__asset--angleleft tw-svg__asset--inherit"
-                                                                width="20px" height="20px" version="1.1"
-                                                                viewBox="0 0 16 16" x="0px" y="0px">
-                                                                <path
-                                                                    d="M7.11 8l5.446-5.444L11 1 4 8l7 7 1.556-1.556">
-                                                                </path>
+                                                            <svg class="tw-svg__asset tw-svg__asset--angleleft tw-svg__asset--inherit" width="20px" height="20px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
+                                                                <path d="M7.11 8l5.446-5.444L11 1 4 8l7 7 1.556-1.556"></path>
                                                             </svg>
                                                         </figure>
                                                     </span>
@@ -143,43 +133,13 @@
                                         </div>
                                         <div class="search-results-panel__wrapper scrollable-area scrollable-area--suppress-scroll-x" data-test-selector="scrollable-area-wrapper" data-a-target="search-scroller" data-simplebar="init">
                                             <div class="simplebar-track vertical" style="visibility: hidden;">
-                                                <div class="simplebar-scrollbar"></div>
+                                                <div class="simplebar-scrollbar" style="top: 2px; height: 25px;"></div>
                                             </div>
                                             <div class="simplebar-track horizontal" style="visibility: hidden;">
-                                                <div class="simplebar-scrollbar"></div>
+                                                <div class="simplebar-scrollbar" style="left: 2px; width: 25px;"></div>
                                             </div>
-                                            <div class="simplebar-scroll-content"
-                                                style="padding-right: 17px; margin-bottom: -34px;">
-                                                <div class="simplebar-content search-results-panel__content"
-                                                    style="padding-bottom: 17px; margin-right: -17px;">
-                                                    <div class="tw-full-width ">
-                                                        <div
-                                                            class="search-results-panel__notice-wrap tw-full-height tw-z-above tw-align-items-center tw-flex tw-flex-column tw-flex-grow-1 tw-justify-content-center">
-                                                            <div
-                                                                class="tw-c-text-alt-2  tw-flex-shrink-1 tw-align-center">
-                                                                <figure class="tw-svg">
-                                                                    <svg class="tw-svg__asset tw-svg__asset--searchnoresults tw-svg__asset--inherit"
-                                                                        width="46px" height="48px"
-                                                                        version="1.1" viewBox="0 0 46 48"
-                                                                        x="0px" y="0px">
-                                                                        <path clip-rule="evenodd"
-                                                                            d="M44.7314176,41.7572363 L37.4713285,48 L26.8572017,35.3514358 L19.8203892,37.5166089 L8.56540656,33.764948 L2,24.3857958 L2,13.1308131 L8.56540656,3.75166089 L19.8203892,0 L32.0132871,3.75166089 L38.2660553,12.8181747 L38.2660553,24.6984342 L34.7250756,29.8328548 L44.7314176,41.7572363 Z M25.8441673,26.223711 L20.1169645,28.1374567 L20.0888962,28.1374567 L14.3616933,26.223711 L11.0126384,21.4393468 L11.0126384,15.6981098 L14.3616933,10.9137457 L20.0888962,9 L20.1176024,9 L25.8448053,10.9137457 L29.5121799,15.6981098 L29.5121799,21.4393468 L25.8441673,26.223711 L25.8441673,26.223711 Z"
-                                                                            fill-rule="evenodd"></path>
-                                                                    </svg>
-                                                                </figure>
-                                                            </div>
-                                                            <h4 class="tw-align-center tw-mg-t-1"
-                                                                data-test-selector="panel-body-no-results">
-                                                                No results found</h4>
-                                                            <p class="">They're probably in another castle
-                                                            </p>
-                                                        </div>
-                                                        <div class="scrollable-trigger__wrapper">
-                                                            <div class="scrollable-trigger__trigger-area scrollable-trigger__trigger-area--up"
-                                                                style="height: 100px;"></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            <div class="simplebar-scroll-content" style="padding-right: 15px; margin-bottom: -30px;">
+                                                <div class="simplebar-content search-results-panel__content" style="padding-bottom: 15px; margin-right: -15px;"></div>
                                             </div>
                                         </div>
                                     </div>

@@ -145,6 +145,9 @@ let gqlAction = async () => {
 
     } else {
 
+        // Set page title
+        document.title = "All Categories - " + document.title;
+
         // Get directory index data
         let directoryData = await gql.getDirectoryIndex(oauth);
         console.log("directoryData: ", directoryData);
@@ -160,7 +163,10 @@ let gqlAction = async () => {
             if (injectDiv.children.length < 1) addDirectoryGrid();
             else if (injectDiv.children[0].classList.contains('tw-grid')) injectDiv = injectDiv.children[0];
             else {
-                injectDiv.children.forEach(child => { child.remove(); });
+                for (let i = 0; i < injectDiv.children.length; i++) {
+                    const element = injectDiv.children[i];
+                    element.remove();
+                }
                 addDirectoryGrid();
             }
         }

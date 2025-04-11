@@ -1,10 +1,11 @@
-<h1 align="center">OldTwitch <kbd>0.0.4</kbd></h1>
+<h1 align="center">OldTwitch <kbd>dev1:0.0.5</kbd></h1>
 <div font-size="24px" align="center">A browser extension to bring back the old Twitch look.</div>
-<div font-size="16px">For the moment, please download OldTwitch from the <a href="https://github.com/ktg5/OldTwitch/actions/workflows/build.yml">Actions page for more recent builds</a>, or the <a href="https://github.com/ktg5/OldTwitch/releases">Releases page for older builds</a></div>
+<div font-size="16px" align="center"><b>For the moment, please download OldTwitch from the <a href="https://github.com/ktg5/OldTwitch/actions/workflows/build.yml">Actions page for more recent builds</a>, or the <a href="https://github.com/ktg5/OldTwitch/releases">Releases page for older builds</a></b></div>
+<br>
 <div align="center">
   <a href="https://github.com/ktg5/OldTwitch/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/ktg5/OldTwitch/build.yml"></a>
   <a href="https://github.com/ktg5/OldTwitch/releases/latest"><img src="https://img.shields.io/github/v/release/ktg5/OldTwitch?label=stable%20release"></a>
-  <a href="https://github.com/ktg5/OldTwitch/actions/workflows/build.yml"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fktg5%2FOldTwitch%2Fmain%2Fmanifest.json&query=version&prefix=v&label=dev%20release&color=darkblue"></a>
+  <a href="https://github.com/ktg5/OldTwitch/actions/workflows/build.yml"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fktg5%2FOldTwitch%2Frefs%2Fheads%2Fmain%2Fsrc%2Fmanifest.json&query=version&prefix=v&label=dev%20release&color=darkblue"></a>
 </div>
 
 ## Screenshots
@@ -48,19 +49,22 @@ Screenshots taken from dev3:0.0.4
 
 - [x] finish home page.
 
+- [x] get channel list working.
+    - [x] ~~channel list show all button.~~
+    - [x] figure out why the following list in the channel list doesn't fetch sometimes.
+    - [x] channel list show more & less buttons.
+
 - [x] stream page.
     - [x] show list of streamer's vods & clips via a little category page added within the watch page.
+    - [x] make the stupid svgs for the stuff on the stream info thingy idk what to call it lmao.
     - [ ] follow & unfollow. (might be impossible cuz of the `client-integrity` value)
 
 - [x] discovery page.
     - [x] game pages.
     - [x] the "all" discovery page found via home page or the "Browse" button.
 
-- [x] get channel list working.
 - [x] vods & clips.
 
-- [x] channel list show all button.
-    - [x] figure out why the following list in the channel list doesn't fetch sometimes.
 - [x] subscribe button for those with sub page.
 - [x] share button.
 - [x] sidebar minimize buttons.

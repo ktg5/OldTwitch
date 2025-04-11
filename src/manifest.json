@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "OldTwitch",
     "description": "A browser extension to bring back the old Twitch look",
-    "version": "0.0.4",
+    "version": "0.0.5",
 
     "background": {
         "service_worker": "js/ot-background.js"
@@ -31,7 +31,7 @@
 
         {
             "matches": ["*://www.twitch.tv/*?*nooldttv*"],
-            "js": ["lib/video-swap-new.user.js", "js/ot-newttv.js"],
+            "js": ["js/ot-newttv.js"],
             "run_at": "document_end"
         },
         {
@@ -42,7 +42,7 @@
         },
         {
             "matches": ["*://player.twitch.tv/*"],
-            "js": ["lib/video-swap-new.user.js", "js/ot-embed.js"],
+            "js": ["js/ot-embed.js"],
             "all_frames": true,
             "run_at": "document_start"
         }
@@ -50,6 +50,6 @@
 
     "web_accessible_resources": [{
         "matches": ["*://*.twitch.tv/*"],
-        "resources": ["html/*", "js/*", "css/*", "lib/*", "ver.txt"]
+        "resources": ["html/*", "js/*", "css/*", "lib/*", "ver.txt", "default_config.json"]
     }]
 }

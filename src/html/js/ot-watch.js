@@ -18,9 +18,11 @@ async function setIframeVideo (args) {
         // check if user is following streamer
         let followButton = document.querySelector(`[data-a-target="follow-button"]`);
         for (const channelInt in channels) {
-            if (channels[channelInt].type == "RECS_FOLLOWED_SECTION") {
+            if (channels[channelInt].id == "provider-side-nav-followed-channels-1") {
                 channels[channelInt].items.forEach(channel => {
-                    if (channel.user.login.toLowerCase() == channelData.login.toLowerCase()) {
+                    if (channel == null) return;
+                    if (channel.broadcaster == null) channel.broadcaster = channel;
+                    if (channel.broadcaster.login.toLowerCase() == channelData.login.toLowerCase()) {
                         followButton.className = "tw-button--hollow";
                         followButton.querySelector(`.tw-button__text`).innerHTML = "Following";
                     };
@@ -193,7 +195,7 @@ async function setIframeVideo (args) {
         // buttons
         let clipBoardButton = document.querySelector(`[data-share-button="clipboard"]`);
         clipBoardButton.addEventListener("click", () => {
-            navigator.clipboard.writeText(`https://www.twitch.tv/${channelData.login}`);
+            navigator.clipboard.writeText(location.href);
             clipBoardButton.querySelector(`.tw-tooltip`).innerHTML = "Copied to clipboard";
         });
         clipBoardButton.addEventListener("mouseout", () => {
@@ -353,7 +355,6 @@ async function setIframeVideo (args) {
                 });
             }
             if (Twitch !== undefined) {
-                console.log(Twitch);
                 vodExec();
             } else {
                 let tempInit = setInterval(() => {
@@ -387,7 +388,6 @@ async function setIframeVideo (args) {
                     // imgs
                     if (vodData.game) {
                         gameData = await gql.getCategory(vodData.game.slug);
-                        console.log(gameData);
                         document.querySelector(`.tw-category-cover`).classList.remove("tw-hide");
                         document.querySelector(`.tw-category-cover`).src = gameData.avatarURL;
                     }

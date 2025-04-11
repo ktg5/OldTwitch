@@ -37,11 +37,7 @@ const extensionLocation = runtime.getURL('').slice(0, -1);
 var userConfig;
 
 // Default config
-const def_ot_config = {
-    // Basic settings.
-    year: '2018',
-    showReleaseNotes: true,
-};
+var def_ot_config;
 
 // Get the user config
 getConfig();
@@ -54,7 +50,6 @@ function getConfig() {
             window.location.reload();
 		} else {
 			userConfig = result.OTConfig;
-            console.log(`%cOLDTTV USER DATA:`, styles3, userConfig);
 		}
 	});
 }
@@ -111,46 +106,36 @@ let firstInit = false;
 async function handlePageChange () {
     // First, let's see what page we're working with.
     var injectTarget = '';
-    var injectJSTargets = [];
+    var injectJSTargets = [
+        runtime.getURL('html/js/ot-gql.js'),
+        runtime.getURL('html/lib/twitch-v1.js'),
+        runtime.getURL('html/js/ot-webmain.js'),
+        runtime.getURL('html/js/ot-search.js')
+    ];
     switch (true) {
         case location.pathname == "/":
             injectTarget = runtime.getURL(`html/index.html`);
-            injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
-            injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
-            injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
         break;
 
         case location.pathname.startsWith("/search"):
             injectTarget = runtime.getURL('html/search.html');
-            injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
-            injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
-            injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
-            injectJSTargets.push(runtime.getURL('html/src/ot-search.js'));
         break;
 
         case location.pathname.startsWith("/directory"):
             if (location.pathname.startsWith("/directory/category")) injectTarget = runtime.getURL('html/directory/category.html');
             else injectTarget = runtime.getURL('html/directory/index.html');
-            injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
-            injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
-            injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
-            injectJSTargets.push(runtime.getURL('html/src/ot-directory.js'));
+            injectJSTargets.push(runtime.getURL('html/js/ot-directory.js'));
         break;
 
         case location.pathname.startsWith("/oldtwitch"):
             injectTarget = runtime.getURL('html/oldtwitch.html');
             injectJSTargets.push(runtime.getURL('lib/coloris.min.js'));
-            injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
-            injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
-            injectJSTargets.push(runtime.getURL('html/src/ot-settings.js'));
+            injectJSTargets.push(runtime.getURL('html/js/ot-settings.js'));
         break;
 
         default:
             injectTarget = runtime.getURL(`html/watch.html`);
-            injectJSTargets.push(runtime.getURL('html/src/ot-gql.js'));
-            injectJSTargets.push(runtime.getURL('html/lib/twitch-v1.js'));
-            injectJSTargets.push(runtime.getURL('html/src/ot-webmain.js'));
-            injectJSTargets.push(runtime.getURL('html/src/ot-watch.js'));
+            injectJSTargets.push(runtime.getURL('html/js/ot-watch.js'));
         break;
     }
 
@@ -197,6 +182,14 @@ async function handlePageChange () {
             srcDoc.src = jsTargets;
             document.head.append(srcDoc);
         });
+
+        // Inject userConfig
+        let userConfigDoc = document.createElement('script');
+        userConfigDoc.id = 'oldttv-js';
+        userConfigDoc.async = "";
+        userConfigDoc.setAttribute('data-script-type', "oldttv-userconfig");
+        userConfigDoc.setAttribute('data-userconfig', JSON.stringify(userConfig));
+        document.head.append(userConfigDoc);
 
         // Stop observer
         blockingObserver.disconnect();

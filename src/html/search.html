@@ -20,7 +20,23 @@
 
             <main class="twilight-main tw-full-width tw-full-height tw-overflow-hidden tw-flex tw-flex-column tw-flex-grow-1 tw-relative">
                 <div class="root-scrollable scrollable-area" data-test-selector="scrollable-area-wrapper" data-a-target="root-scroller" data-simplebar="init">
-                    
+                    <div class="simplebar-track vertical" style="visibility: hidden;">
+                        <div class="simplebar-scrollbar"></div>
+                    </div>
+                    <div class="simplebar-track horizontal" style="visibility: hidden;">
+                        <div class="simplebar-scrollbar"></div>
+                    </div>
+                    <div class="simplebar-scroll-content" style="padding-right: 15px; margin-bottom: -30px;">
+                        <div class="simplebar-content root-scrollable__content" style="padding-bottom: 15px; margin-right: -15px;">
+                            <div class="root-scrollable__wrapper tw-full-width tw-relative">
+                                <div class="tw-pd-3">
+                                    <div data-a-target="search-inject" class="tw-full-width tw-full-height tw-align-items-center tw-flex tw-justify-content-center">
+                                        <div class="tw-loading-spinner"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>

@@ -222,9 +222,8 @@ class Gql {
                         "limit": 30,
                         "options": {
                             "recommendationsContext": {
-                            "platform": "web"
+                                "platform": "web"
                             },
-                            // "requestID": "JIRA-VXP-2397",
                             "sort": "RELEVANCE",
                             "tags": []
                         }
@@ -262,10 +261,10 @@ class Gql {
      * @param {Array} [CurrentPastStreamer] - Optional. An array containing the current and past channel names.
      * @returns {Promise<Object>} A promise that resolves to the personal recommendations data.
      */
-    async getRecommends(oauth, CurrentPastStreamer) {
+    async getSideNavData(oauth, CurrentPastStreamer) {
         if (!CurrentPastStreamer) return console.error(`"CurrentPastStreamer" is required but returned null.`);
 
-        let currentChannel, pastChannel;
+        let currentChannel = null, pastChannel = null;
         if (CurrentPastStreamer && Array.isArray(CurrentPastStreamer)) {
             currentChannel = CurrentPastStreamer[0];
             pastChannel = CurrentPastStreamer[1];
@@ -279,7 +278,7 @@ class Gql {
         if (oauth) Headers.authorization = `OAuth ${oauth}`;
 
         let Body = {
-            "operationName": "PersonalSections",
+            "operationName": "SideNav",
             "variables": {
                 "input": {
                     "sectionInputs": [
@@ -289,11 +288,23 @@ class Gql {
                         "SIMILAR_SECTION"
                     ],
                     "recommendationContext": {
-                        "channelName": "",
-                        "lastChannelName": "",
-                        "pageviewLocation": "channel",
+                        "platform": "web",
+                        "clientApp": "twilight",
+                        "channelName": currentChannel,
+                        "categorySlug": null,
+                        "lastChannelName": pastChannel,
+                        "lastCategorySlug": null,
+                        "pageviewContent": null,
+                        "pageviewContentType": null,
+                        "pageviewLocation": null,
+                        "pageviewMedium": null,
+                        "previousPageviewContent": null,
+                        "previousPageviewContentType": null,
+                        "previousPageviewLocation": null,
+                        "previousPageviewMedium": null
                     },
-                    "contextChannelName": ""
+                    "followSortOrder": "RECS",
+                    "contextChannelName": currentChannel
                 },
                 "creatorAnniversariesFeature": false,
                 "withFreeformTags": false
@@ -301,15 +312,9 @@ class Gql {
             "extensions": {
                 "persistedQuery": {
                     "version": 1,
-                    "sha256Hash": "4c3776186239b845f100e5d989a4823f8586c899fb5e7cd856efabd2405b998c"
+                    "sha256Hash": "b235e7c084bc768d827343cda0b95310535a0956d449e574885b00e176fe5f27"
                 }
             }
-        }
-        if (currentChannel) {
-            Body.variables.input.recommendationContext.channelName = currentChannel;
-            Body.variables.input.contextChannelName = currentChannel;
-        } if (pastChannel) {
-            Body.variables.input.recommendationContext.lastChannelName = pastChannel;
         }
 
         return new Promise(async (resolve, reject) => {
@@ -320,10 +325,124 @@ class Gql {
             }).then(async rawData => {
                 let data = await rawData.json();
 
-                if (data.errors) resolve({ errors: data.errors });
-                else resolve(data.data.personalSections);
+                if (data.errors) return resolve({ errors: data.errors });
+
+                let cleanData = [];
+                let sideNavData = data.data.sideNav.sections.edges;
+                sideNavData.forEach(edge => {
+                    let thisShelfContent = [];
+                    edge.node.content.edges.forEach(shelfEdge => {
+                        thisShelfContent.push(shelfEdge.node);
+                    });
+
+                    cleanData.push({
+                        id: edge.node.id,
+                        title: edge.node.title,
+                        items: thisShelfContent
+                    });
+                });
+
+                return resolve(cleanData);
             });
         })
+    }
+
+
+    async getSearchBarData(string) {
+        if (!string) return console.error(`"string" is required but returned null.`);
+
+        return new Promise(async (resolve, reject) => {
+            await fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "client-id": this.clientid
+                },
+                body: JSON.stringify({
+                    "operationName": "SearchTray_SearchSuggestions",
+                    "variables": {
+                        "requestID": "",
+                        "queryFragment": `${string}`,
+                        "withOfflineChannelContent": false,
+                        "includeIsDJ": true
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "2749d8bc89a2ddd37518e23742a4287becd3064c40465d8b57317cabd0efe096"
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+
+                if (data.errors) resolve({ errors: data.errors });
+                else {
+                    let cleanData = [];
+                    data.data.searchSuggestions.edges.forEach(elmnt => { cleanData.push(elmnt.node) });
+                    resolve(cleanData);
+                }
+            });
+        });
+    }
+
+    async getSearchData(string) {
+        if (!string) return console.error(`"string" is required but returned null.`);
+
+        return new Promise(async (resolve, reject) => {
+            await fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "client-id": this.clientid
+                },
+                body: JSON.stringify({
+                    "operationName": "SearchResultsPage_SearchResults",
+                    "variables": {
+                        "platform": "web",
+                        "query": `${string}`,
+                        "options": {
+                            "targets": null,
+                            "shouldSkipDiscoveryControl": false
+                        },
+                        "requestID": "",
+                        "includeIsDJ": true
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "f6c2575aee4418e8a616e03364d8bcdbf0b10a5c87b59f523569dacc963e8da5"
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+
+                if (data.errors) resolve({ errors: data.errors });
+                else {
+                    let cleanData = {};
+                    let targetObject = data.data.searchFor;
+                    for (const key in targetObject) {
+                        if (Object.prototype.hasOwnProperty.call(targetObject, key)) {
+                            const content = targetObject[key];
+                            // some of the results will return null
+                            if (content != "SearchFor") {
+                                if (content != null) {
+                                    // format edges
+                                    let tempEdges = [];
+                                    content.edges.forEach(elmnt => {
+                                        tempEdges.push(elmnt.item);
+                                    });
+    
+                                    // add formated data to cleandata
+                                    cleanData[key] = tempEdges;
+                                } else cleanData[key] = null;
+                            }
+                        }
+                    }
+
+                    resolve(cleanData);
+                };
+            });
+        });
     }
     
 

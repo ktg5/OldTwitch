@@ -923,7 +923,6 @@
                 "recommendationsContext": {
                     "platform": "web"
                 },
-                "requestID": "JIRA-VXP-2397",
                 "freeformTags": null,
                 "tags": [],
                 "broadcasterLanguages": [
@@ -1218,6 +1217,143 @@
             "persistedQuery": {
                 "version": 1,
                 "sha256Hash": "096d50357df5e938f4fa83fe2acf25cb0f4886149aa81ddb9754eae98c05f2dd"
+            }
+        }
+    },
+    {
+        "operationName": "SideNav",
+        "variables": {
+            "input": {
+                "sectionInputs": [
+                    "RECS_FOLLOWED_SECTION",
+                    "RECOMMENDED_COLLABS_SECTION",
+                    "RECOMMENDED_SECTION",
+                    "SIMILAR_SECTION"
+                ],
+                "recommendationContext": {
+                    "platform": "web",
+                    "clientApp": "twilight",
+                    "channelName": "taxi2g",
+                    "categorySlug": null,
+                    "lastChannelName": "taxi2g",
+                    "lastCategorySlug": null,
+                    "pageviewContent": null,
+                    "pageviewContentType": null,
+                    "pageviewLocation": null,
+                    "pageviewMedium": null,
+                    "previousPageviewContent": null,
+                    "previousPageviewContentType": null,
+                    "previousPageviewLocation": null,
+                    "previousPageviewMedium": null
+                },
+                "followSortOrder": "RECS",
+                "contextChannelName": "taxi2g"
+            },
+            "creatorAnniversariesFeature": false,
+            "withFreeformTags": false
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "b235e7c084bc768d827343cda0b95310535a0956d449e574885b00e176fe5f27"
+            }
+        }
+    },
+    {
+        "operationName": "SideNav",
+        "variables": {
+            "input": {
+                "sectionInputs": [
+                    "RECOMMENDED_SECTION"
+                ],
+                "recommendationContext": {
+                    "platform": "web",
+                    "clientApp": "twilight",
+                    "location": "home",
+                    "referrerDomain": "www.twitch.tv",
+                    "viewportHeight": 1213,
+                    "viewportWidth": 1957,
+                    "channelName": null,
+                    "categorySlug": null,
+                    "lastChannelName": null,
+                    "lastCategorySlug": null,
+                    "pageviewContent": null,
+                    "pageviewContentType": null,
+                    "pageviewLocation": "home",
+                    "pageviewMedium": null,
+                    "previousPageviewContent": null,
+                    "previousPageviewContentType": null,
+                    "previousPageviewLocation": null,
+                    "previousPageviewMedium": null
+                }
+            },
+            "creatorAnniversariesFeature": false,
+            "withFreeformTags": false
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "b235e7c084bc768d827343cda0b95310535a0956d449e574885b00e176fe5f27"
+            }
+        }
+    },
+    {
+        "operationName": "SearchTray_SearchSuggestions",
+        "variables": {
+            "requestID": "",
+            "queryFragment": "args",
+            "withOfflineChannelContent": false,
+            "includeIsDJ": true
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "2749d8bc89a2ddd37518e23742a4287becd3064c40465d8b57317cabd0efe096"
+            }
+        }
+    },
+    {
+        "operationName": "SearchResultsPage_SearchResults",
+        "variables": {
+            "platform": "web",
+            "query": "xdxdxd",
+            "options": {
+                "targets": null,
+                "shouldSkipDiscoveryControl": false
+            },
+            "requestID": "",
+            "includeIsDJ": true
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "f6c2575aee4418e8a616e03364d8bcdbf0b10a5c87b59f523569dacc963e8da5"
+            }
+        }
+    },
+    {
+        "operationName": "SearchResultsPage_SearchResults",
+        "variables": {
+            "platform": "web",
+            "query": "hello my name is deez xdxdxdxd",
+            "options": {
+                "targets": [
+                    {
+                        "index": "CHANNEL_WITH_TAG",
+                        "index": "CHANNEL",
+                        "index": "GAME",
+                        "index": "VOD"
+                    }
+                ],
+                "shouldSkipDiscoveryControl": false
+            },
+            "requestID": "244a7105-9f3b-4d12-a1d3-760041324d0b",
+            "includeIsDJ": true
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "f6c2575aee4418e8a616e03364d8bcdbf0b10a5c87b59f523569dacc963e8da5"
             }
         }
     }
