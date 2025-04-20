@@ -92,111 +92,6 @@ if (document.cookie.split('auth-token=')[1]) {
 } else {
     oauth = null
 }
-// Do stuff with gql
-if (oauth != null) {
-    let gqlAction = async () => {
-        userData = await gql.getCurrentUser(oauth);
-        console.log(`userData: `, userData);
-    
-        if (userData != null) {
-            // check that html is here
-            let loginButton = document.querySelector('[data-a-target="login-button"]');
-            let actionAfterHtmlInit = () => {
-                // set user info
-                // remove login & signup buttons
-                loginButton.parentElement.remove();
-                document.querySelector('[data-a-target="signup-button"]').parentElement.remove();
-
-                // name & pfp
-                let targetCard = document.createElement('div');
-                targetCard.classList.add("user-info", "tw-relative");
-                targetCard.insertAdjacentHTML('beforeend', `
-                    <button>
-                        <div class="tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
-                            <div class="channel-header__user-avatar channel-header__user-avatar--active tw-align-items-stretch tw-flex tw-flex-shrink-0 tw-mg-r-1">
-                                <div class="tw-relative">
-                                    <figure class="tw-avatar tw-avatar--size-30">
-                                        <div class="tw-overflow-hidden">
-                                            <img class="tw-image" src="${userData.profileImageURL}">
-                                        </div>
-                                    </figure>
-                                </div>
-                            </div>
-                            <div class="tw-align-items-center">
-                                <span>
-                                    <span>${userData.displayName}</span>
-                                </span>
-                            </div>
-                        </div>
-                    </button>
-
-                    <div class="tw-balloon tw-balloon--sm tw-balloon--down tw-balloon--right tw-block tw-absolute tw-hide" data-a-target="overflow-menu">
-                        <div class="tw-balloon__tail tw-overflow-hidden tw-absolute">
-                            <div class="tw-balloon__tail-symbol tw-border-t tw-border-r tw-border-b tw-border-l tw-border-radius-small tw-c-background  tw-absolute"></div>
-                        </div>
-                        <div class="tw-border-t tw-border-r tw-border-b tw-border-l tw-elevation-1 tw-border-radius-small tw-c-background">
-                            <div class="tw-pd-1">
-                                <a href="https://www.twitch.tv/${userData.displayName}" class="tw-interactable" data-a-target="channel-link">
-                                    <div class="tw-pd-x-1 tw-pd-y-05">Channel</div>
-                                </a>
-                                <a href="https://dashboard.twitch.tv/u/${userData.displayName}/home" class="tw-interactable" data-a-target="dashboard-link">
-                                    <div class="tw-pd-x-1 tw-pd-y-05">Creator Dashboard</div>
-                                </a>
-                                <a href="https://www.twitch.tv/subscriptions" class="tw-interactable" data-a-target="subscriptions-link">
-                                    <div class="tw-pd-x-1 tw-pd-y-05">Subscriptions</div>
-                                </a>
-                                <a href="https://www.twitch.tv/inventory" class="tw-interactable" data-a-target="inventory-link">
-                                    <div class="tw-pd-x-1 tw-pd-y-05">Drops & Inventory</div>
-                                </a>
-                                <a href="https://www.twitch.tv/oldtwitch" class="tw-interactable" data-a-target="oldtwitch-settings-link">
-                                    <div class="tw-pd-x-1 tw-pd-y-05">OldTwitch Configuration</div>
-                                </a>
-                                <a href="https://www.twitch.tv/settings" class="tw-interactable" data-a-target="settings-link">
-                                    <div class="tw-pd-x-1 tw-pd-y-05">Settings</div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                `);
-
-                document.querySelector(`[data-a-target="user-card"]`).appendChild(targetCard);
-            }
-            if (loginButton) {
-                actionAfterHtmlInit();
-            } else {
-                let tempInit = setInterval(() => {
-                    if (loginButton) {
-                        actionAfterHtmlInit();
-                        clearInterval(tempInit);
-                    }
-                }, 50);
-            }
-        }
-
-        // Set balloon toggles
-        document.querySelectorAll('.tw-balloon').forEach(balloon => {
-            let balloonToggler = balloon.parentElement.children[0];
-            document.addEventListener('click', (e) => {
-                if (
-                    (e.target === balloon || balloon.contains(e.target)) || 
-                    (e.target === balloonToggler || balloonToggler.contains(e.target))
-                ) {
-                    if (balloonToggler.getAttribute("data-a-target") != "nav-search-input") balloon.classList.remove('tw-hide');
-                } else balloon.classList.add('tw-hide');
-            });
-        });
-    }
-    if (gql) {
-        gqlAction();
-    } else {
-        let tempInit = setInterval(() => {
-            if (gql) {
-                gqlAction();
-                clearInterval(tempInit);
-            }
-        }, 50);
-    }
-}
 
 
 // Add navbar if found
@@ -212,6 +107,91 @@ if (navbar) {
             if (location.search.includes('?')) location.search += "&nooldttv";
             else location.search = "?nooldttv";
         });
+
+
+        let loginButton = document.querySelector('[data-a-target="login-button"]');
+        let signupButton = document.querySelector('[data-a-target="signup-button"]');
+        // Do stuff with gql
+        if (oauth != null) {
+            let gqlAction = async () => {
+                userData = await gql.getCurrentUser(oauth);
+                console.log(`userData: `, userData);
+            
+                if (userData != null) {
+                    // ### set user info
+                    // remove login & signup buttons
+                    loginButton.parentElement.remove();
+                    signupButton.parentElement.remove();
+
+                    // name & pfp
+                    let targetCard = document.createElement('div');
+                    targetCard.classList.add("user-info", "tw-relative");
+                    targetCard.insertAdjacentHTML('beforeend', `
+                        <button>
+                            <div class="tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
+                                <div class="channel-header__user-avatar channel-header__user-avatar--active tw-align-items-stretch tw-flex tw-flex-shrink-0 tw-mg-r-1">
+                                    <div class="tw-relative">
+                                        <figure class="tw-avatar tw-avatar--size-30">
+                                            <div class="tw-overflow-hidden">
+                                                <img class="tw-image" src="${userData.profileImageURL}">
+                                            </div>
+                                        </figure>
+                                    </div>
+                                </div>
+                                <div class="tw-align-items-center">
+                                    <span>
+                                        <span>${userData.displayName}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </button>
+
+                        <div class="tw-balloon tw-balloon--sm tw-balloon--down tw-balloon--right tw-block tw-absolute tw-hide" data-a-target="overflow-menu">
+                            <div class="tw-balloon__tail tw-overflow-hidden tw-absolute">
+                                <div class="tw-balloon__tail-symbol tw-border-t tw-border-r tw-border-b tw-border-l tw-border-radius-small tw-c-background  tw-absolute"></div>
+                            </div>
+                            <div class="tw-border-t tw-border-r tw-border-b tw-border-l tw-elevation-1 tw-border-radius-small tw-c-background">
+                                <div class="tw-pd-1">
+                                    <a href="https://www.twitch.tv/${userData.displayName}" class="tw-interactable" data-a-target="channel-link">
+                                        <div class="tw-pd-x-1 tw-pd-y-05">Channel</div>
+                                    </a>
+                                    <a href="https://dashboard.twitch.tv/u/${userData.displayName}/home" class="tw-interactable" data-a-target="dashboard-link">
+                                        <div class="tw-pd-x-1 tw-pd-y-05">Creator Dashboard</div>
+                                    </a>
+                                    <a href="https://www.twitch.tv/subscriptions" class="tw-interactable" data-a-target="subscriptions-link">
+                                        <div class="tw-pd-x-1 tw-pd-y-05">Subscriptions</div>
+                                    </a>
+                                    <a href="https://www.twitch.tv/inventory" class="tw-interactable" data-a-target="inventory-link">
+                                        <div class="tw-pd-x-1 tw-pd-y-05">Drops & Inventory</div>
+                                    </a>
+                                    <a href="https://www.twitch.tv/oldtwitch" class="tw-interactable" data-a-target="oldtwitch-settings-link">
+                                        <div class="tw-pd-x-1 tw-pd-y-05">OldTwitch Configuration</div>
+                                    </a>
+                                    <a href="https://www.twitch.tv/settings" class="tw-interactable" data-a-target="settings-link">
+                                        <div class="tw-pd-x-1 tw-pd-y-05">Settings</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+
+                    document.querySelector(`[data-a-target="user-card"]`).appendChild(targetCard);
+                }
+            }
+            if (gql) {
+                gqlAction();
+            } else {
+                let tempInit = setInterval(() => {
+                    if (gql) {
+                        gqlAction();
+                        clearInterval(tempInit);
+                    }
+                }, 50);
+            }
+        } else {
+            loginButton.addEventListener('click', () => { accountAction({ type: "login" }) });
+            signupButton.addEventListener('click', () => { accountAction({ type: "signup" }) });
+        }
     });
 }
 // Add sidebar if found
@@ -372,8 +352,16 @@ function showError(args) {
 }
 
 
+// Account popup
+let ifDoc, ifWindow, ifInterval;
+let ifLoaded = false;
+let closeAccountClickListener = (e) => {
+    if (document.querySelector('.oldttv-account-popup')) if (!e.target.closest(`.oldttv-account-popup iframe`)) closeAccountAction();
+};
+let closeAccountKeyListener = (e) => {
+    if (document.querySelector('.oldttv-account-popup')) if (e.key == 'Escape') closeAccountAction();
+};
 // Show account popup
-let accountIFrefresh = false;
 function accountAction(args) {
     if (!args || !args.type) return console.error("Invalid");
 
@@ -384,7 +372,8 @@ function accountAction(args) {
         popupWindow.classList.add('oldttv-account-popup');
         popupWindow.innerHTML = `
             <div class="oldttv-account-popup__content">
-                <iframe data-a-target="account-popup-if" src=""></iframe>
+                <h5 class="tw-md-mg-b-1">Click anywhere or press the "Escape" key to close this window.</h5>
+                <iframe data-a-target="account-popup-if" src="" width="520" height="300" style="background: black"></iframe>
             </div>
         `;
         document.body.appendChild(popupWindow);
@@ -392,31 +381,85 @@ function accountAction(args) {
     let popupWindowIF = popupWindow.querySelector('iframe');
 
     // iframe listener
-    accountIFrefresh = false;
     popupWindowIF.addEventListener('load', (e) => {
-        popupWindowIF.contentDocument.setInterval(() => {
-            
-        }, interval);
-        if (accountIFrefresh == false) accountIFrefresh = true
-        else {
-            console.warn('accountIF refreshed! data: ', e);
+        // If first init since creation
+        if (ifLoaded == false) {
+            ifLoaded = true;
+            // Swap form button stuff
+            function initSwapButtons() {
+                // Find the form div first to figure out what form we're in
+                let formDiv;
+                let tempInt = setInterval(() => {
+                    formDiv = ifDoc.querySelector('form');
+                    if (formDiv) {
+                        continueFunc();
+                        clearInterval(tempInt);
+                    }
+                }, 10);
+
+                // Do logic depending on what form
+                function continueFunc() {
+                    if (formDiv.getAttribute('name') == "login-submit-form") {
+                        ifDoc.querySelector('.kBhFFG').addEventListener('click', () => { initSwapButtons() });
+                    } else if (formDiv.getAttribute('data-test-selector') == "signup-form") {
+                        ifDoc.querySelector('.jirWOp').addEventListener('click', () => { initSwapButtons() });
+                    }
+                }
+            }
+
+            // Vars
+            ifDoc = popupWindowIF.contentDocument;
+            ifWindow = popupWindowIF.contentWindow;
+
+            // Init
+            initSwapButtons();
+            ifInterval = setInterval(() => {
+                let targetHeightDiv = ifDoc.querySelector('.simplebar-content .Layout-sc-1xcs6mc-0');
+                if (targetHeightDiv) {
+                    popupWindowIF.classList.remove('tw-hide');
+                    popupWindowIF.height = targetHeightDiv.clientHeight;
+                }
+            }, 10);
+
+            // Close listener
+            setTimeout(() => {
+                document.addEventListener('click', closeAccountClickListener);
+                ifWindow.addEventListener('keydown', closeAccountKeyListener);
+            }, 50);
+        // Else, close & reload the whole page
+        } else {
+            closeAccountAction();
+            document.location.reload();
         }
     });
 
     // Add content depending on the "type" value
     switch (args.type) {
-        case "signin":
+        case "signup":
             popupWindowIF.src = "/signup";
-            popupWindowIF.width = 500;
-            popupWindowIF.height = 635;
         break;
     
         case "login":
             popupWindowIF.src = "/login";
-            popupWindowIF.width = 500;
-            popupWindowIF.height = 360;
         break;
     }
+}
+
+function closeAccountAction() {
+    // Clear iframe interval
+    clearInterval(ifInterval);
+
+    // Clear vars
+    ifDoc = undefined;
+    lastIfURL = undefined;
+    ifInterval = undefined;
+    ifLoaded = false;
+
+    // Remove popup
+    document.querySelector('.oldttv-account-popup').remove();
+
+    // Remove event listener(s)
+    document.removeEventListener('click', closeAccountClickListener);
 }
 
 
@@ -570,6 +613,20 @@ setTimeout(async () => {
             }
         });
     }
+
+
+    // Set balloon toggles
+    document.querySelectorAll('.tw-balloon').forEach(balloon => {
+        let balloonToggler = balloon.parentElement.children[0];
+        document.addEventListener('click', (e) => {
+            if (
+                (e.target === balloon || balloon.contains(e.target)) || 
+                (e.target === balloonToggler || balloonToggler.contains(e.target))
+            ) {
+                if (balloonToggler.getAttribute("data-a-target") != "nav-search-input") balloon.classList.remove('tw-hide');
+            } else balloon.classList.add('tw-hide');
+        });
+    });
 
 
     // If index page, do index page things

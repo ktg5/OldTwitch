@@ -124,12 +124,12 @@ setTimeout(async () => {
         });
     
         // confirm search button & enter action
-        searchBarInput.addEventListener('keydown', async (e) => {
+        searchBarInput.addEventListener('keydown', (e) => {
             if (e.key == 'Enter') {
                 if (searchBarInput.value != "") location.href = `/search?term=${searchBarInput.value}`;
             }
         });
-        searchBar.querySelector(`.tw-input__icon-group`).addEventListener('click', async (e) => {
+        searchBar.querySelector(`.tw-input__icon-group`).addEventListener('click', (e) => {
             if (searchBarInput.value != "") location.href = `/search?term=${searchBarInput.value}`;
         });
     

@@ -185,7 +185,7 @@ async function setIframeVideo (args) {
 
 
         // check if channel name is the same as the current user
-        if (channelData.displayName != userData.displayName) document.querySelector(`[data-a-target="follow-button"]`).parentElement.classList.remove("tw-hide");
+        if (userData) if (channelData.displayName != userData.displayName) document.querySelector(`[data-a-target="follow-button"]`).parentElement.classList.remove("tw-hide");
         let subButton = document.querySelector(`[data-a-target="subscribe-button"]`).parentElement;
         if (channelData.roles.isAffiliate || channelData.roles.isPartner) {
             subButton.classList.remove("tw-hide");
@@ -335,6 +335,20 @@ async function setIframeVideo (args) {
 
             // set chat
             chatIframe.src = `https://www.twitch.tv/embed/${args.channel}/chat?parent=twitch.tv`;
+            let chatIframeDoc, chatIframeWindow;
+            chatOnLoad = (e) => {
+                chatIframeDoc = chatIframe.contentDocument;
+                chatIframeWindow = chatIframe.contentWindow;
+
+                // Check for dark mode
+                let HTMLDiv = document.querySelector('html');
+                if (HTMLDiv.classList.contains('tw-theme--dark')) {
+                    let IfHTMLDiv = chatIframeDoc.querySelector('html');
+                    IfHTMLDiv.classList.remove('tw-root--theme-light');
+                    IfHTMLDiv.classList.add('tw-root--theme-dark');
+                }
+            };
+            chatIframe.addEventListener('load', chatOnLoad);
         break;
     
         case "video":
