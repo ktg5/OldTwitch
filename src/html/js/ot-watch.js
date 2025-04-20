@@ -237,6 +237,7 @@ async function setIframeVideo (args) {
 
             gqlAction = async () => {
                 channelData = await gql.getChannel(args.channel);
+                if (!channelData) showError({ id: 404 })
                 videosData = await gql.getChannelVods(args.channel);
                 console.log("channelData: ", channelData);
 
@@ -256,20 +257,20 @@ async function setIframeVideo (args) {
                             let panelDiv = document.createElement("div");
                             panelDiv.className = "default-panel"
                             panelDiv.setAttribute("data-a-target", `panel-${panelsContainer.childElementCount}`);
-                            if (panel.type == "EXTENSION") {
-                                panelDiv.innerHTML = `<kbd>[ OldTwitch ]: An Twitch Extension was detected here, it will not be added because I don't know how to add them yet. This might be temporary, so just keep your hopes up in future updates.</kbd>`
-                            } else {
+                            if (panel.type !== "EXTENSION") {
                                 panelDiv.innerHTML = `
-                                ${panel.title ? `<h3 data-test-selector="title_panel" class="tw-title">${panel.title}</h3>` : ""}
-                                <a data-test-selector="link_url_panel" class="tw-link" rel="noopener noreferrer" target="_blank"${panel.linkURL ? ` href="${panel.linkURL}"` : ""}><img data-test-selector="image_panel"${panel.imageURL ? ` src="${panel.imageURL}"` : ""}></a>
+                                ${panel.linkURL ? `<a data-test-selector="link_url_panel" class="tw-link" rel="noopener noreferrer" target="_blank" href="${panel.linkURL}">` : ""}
+                                    ${panel.title ? `<h3 data-test-selector="title_panel" class="tw-title">${panel.title}</h3>`: ""}
+                                    ${panel.imageURL ? `<img data-test-selector="image_panel" src="${panel.imageURL}">` : ""}
+                                ${panel.linkURL ? "</a>" : ""}
                                 ${panel.description ? `
-                                    <div data-test-selector="description_panel">
-                                        <div class="tw-typeset">
-                                            <div class="panel-description">
-                                                <p>${panel.description}</p>
-                                            </div>
+                                <div data-test-selector="description_panel">
+                                    <div class="tw-typeset">
+                                        <div class="panel-description">
+                                            <p>${panel.description}</p>
                                         </div>
                                     </div>
+                                </div>
                                 ` : ""}
                                 `;
                             }
@@ -367,6 +368,7 @@ async function setIframeVideo (args) {
 
             gqlAction = async () => {
                 vodData = await gql.getVodInfo(args.id);
+                if (!vodData) return showError({ id: 404 });
                 console.log("vodData: ", vodData);
                 channelData = await gql.getChannel(vodData.owner.login);
                 videosData = await gql.getChannelVods(vodData.owner.login);

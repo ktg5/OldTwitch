@@ -532,6 +532,8 @@ class Gql {
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
+                    if (!data[0].data.user) return resolve(null);
+
                     let isLive = data[0].data.user.stream != null;
 
                     let gameSlug;
@@ -619,6 +621,7 @@ class Gql {
                 if (data.errors) resolve({ errors: data.errors });
 
                 let cleanData = [];
+                if (!data.data.user) resolve(null);
                 for (let i = 0; i < data.data.user.videos.edges.length; i++) {
                     const element = data.data.user.videos.edges[i];
                     cleanData[i] = element.node;
@@ -1314,8 +1317,7 @@ class Gql {
                 method: "POST"
             }).then(async rawData => {
                 let data = await rawData.json();
-
-                await fetch("https://gql.twitch.tv/gql", {
+                if (data.data.video) await fetch("https://gql.twitch.tv/gql", {
                     headers: {
                         "client-id": this.clientid,
                     },
@@ -1339,6 +1341,8 @@ class Gql {
                     if (dataT.errors) resolve({ errors: dataT.errors });
                     else resolve(dataT.data.video);
                 });
+
+                else resolve(null);
             });
         });
     }

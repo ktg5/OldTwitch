@@ -22,7 +22,8 @@
                 "*://www.twitch.tv/*?*nooldttv*", "*://www.twitch.tv/p/*", "*://www.twitch.tv/subs/*",
                 "*://www.twitch.tv/embed/*", "*://www.twitch.tv/popout/*", "*://www.twitch.tv/drops/*",
                 "*://www.twitch.tv/inventory", "*://www.twitch.tv/embed-error/*", "*://www.twitch.tv/jobs/*",
-                "*://www.twitch.tv/settings/*", "*://www.twitch.tv/privacy", "*://www.twitch.tv/subscriptions"
+                "*://www.twitch.tv/settings/*", "*://www.twitch.tv/privacy", "*://www.twitch.tv/subscriptions",
+                "*://www.twitch.tv/signup", "*://www.twitch.tv/login"
             ],
             "js": ["js/ot-main.js"],
             "all_frames": true,
@@ -50,6 +51,6 @@
 
     "web_accessible_resources": [{
         "matches": ["*://*.twitch.tv/*"],
-        "resources": ["html/*", "js/*", "css/*", "lib/*", "ver.txt", "default_config.json"]
+        "resources": ["html/*", "html/img/*", "js/*", "css/*", "lib/*", "ver.txt", "default_config.json"]
     }]
 }

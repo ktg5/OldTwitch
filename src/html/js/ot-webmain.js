@@ -340,9 +340,101 @@ if (sidebar) {
 }
 
 
+// Show errors & stuff
+function showError(args) {
+    if (!args || !args.id) return console.error("Invalid");
+
+    let mainDiv = document.querySelector('.twilight-main');
+
+    if (mainDiv && args.id) {
+        // css insert
+        let style = document.createElement("style");
+        style.innerHTML = `
+            /* error css */
+
+            [data-a-target="right-column-chat-bar"] {
+                display: none !important;
+            }
+        `
+        document.head.appendChild(style);
+
+        // html insert
+        switch (args.id) {
+            case 404:
+                mainDiv.innerHTML = `
+                    <div class="tw-pd-3">
+                        <h2>Not found.<h2>
+                    </div>
+                `;
+            break;
+        }
+    }
+}
+
+
+// Show account popup
+let accountIFrefresh = false;
+function accountAction(args) {
+    if (!args || !args.type) return console.error("Invalid");
+
+    // Find or make the popup window
+    let popupWindow = document.querySelector('.oldttv-account-popup');
+    if (!popupWindow) {
+        popupWindow = document.createElement('div');
+        popupWindow.classList.add('oldttv-account-popup');
+        popupWindow.innerHTML = `
+            <div class="oldttv-account-popup__content">
+                <iframe data-a-target="account-popup-if" src=""></iframe>
+            </div>
+        `;
+        document.body.appendChild(popupWindow);
+    }
+    let popupWindowIF = popupWindow.querySelector('iframe');
+
+    // iframe listener
+    accountIFrefresh = false;
+    popupWindowIF.addEventListener('load', (e) => {
+        popupWindowIF.contentDocument.setInterval(() => {
+            
+        }, interval);
+        if (accountIFrefresh == false) accountIFrefresh = true
+        else {
+            console.warn('accountIF refreshed! data: ', e);
+        }
+    });
+
+    // Add content depending on the "type" value
+    switch (args.type) {
+        case "signin":
+            popupWindowIF.src = "/signup";
+            popupWindowIF.width = 500;
+            popupWindowIF.height = 635;
+        break;
+    
+        case "login":
+            popupWindowIF.src = "/login";
+            popupWindowIF.width = 500;
+            popupWindowIF.height = 360;
+        break;
+    }
+}
+
+
 // On load
 var currentVersion;
 setTimeout(async () => {
+
+    if (oauth) {
+        let style = document.createElement("style");
+        style.innerHTML = `
+            /* error css */
+
+            [data-a-target="signup-note"] {
+                display: none !important;
+            }
+        `
+        document.head.appendChild(style);
+    }
 
     currentVersion = document.body.getAttribute(`oldttv-ver`);
     console.log("currentVersion: ", currentVersion);
