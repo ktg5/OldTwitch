@@ -1356,5 +1356,31 @@
                 "sha256Hash": "f6c2575aee4418e8a616e03364d8bcdbf0b10a5c87b59f523569dacc963e8da5"
             }
         }
+    },
+    {
+        "operationName": "OnsiteNotifications_View",
+        "variables": {},
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "db011164c7980ce0b90b04d8ecab0c27cfc8505170e2d6b1a5a51060a8e658df"
+            }
+        }
+    },
+    {
+        "operationName": "OnsiteNotifications_ListNotifications",
+        "variables": {
+            "shouldLoadLastBroadcast": false,
+            "limit": 10,
+            "cursor": "",
+            "language": "en",
+            "displayType": "VIEWER"
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "65bdc7f01ed3082f4382a154d190e23ad5459771c61318265cfdb59f63aad492"
+            }
+        }
     }
 ]

@@ -15,7 +15,11 @@ let gqlAction = async () => {
         // unsure if this even exists anymore but it's worth a try
         // Set title
         document.querySelector(`.directory-header__title h2`).innerHTML = categoryData.displayName;
-        document.querySelector(`.directory-header__title span`).classList.add("tw-hide");
+        document.querySelector(`.directory-header__title .tw-placeholder-wrapper`).classList.add("tw-hide");
+        // Set subtitle
+        document.querySelector(`.directory-header__title`).innerHTML += `
+            <span>${categoryData.followersCount} followers • ${categoryData.viewersCount} viewers</span>
+        `;
         // Set box art
         document.querySelector(`.directory-header__avatar`).innerHTML = `<img class="tw-image" src="${categoryData.avatarURL}">`;
 

@@ -24,6 +24,7 @@ class Gql {
     async getClientInteg(oauth) {
         if (this.oauth != undefined) oauth = this.oauth;
         if (!oauth) return console.error(`"oauth" is required but returned null.`);
+        if (oauth && !this.oauth) this.oauth = oauth;
 
         return new Promise(async (resolve, reject) => {
             await fetch("https://gql.twitch.tv/integrity", {
@@ -59,6 +60,7 @@ class Gql {
     async getCurrentUser(oauth) {
         if (this.oauth != undefined) oauth = this.oauth;
         if (!oauth) return console.error(`"oauth" is required but returned null.`);
+        if (oauth && !this.oauth) this.oauth = oauth;
 
         return new Promise(async (resolve, reject) => {
             await fetch("https://gql.twitch.tv/gql", {
@@ -83,6 +85,69 @@ class Gql {
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.currentUser);
+            });
+        });
+    }
+
+    /**
+     * Fetches the current user's notifications.
+     *
+     * @param {string} oauth - The OAuth token used for authentication. If not provided, 
+     *                         the instance's OAuth token will be used.
+     * @returns {Promise<Array>} A promise that resolves to the current user's notification data.
+     *                            Logs an error if the OAuth token is invalid.
+     */
+    async getUserNotifications(oauth) {
+        if (this.oauth != undefined) oauth = this.oauth;
+        if (!oauth) return console.error(`"oauth" is required but returned null.`);
+        if (oauth && !this.oauth) this.oauth = oauth;
+
+        return new Promise(async (resolve, reject) => {
+            await fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "authorization": `OAuth ${oauth}`,
+                    "client-id": this.clientid,
+                    "x-device-id": "0",
+                },
+                body: JSON.stringify([
+                    {
+                        "operationName": "OnsiteNotifications_View",
+                        "variables": {},
+                        "extensions": {
+                            "persistedQuery": {
+                                "version": 1,
+                                "sha256Hash": "db011164c7980ce0b90b04d8ecab0c27cfc8505170e2d6b1a5a51060a8e658df"
+                            }
+                        }
+                    },
+                    {
+                        "operationName": "OnsiteNotifications_ListNotifications",
+                        "variables": {
+                            "shouldLoadLastBroadcast": false,
+                            "limit": 10,
+                            "cursor": "",
+                            "language": "en",
+                            "displayType": "VIEWER"
+                        },
+                        "extensions": {
+                            "persistedQuery": {
+                                "version": 1,
+                                "sha256Hash": "65bdc7f01ed3082f4382a154d190e23ad5459771c61318265cfdb59f63aad492"
+                            }
+                        }
+                    }
+                ]),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+
+                if (data[1].errors) resolve({ errors: data[1].errors });
+                else {
+                    let cleanData = [];
+
+                    data[1].data.currentUser.notifications.edges.forEach(edge => { cleanData.push(edge.node) });
+                    resolve(cleanData);
+                }
             });
         });
     }
@@ -206,7 +271,10 @@ class Gql {
             "x-device-id": "0"
         }
         if (this.oauth != undefined) oauth = this.oauth;
-        if (oauth) Headers.authorization = `OAuth ${oauth}`;
+        if (oauth) {
+            Headers.authorization = `OAuth ${oauth}`;
+            if (!this.oauth) this.oauth = oauth;
+        }
 
         if (!limit) {
             limit = 30;
@@ -275,7 +343,10 @@ class Gql {
             "x-device-id": "0"
         }
         if (this.oauth != undefined) oauth = this.oauth;
-        if (oauth) Headers.authorization = `OAuth ${oauth}`;
+        if (oauth) {
+            Headers.authorization = `OAuth ${oauth}`;
+            if (!this.oauth) this.oauth = oauth;
+        }
 
         let Body = {
             "operationName": "SideNav",
@@ -348,6 +419,12 @@ class Gql {
     }
 
 
+    /**
+     * Fetches search **bar** results with the provided "string" value.
+     *
+     * @param {string} string - The query you'd like to search.
+     * @returns {Promise<Array>} A promise that resolves search **bar** data with the provided "string" value.
+     */
     async getSearchBarData(string) {
         if (!string) return console.error(`"string" is required but returned null.`);
 
@@ -385,6 +462,12 @@ class Gql {
         });
     }
 
+    /**
+     * Fetches search results with the provided "string" value.
+     *
+     * @param {string} string - The query you'd like to search.
+     * @returns {Promise<Array>} A promise that resolves search data with the provided "string" value.
+     */
     async getSearchData(string) {
         if (!string) return console.error(`"string" is required but returned null.`);
 
@@ -688,6 +771,58 @@ class Gql {
     }
 
     /**
+     * @description Gets the list of emotes from a given channel.
+     * @param {string} name - The name of the channel.
+     * @returns {Promise<Array<Object>>} A promise that resolves with an array of clips.
+     */
+    async getChannelEmotes(name) {
+        if (!name) return console.error(`"name" is required but returned null.`);
+
+        return new Promise(async (resolve, reject) => {
+            await fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "client-id": this.clientid,
+                },
+                body: JSON.stringify({
+                    "operationName": "SupportPanelCheckoutService",
+                    "variables": {
+                        "giftRecipientLogin": "",
+                        "withStandardGifting": false,
+                        "login": name
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "36abd17139c86e4387828f67f84b85a1a73bbe15eab8b15d0612c204297d01e5"
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                const data = await rawData.json();
+
+                if (data.errors) resolve({ errors: data.errors });
+                const subList = data.data.user.subscriptionProducts;
+                if (subList && subList.length > 0) {
+                    let cleanData = [];
+                    subList.forEach(tier => {
+                        // https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_42de00acd19a42ce8489a5d09371b90c/default/light/1.0
+                        tier.emotes.forEach(emote => { cleanData[cleanData.length] = {
+                            id: emote.id,
+                            setid: emote.setID,
+                            name: emote.token,
+                            imageURL: `https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/light/4.0`,
+                            assetType: emote.assetType,
+                            __typename: emote.__typename
+                        }; });
+                    });
+                    resolve(cleanData);
+                } else resolve(null);
+            });
+        });
+    }
+
+    /**
      * @description Gets the metadata of a given stream.
      * @param {string} name - The name of the channel.
      * @returns {Promise<Object|null>} A promise that resolves with the stream metadata if the stream is live, otherwise resolves to `null`.
@@ -772,6 +907,12 @@ class Gql {
         });
     }
 
+    /**
+     * Checks to see if the streamer name provided is live or not.
+     *
+     * @param {string} name - The streamer name.
+     * @returns {Promise<boolean>} A promise that resolves a boolean. (True... or False...)
+     */
     async getStreamStatus(name) {
         if (!name) return console.error(`"name" is required but returned null.`);
 
@@ -815,6 +956,7 @@ class Gql {
     async followChannelId(oauth, id, disableNotifs) {
         if (this.oauth != undefined) oauth = this.oauth;
         if (!oauth) return console.error(`"oauth" is required but returned null.`);
+        if (oauth && !this.oauth) this.oauth = oauth;
         if (!id) return console.error(`"id" is required but returned null.`);
         if (disableNotifs && typeof disableNotifs !== 'boolean') return console.error(`"disableNotifs" must be a boolean.`);
         else if (!disableNotifs) console.warn(`"disableNotifs" arg not set, going with false.`);
@@ -870,6 +1012,7 @@ class Gql {
     async unfollowChannelId(oauth, id) {
         if (this.oauth != undefined) oauth = this.oauth;
         if (!oauth) return console.error(`"oauth" is required but returned null.`);
+        if (oauth && !this.oauth) this.oauth = oauth;
         if (!id) return console.error(`"id" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {

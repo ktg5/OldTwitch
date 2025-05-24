@@ -13,6 +13,20 @@ setTimeout(() => {
         case "clips.twitch.tv":
             // Add player CSS to head
             document.head.insertAdjacentHTML('afterbegin', `<link id="oldtwitch-css" class="oldtwitch-player" rel="stylesheet" type="text/css" href="${runtime.getURL('css/player.css')}">`);
+
+            // if in a iframe
+            if (window.self !== window.top) {
+                let viewTwitchButton = document.querySelector(`.ScAttachedTooltipWrapper-sc-1ems1ts-0`);
+                const videoInt = setInterval(() => {
+                    if (viewTwitchButton) {
+                        // start
+                        viewTwitchButton.remove();
+
+                        // end
+                        clearInterval(videoInt);
+                    } else viewTwitchButton = document.querySelector(`.ScAttachedTooltipWrapper-sc-1ems1ts-0`);
+                }, 100);
+            }
         break;
 
         case 'www.twitch.tv':

@@ -1,10 +1,7 @@
-.tw-root--theme-dark .bzuOqI {
-    color: #b8b5c0 !important;
+:root {
+    --color-text-base: #323133 !important;
 }
 
-.tw-root--theme-dark .stream-chat, .tw-root--theme-dark .jWHzQH {
-    background: #0e0c13 !important;
-}
 
 .Layout-sc-1xcs6mc-0 .stream-chat-header {
     justify-content: left !important;
@@ -12,39 +9,21 @@
 }
 
 .tw-root--theme-dark .stream-chat-header {
-    background: #0e0c13 !important;
-    border-bottom: 1px solid #2c2541!important;
+    border-bottom: 1px solid var(--color-background-alt) !important;
 }
 
 .tw-root--theme-dark .Layout-sc-1xcs6mc-0.pMQwv {
-    border-bottom: 1px solid #2c2541!important;
+    border-bottom: 1px solid var(--color-background-alt) !important;
 }
 
 .stream-chat-header [data-test-selector="chat-room-header-label"] {
     text-transform: none !important;
 }
 
-.tw-root--theme-dark [data-test-selector="chat-viewer-list"] {
-    color: #dad8de !important;
+.jxaBAK, .community-highlight {
+    box-shadow: none !important;
 }
 
-
-html.tw-root--theme-dark .chat-room {
-    background-color: #0e0c13 !important;
-    color: #dad8de !important;
-}
-
-.tw-root--theme-dark .fhQiFC, .tw-root--theme-dark .ffeswd {
-    color: #dad8de !important;
-}
-
-.tw-root--theme-dark .tw-c-text-base {
-    color: #dad8de !important;
-}
-
-.tw-root--theme-dark .tw-c-text-alt-2, .tw-root--theme-dark .lcKAey {
-    color: #b8b5c0 !important;
-}
 
 .chat-wysiwyg-input__box {
     border: 1px solid #dad8de;
@@ -70,11 +49,18 @@ html.tw-root--theme-dark .chat-room {
     box-shadow: none !important;
 }
 
-.tw-root--theme-dark .chat-wysiwyg-input__box {
-    border: 1px solid #392e5c;
-    background: #0e0c13;
-    color: #faf9fa;
+.chat-wysiwyg-input__box {
+    border: 1px solid var(--color-border-input);
+    background-color: var(--color-background-body) !important;
     border-radius: 0 !important;
+}
+
+.chat-wysiwyg-input__box .chat-wysiwyg-input__placeholder {
+    color: var(--color-text-input) !important;
+}
+
+.tw-root--theme-dark .chat-wysiwyg-input__box:hover {
+    box-shadow: 0 0 0 var(--input-border-width-default) #392e5c !important;
 }
 
 .tw-root--theme-light .chat-wysiwyg-input__box {
@@ -117,16 +103,17 @@ html.tw-root--theme-dark .chat-room {
     color: #6441a4 !important;
 }
 
-.tw-root--theme-dark .kIbAir, .tw-root--theme-dark .gjSLzh,
-.tw-root--theme-dark .jIBntd, .tw-root--theme-dark .cFdOrq
+.kIbAir,
+.gjSLzh,
+.jIBntd,
+.cFdOrq
 {
-    color: #dad8de !important;
+    color: var(--color-text-base) !important;
 }
 
 .ScCoreButton-sc-ocjdkq-0,.tw-root--theme-dark .ScCoreButton-sc-ocjdkq-0,.tw-theme--light .ScCoreButton-sc-ocjdkq-0 {
     border: 1px solid transparent;
     background: #6441a4;
-    color: #fff
 }
 
 .ScCoreButton-sc-ocjdkq-0:hover {

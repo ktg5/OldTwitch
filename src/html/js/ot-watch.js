@@ -346,6 +346,27 @@ async function setIframeVideo (args) {
                     let IfHTMLDiv = chatIframeDoc.querySelector('html');
                     IfHTMLDiv.classList.remove('tw-root--theme-light');
                     IfHTMLDiv.classList.add('tw-root--theme-dark');
+
+                    let customRoot = chatIframeDoc.createElement('style');
+                    customRoot.innerHTML = `
+                    :root {
+                        --color-background-body: #0e0c13 !important;
+                        --color-background-base: #0e0c13 !important;
+                        --color-background-alt:  #2c2541 !important;
+                        --color-background-alt-2: var(--color-background-alt) !important;
+                        --color-text-base: #ebe9ee !important;
+                        --color-text-label: #ebe9ee !important;
+                        --color-text-alt: #b8b5c0 !important;
+                        --color-text-alt-2: #b8b5c0 !important;
+                        --color-text-link: #a070ea !important;
+                        --color-border-input: #392e5c !important;
+                        --color-border-input-hover: #635199 !important;
+                        --color-background-input-checkbox-checked-background: black !important;
+                        --color-border-input-checkbox: rgb(216 216 227 / 95%) !important;
+                        --color-border-input-checkbox-hover: var(--color-border-input-checkbox-checked) !important;
+                    }
+                    `;
+                    chatIframeDoc.head.appendChild(customRoot);
                 }
             };
             chatIframe.addEventListener('load', chatOnLoad);
