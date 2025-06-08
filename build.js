@@ -130,6 +130,13 @@ copyDir('./src', firefoxDir).then(async () => {
     firefoxManifest.web_accessible_resources = resources,
     delete firefoxManifest.action; // Manifest v2 moment
     delete firefoxManifest.background.service_worker; // This is only for Chrome, Firefox will freak out if this isn't deleted lol.
+    // Add ID for addin' the extension to the browser lololol
+    firefoxManifest.applications = {
+        "gecko": {
+            "id": "imgaming@home.lol"
+        }
+    };
+
     // Write the manifest file for Firefox
     fs.writeFileSync(`${firefoxDir}/manifest.json`, JSON.stringify(firefoxManifest, null, 2));
 

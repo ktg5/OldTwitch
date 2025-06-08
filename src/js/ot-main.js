@@ -37,20 +37,27 @@ const extensionLocation = runtime.getURL('').slice(0, -1);
 var userConfig;
 
 // Default config
-var def_ot_config;
+async function getDefaults() {
+    return new Promise(async (resolve, reject) => {
+        await fetch(runtime.getURL('default_config.json')).then(async rawData => {
+            let data = await rawData.json();
+
+            resolve(data);
+        });
+    });
+}
 
 // Get the user config
 storage.get(['OTConfig'], async function(result) {
     if (result == undefined || Object.keys(result).length == 0) {
-        await storage.set({OTConfig: def_ot_config});
+        await storage.set({OTConfig: await getDefaults()});
         userConfig = await storage.get(['OTConfig']);
         console.log(`%cOLDTTV USER DATA (reset to default):`, styles3, userConfig);
         window.location.reload();
-    } else {
-        console.log('hiii')
-        userConfig = result.OTConfig;
-        console.log(`%cOLDTTV USER DATA:`, styles3, userConfig);
-    }
+    } else userConfig = result.OTConfig;
+
+    // Initial injection when the page first loads
+    handlePageChange();
 });
 
 
@@ -195,9 +202,7 @@ async function handlePageChange () {
 
 
         // Check config
+        console.log(userConfig);
         if (userConfig) if (userConfig.darkMode == true || window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) html.classList.add(`tw-theme--dark`);
     });
 }
-
-// Initial injection when the page first loads
-handlePageChange();
