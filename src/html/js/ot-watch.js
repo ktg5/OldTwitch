@@ -206,6 +206,8 @@ async function setIframeVideo (args) {
         document.querySelector(`[data-share-text="embed-chat"] .tw-input`).value = `<iframe src="https://www.twitch.tv/embed/${channelData.login}/chat?parent=localhost" frameborder="0" scrolling="no" height="315" width="100%"></iframe>`;
     }
 
+    const totalViewsDiv = document.querySelector('[data-a-target="total-views-count"]');
+
     switch (args.type) {
         case "stream":
             if (!args.channel) return "Invalid args";
@@ -301,7 +303,6 @@ async function setIframeVideo (args) {
                     }
 
                     // ints
-                    // document.querySelector(`[data-a-target="total-views-count"]`).parentElement.parentElement.classList.remove("tw-hide");
                     document.querySelector(`.channel-header__item[data-a-target="followers-channel-header-item"] .channel-header__item-count span`).innerHTML = channelData.followerCount;
                     if (channelData.live) {
                         document.querySelector(`.channel-info-bar__action-container .tw-flex`).classList.remove("tw-hide");
@@ -376,6 +377,8 @@ async function setIframeVideo (args) {
             if (!args.id) return "Invalid args";
 
             // Enable divs
+            totalViewsDiv.classList.remove('tw-hide');
+            totalViewsDiv.parentElement.classList.remove('tw-hide');
             document.querySelector(`.channel-header`).classList.remove("tw-hide");
 
             // Get possible timecode args
@@ -431,12 +434,11 @@ async function setIframeVideo (args) {
 
                     // ints
                     document.querySelector(`.channel-info-bar__action-container .tw-flex`).classList.remove("tw-hide");
-                    document.querySelector(`[data-a-target="total-views-count"]`).parentElement.parentElement.classList.remove("tw-hide");
                     document.querySelector(`.channel-header__item[data-a-target="followers-channel-header-item"] .channel-header__item-count span`).innerHTML = channelData.followerCount;
                     if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
 
                     document.querySelector(`.tw-stat[data-a-target="viewer-count"]`).classList.add("tw-hide");
-                    document.querySelector(`[data-a-target="total-views-count"] .tw-stat__value`).innerHTML = vodData.viewCount;
+                    totalViewsDiv.querySelector(`.tw-stat__value`).innerHTML = vodData.viewCount;
                 }
                 addStremerInfo();
             };
@@ -456,7 +458,8 @@ async function setIframeVideo (args) {
             if (!args.slug) return "Invalid args";
 
             // Enable divs
-            document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.add("tw-hide");
+            totalViewsDiv.classList.remove('tw-hide');
+            totalViewsDiv.parentElement.classList.remove('tw-hide');
             document.querySelector(`.channel-header`).classList.remove("tw-hide");
 
             // set iframe
@@ -492,12 +495,11 @@ async function setIframeVideo (args) {
 
                     // ints
                     document.querySelector(`.channel-info-bar__action-container .tw-flex`).classList.remove("tw-hide");
-                    document.querySelector(`[data-a-target="total-views-count"]`).parentElement.parentElement.classList.remove("tw-hide");
                     document.querySelector(`.channel-header__item[data-a-target="followers-channel-header-item"] .channel-header__item-count span`).innerHTML = channelData.followerCount;
                     if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
 
                     document.querySelector(`.tw-stat[data-a-target="viewer-count"]`).classList.add("tw-hide");
-                    document.querySelector(`[data-a-target="total-views-count"] .tw-stat__value`).innerHTML = clipData.viewCount;
+                    totalViewsDiv.querySelector(`.tw-stat__value`).innerHTML = clipData.viewCount;
                 }
                 addStremerInfo();
             };

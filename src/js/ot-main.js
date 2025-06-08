@@ -40,19 +40,18 @@ var userConfig;
 var def_ot_config;
 
 // Get the user config
-getConfig();
-function getConfig() {
-	storage.get(['OTConfig'], async function(result) {
-		if (result == undefined || Object.keys(result).length == 0) {
-			await storage.set({OTConfig: def_ot_config});
-			userConfig = await storage.get(['OTConfig']);
-            console.log(`%cOLDTTV USER DATA (reset to default):`, styles3, userConfig);
-            window.location.reload();
-		} else {
-			userConfig = result.OTConfig;
-		}
-	});
-}
+storage.get(['OTConfig'], async function(result) {
+    if (result == undefined || Object.keys(result).length == 0) {
+        await storage.set({OTConfig: def_ot_config});
+        userConfig = await storage.get(['OTConfig']);
+        console.log(`%cOLDTTV USER DATA (reset to default):`, styles3, userConfig);
+        window.location.reload();
+    } else {
+        console.log('hiii')
+        userConfig = result.OTConfig;
+        console.log(`%cOLDTTV USER DATA:`, styles3, userConfig);
+    }
+});
 
 
 // Block Twitch scripts from adding their own stuff within the inject
@@ -188,7 +187,7 @@ async function handlePageChange () {
         userConfigDoc.id = 'oldttv-js';
         userConfigDoc.async = "";
         userConfigDoc.setAttribute('data-script-type', "oldttv-userconfig");
-        userConfigDoc.setAttribute('data-userconfig', JSON.stringify(userConfig));
+        userConfigDoc.setAttribute('data-userconfig', JSON.stringify(userConfig ? userConfig : {}));
         document.head.append(userConfigDoc);
 
         // Stop observer
@@ -196,7 +195,7 @@ async function handlePageChange () {
 
 
         // Check config
-        if (userConfig.darkMode == true || window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) html.classList.add(`tw-theme--dark`);
+        if (userConfig) if (userConfig.darkMode == true || window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) html.classList.add(`tw-theme--dark`);
     });
 }
 

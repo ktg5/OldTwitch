@@ -86,11 +86,16 @@ function makeNotification(text, actions) {
 // account, and if I did you won't be able to install this extension in the
 // first place. (That is if you downloaded the extension from a browser
 // extension store)
-var userData, oauth;
+var userData, oauth, deviceId;
 if (document.cookie.split('auth-token=')[1]) {
     oauth = document.cookie.split('auth-token=')[1].split(";")[0];
 } else {
     oauth = null
+}
+if (document.cookie.split('unique_id')[1]) {
+    deviceId = document.cookie.split('unique_id=')[1].split(";")[0];
+} else {
+    deviceId = null
 }
 
 

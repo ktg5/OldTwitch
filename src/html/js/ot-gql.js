@@ -31,7 +31,7 @@ class Gql {
                 "headers": {
                     "authorization": `OAuth ${oauth}`,
                     "client-id": this.clientid,
-                    "x-device-id": "0",
+                    "x-device-id": deviceId,
                 },
                 "body": null,
                 "method": "POST"
@@ -103,49 +103,44 @@ class Gql {
         if (oauth && !this.oauth) this.oauth = oauth;
 
         return new Promise(async (resolve, reject) => {
+            if (this.integToken.token == "" ||
+                this.integToken.token != "" && Date.now() > this.integToken.expiration)
+            {
+                await this.getClientInteg(oauth);
+            }
+
             await fetch("https://gql.twitch.tv/gql", {
                 headers: {
                     "authorization": `OAuth ${oauth}`,
                     "client-id": this.clientid,
-                    "x-device-id": "0",
+                    "client-integrity": this.integToken.token,
+                    "x-device-id": deviceId,
                 },
-                body: JSON.stringify([
-                    {
-                        "operationName": "OnsiteNotifications_View",
-                        "variables": {},
-                        "extensions": {
-                            "persistedQuery": {
-                                "version": 1,
-                                "sha256Hash": "db011164c7980ce0b90b04d8ecab0c27cfc8505170e2d6b1a5a51060a8e658df"
-                            }
-                        }
+                body: JSON.stringify({
+                    "operationName": "OnsiteNotifications_ListNotifications",
+                    "variables": {
+                        "shouldLoadLastBroadcast": false,
+                        "limit": 10,
+                        "cursor": "",
+                        "language": "en",
+                        "displayType": "VIEWER"
                     },
-                    {
-                        "operationName": "OnsiteNotifications_ListNotifications",
-                        "variables": {
-                            "shouldLoadLastBroadcast": false,
-                            "limit": 10,
-                            "cursor": "",
-                            "language": "en",
-                            "displayType": "VIEWER"
-                        },
-                        "extensions": {
-                            "persistedQuery": {
-                                "version": 1,
-                                "sha256Hash": "65bdc7f01ed3082f4382a154d190e23ad5459771c61318265cfdb59f63aad492"
-                            }
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "65bdc7f01ed3082f4382a154d190e23ad5459771c61318265cfdb59f63aad492"
                         }
                     }
-                ]),
+                }),
                 method: "POST"
             }).then(async rawData => {
                 let data = await rawData.json();
 
-                if (data[1].errors) resolve({ errors: data[1].errors });
+                if (data.errors) resolve({ errors: data.errors });
                 else {
                     let cleanData = [];
 
-                    data[1].data.currentUser.notifications.edges.forEach(edge => { cleanData.push(edge.node) });
+                    data.data.currentUser.notifications.edges.forEach(edge => { cleanData.push(edge.node) });
                     resolve(cleanData);
                 }
             });
@@ -973,7 +968,7 @@ class Gql {
                     "authorization": `OAuth ${oauth}`,
                     "client-id": this.clientid,
                     "client-integrity": this.integToken.token,
-                    "x-device-id": "0",
+                    "x-device-id": deviceId,
                 },
                 body: JSON.stringify({
                     "operationName": "FollowButton_FollowUser",
