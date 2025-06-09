@@ -196,6 +196,7 @@ if (navbar) {
         } else {
             loginButton.addEventListener('click', () => { accountAction({ type: "login" }) });
             signupButton.addEventListener('click', () => { accountAction({ type: "signup" }) });
+            document.querySelector('[data-a-target="signup-note"] button').addEventListener('click', () => { accountAction({ type: "signup" }) });
         }
     });
 }
@@ -270,7 +271,7 @@ if (sidebar) {
                         // sometimes the gql returns null, idk why it even pulls it, but whatever.
                         if (!stream.broadcaster) return console.warn('no user, stream: ', stream);
 
-                        channelDiv.href = `/${stream.broadcaster.login}`;
+                        channelDiv.href = `https://twitch.tv/${stream.broadcaster.login}`;
                         if (stream.broadcaster) channelDiv.title = stream.broadcaster.broadcastSettings.title;
                         channelDiv.innerHTML = `
                         <figure class="tw-avatar tw-avatar--size-30">
@@ -296,7 +297,7 @@ if (sidebar) {
                         channelDiv = document.createElement("a");
                         channelDiv.classList.add("channel");
         
-                        channelDiv.href = `/${stream.login}`;
+                        channelDiv.href = `https://twitch.tv/${stream.login}`;
                         if (stream.content) channelDiv.title = stream.broadcastSettings.title;
                         channelDiv.innerHTML = `
                         <figure class="tw-avatar tw-avatar--size-30">
@@ -377,7 +378,7 @@ function accountAction(args) {
         popupWindow.classList.add('oldttv-account-popup');
         popupWindow.innerHTML = `
             <div class="oldttv-account-popup__content">
-                <h5 class="tw-md-mg-b-1">Click anywhere or press the "Escape" key to close this window.</h5>
+                <h5 class="tw-md-mg-b-1" style="white">Click anywhere or press the "Escape" key to close this window.</h5>
                 <iframe data-a-target="account-popup-if" src="" width="520" height="300" style="background: black"></iframe>
             </div>
         `;
@@ -389,6 +390,10 @@ function accountAction(args) {
     popupWindowIF.addEventListener('load', (e) => {
         // If first init since creation
         if (ifLoaded == false) {
+            // Vars
+            ifDoc = popupWindowIF.contentDocument;
+            ifWindow = popupWindowIF.contentWindow;
+
             ifLoaded = true;
             // Swap form button stuff
             function initSwapButtons() {
@@ -411,10 +416,6 @@ function accountAction(args) {
                     }
                 }
             }
-
-            // Vars
-            ifDoc = popupWindowIF.contentDocument;
-            ifWindow = popupWindowIF.contentWindow;
 
             // Init
             initSwapButtons();
@@ -660,13 +661,13 @@ setTimeout(async () => {
                 });
 
                 // channel details
-                document.querySelector(`.streamer-pfp`).innerHTML = `<a href="/${featuredStreams[i].broadcaster.login}"><img class="tw-image" src="${featuredStreams[i].broadcaster.profileImageURL}"></a>`;
-                document.querySelector(`.item-name`).innerHTML = `<a style="color: #b8b5c0;" href="/${featuredStreams[i].broadcaster.login}">${featuredStreams[i].broadcaster.displayName}</a>`;
-                document.querySelector(`.streamer-category`).innerHTML = `<a href="/directory/category/${featuredStreams[i].game.slug}">${featuredStreams[i].game.displayName}</a>`;
+                document.querySelector(`.streamer-pfp`).innerHTML = `<a href="https://twitch.tv/${featuredStreams[i].broadcaster.login}"><img class="tw-image" src="${featuredStreams[i].broadcaster.profileImageURL}"></a>`;
+                document.querySelector(`.item-name`).innerHTML = `<a style="color: #b8b5c0;" href="https://twitch.tv/${featuredStreams[i].broadcaster.login}">${featuredStreams[i].broadcaster.displayName}</a>`;
+                document.querySelector(`.streamer-category`).innerHTML = `<a href="https://twitch.tv/directory/category/${featuredStreams[i].game.slug}">${featuredStreams[i].game.displayName}</a>`;
                 document.querySelector(`.streamer-desc`).innerHTML = "";
                 document.querySelector(`.streamer-tags`).innerHTML = "";
                 featuredStreams[i].freeformTags.forEach(streamTag => {
-                    document.querySelector(`.streamer-tags`).innerHTML += `<a class="search-tag" href="/directory/all/tags/${streamTag.name}">${streamTag.name}</a>`;
+                    document.querySelector(`.streamer-tags`).innerHTML += `<a class="search-tag" href="https://twitch.tv/directory/all/tags/${streamTag.name}">${streamTag.name}</a>`;
                 });
             }
 
@@ -676,6 +677,7 @@ setTimeout(async () => {
                 
                 let targetDiv = document.querySelector(`.tw-flex.tw-flex-nowrap.tw-pd-x-05.tw-pd-y-1`).children[i];
                 if (targetDiv) {
+                    targetDiv.title = `${featuredStream.broadcaster.displayName} - ${featuredStream.game.displayName}`;
                     targetDiv.style.cursor = "pointer";
                     targetDiv.innerHTML = `<img class="tw-image" src="${featuredStream.previewImageURL}">`;
                     if (i == 0) targetDiv.classList.add("channel-selected");
@@ -709,13 +711,13 @@ setTimeout(async () => {
             const game = homePageData.shelves.TopGamesForYou[i];
 
             // covert art
-            topGamesGrid.children[i].querySelector(`figure`).innerHTML = `<a href="/directory/category/${game.categorySlug}"><img class="tw-image" src="${game.boxArtURL}"></a>`;
+            topGamesGrid.children[i].querySelector(`figure`).innerHTML = `<a href="https://twitch.tv/directory/category/${game.categorySlug}"><img class="tw-image" src="${game.boxArtURL}"></a>`;
             // title
-            topGamesGrid.children[i].querySelector(`.game-title`).innerHTML = `<a href="/directory/category/${game.categorySlug}">${game.displayName}</a>`;
+            topGamesGrid.children[i].querySelector(`.game-title`).innerHTML = `<a href="https://twitch.tv/directory/category/${game.categorySlug}">${game.displayName}</a>`;
             // tags
             // topGamesGrid.children[i].querySelector(`.game-tags`).innerHTML = "";
             // game.gameTags.forEach(gameTag => {
-            //     topGamesGrid.children[i].querySelector(`.game-tags`).innerHTML += `<a class="game-tag" href="/directory/all/tags/${gameTag.tagName}">${gameTag.localizedName}</a>`;
+            //     topGamesGrid.children[i].querySelector(`.game-tags`).innerHTML += `<a class="game-tag" href="https://twitch.tv/directory/all/tags/${gameTag.tagName}">${gameTag.localizedName}</a>`;
             // });
             // viewers
             topGamesGrid.children[i].querySelector(`.game-tags`).innerHTML = `${game.viewersCount} viewers`;
@@ -728,9 +730,9 @@ setTimeout(async () => {
 
             if (topStreamersGrid.children[i]) {
                 // covert art
-                topStreamersGrid.children[i].querySelector(`figure`).innerHTML = `<a href="/${channel.broadcaster.login}"><img class="tw-image" src="${channel.previewImageURL}"></a>`;
+                topStreamersGrid.children[i].querySelector(`figure`).innerHTML = `<a href="https://twitch.tv/${channel.broadcaster.login}"><img class="tw-image" src="${channel.previewImageURL}"></a>`;
                 // title
-                topStreamersGrid.children[i].querySelector(`.item-name`).innerHTML = `<a href="/${channel.broadcaster.login}">${channel.broadcaster.displayName}</a>`;
+                topStreamersGrid.children[i].querySelector(`.item-name`).innerHTML = `<a href="https://twitch.tv/${channel.broadcaster.login}">${channel.broadcaster.displayName}</a>`;
                 // viewers
                 topStreamersGrid.children[i].querySelector(`.item-subtext`).innerHTML = `${channel.viewersCount} viewers on ${channel.broadcaster.displayName}`;
             }

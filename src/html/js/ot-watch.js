@@ -10,6 +10,7 @@ async function setIframeVideo (args) {
     let chatIframe = document.querySelector(".chat-iframe");
     let playerRoot = document.querySelector(`[data-target="main-root"]`);
 
+    // Add data to page that's for every path
     async function notFirstInit() {
         // name & pfp
         document.querySelector(`.channel-header__user .tw-image`).src = channelData.profileImageURL;
@@ -137,9 +138,9 @@ async function setIframeVideo (args) {
         }
 
         
-        // only go for stream type
+        // Channel tabs
         if (args.type == "stream") {
-            // go to tab if found
+            // Open tab if location.hash contains a `channel-header-item`
             if (location.hash.length > 0) {
                 let tab = location.hash.split("#")[1];
                 let elmnt = document.querySelector(`[data-a-target="${tab}-channel-header-item"]`);
@@ -147,7 +148,7 @@ async function setIframeVideo (args) {
                 if (elmnt) loadStreamerSidePage({elmnt: elmnt, tab: tab});
             }
 
-            // Make topbar buttons worky
+            // On channel tab click, open it's tab
             document.addEventListener("click", async (e) => {
                 let closestTarget = e.target.closest(`[data-target="channel-header-item"]`);
     
@@ -161,13 +162,15 @@ async function setIframeVideo (args) {
                 }
             });
         } else {
+            // If not on the channel's page (aka a clip or vod of their own)
             document.addEventListener("click", async (e) => {
                 let closestTarget = e.target.closest(`[data-target="channel-header-item"]`);
 
                 if (closestTarget) {
                     setTimeout(() => {
-                        // change location.href
-                        location.href = `${location.origin}/${channelData.login}${location.hash ? `${location.hash}` : ""}`;
+                        // Go to their channel w/ the location.hash that'll be used to open the channel tab automatically
+                        // See the stuff above
+                        location.href = `https://twitch.tv/${channelData.login}${location.hash ? `${location.hash}` : ""}`;
                     }, 10);
                 }
             });
@@ -531,6 +534,7 @@ switch (true) {
         arg1 = pathname.split("/")[1];
         if (arg1.includes("?")) arg1 = arg1.split("?")[0];
         if (pathname.split("/").length > 1 && pathname.includes("/clip/")) setIframeVideo({ type: "clip", slug: pathname.split("clip/").pop(), channel: arg1 })
+        if (location.host == "clips.twitch.tv") setIframeVideo({ type: "clip", slug: pathname.split("/").pop(), channel: null })
         else setIframeVideo({ type: "stream", channel: arg1 });
     break;
 }

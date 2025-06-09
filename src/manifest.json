@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "OldTwitch",
     "description": "A browser extension to bring back the old Twitch look",
-    "version": "0.0.5",
+    "version": "0.0.6",
 
     "background": {
         "service_worker": "js/ot-background.js"
@@ -17,13 +17,14 @@
 
     "content_scripts": [
         {
-            "matches": ["*://www.twitch.tv/*"],
+            "matches": ["*://www.twitch.tv/*", "*://clips.twitch.tv/*"],
             "exclude_matches": [
                 "*://www.twitch.tv/*?*nooldttv*", "*://www.twitch.tv/p/*", "*://www.twitch.tv/subs/*",
                 "*://www.twitch.tv/embed/*", "*://www.twitch.tv/popout/*", "*://www.twitch.tv/drops/*",
                 "*://www.twitch.tv/inventory", "*://www.twitch.tv/embed-error/*", "*://www.twitch.tv/jobs/*",
                 "*://www.twitch.tv/settings/*", "*://www.twitch.tv/privacy", "*://www.twitch.tv/subscriptions",
-                "*://www.twitch.tv/signup", "*://www.twitch.tv/login"
+                "*://www.twitch.tv/signup", "*://www.twitch.tv/login", "*://www.twitch.tv/user/*",
+                "*://clips.twitch.tv/embed*", "*://clips.twitch.tv/create*"
             ],
             "js": ["js/ot-main.js"],
             "all_frames": true,

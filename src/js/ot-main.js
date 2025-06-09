@@ -202,7 +202,6 @@ async function handlePageChange () {
 
 
         // Check config
-        console.log(userConfig);
         if (userConfig) if (userConfig.darkMode == true || window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) html.classList.add(`tw-theme--dark`);
     });
 }

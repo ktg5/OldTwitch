@@ -366,6 +366,7 @@ body {
     content: 'Click to return to watch page';
     display: block;
     position: absolute;
+    color: white;
     font-size: 20px;
     width: max-content;
     top: 50%;

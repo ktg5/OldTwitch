@@ -64,6 +64,7 @@ Screenshots taken from dev3:0.0.4
     - [x] the "all" discovery page found via home page or the "Browse" button.
 
 - [x] vods & clips.
+    - [x] make clips.twitch.tv/[clip] go to OldTwitch clips page 
 
 - [x] subscribe button for those with sub page.
 - [x] share button.
