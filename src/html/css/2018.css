@@ -449,14 +449,14 @@ body {
 
 
 /* Account Popup */
-.oldttv-account-popup {
+.oldttv-popup {
     position: absolute;
     width: 100vw;
     height: 100vh;
     z-index: 9000;
 }
 
-.oldttv-account-popup:before {
+.oldttv-popup:before {
     content: '';
     position: absolute;
     background: rgb(0 0 0 / 50%);
@@ -464,7 +464,8 @@ body {
     height: 100%;
 }
 
-.oldttv-account-popup__content {
+.oldttv-popup__content {
+    color: white;
     position: absolute;
     margin: auto;
     left: 0;
@@ -474,6 +475,11 @@ body {
     width: fit-content;
     height: fit-content;
     z-index: 9001;
+}
+
+.oldttv-popup__content [data-a-target="oldttv-popup-if-wait"] {
+    width: 50vw;
+    margin: auto;
 }
 
 

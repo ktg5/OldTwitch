@@ -19,7 +19,7 @@
         {
             "matches": ["*://www.twitch.tv/*", "*://clips.twitch.tv/*"],
             "exclude_matches": [
-                "*://www.twitch.tv/*?*nooldttv*", "*://www.twitch.tv/p/*", "*://www.twitch.tv/subs/*",
+                "*://*.twitch.tv/*?*nooldttv*", "*://www.twitch.tv/p/*", "*://www.twitch.tv/subs/*",
                 "*://www.twitch.tv/embed/*", "*://www.twitch.tv/popout/*", "*://www.twitch.tv/drops/*",
                 "*://www.twitch.tv/inventory", "*://www.twitch.tv/embed-error/*", "*://www.twitch.tv/jobs/*",
                 "*://www.twitch.tv/settings/*", "*://www.twitch.tv/privacy", "*://www.twitch.tv/subscriptions",
@@ -34,6 +34,12 @@
         {
             "matches": ["*://www.twitch.tv/*?*nooldttv*"],
             "js": ["js/ot-newttv.js"],
+            "run_at": "document_end"
+        },
+        {
+            "matches": ["*://www.twitch.tv/*?*editclip*"],
+            "js": ["js/ot-newttv.js"],
+            "all_frames": true,
             "run_at": "document_end"
         },
         {

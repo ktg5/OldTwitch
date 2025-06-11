@@ -1,9 +1,10 @@
 var stream, channelData, videosData, clipsData;
 
-var channelTabs = ["videos", "clips"];
+const channelTabs = ["videos", "clips"];
 
 // Main function
 async function setIframeVideo (args) {
+    console.log(`setIframeVideo:`, args)
     if (typeof(args) != "object") return "Invalid args";
     if (!args.type) return "Invalid args";
 
@@ -386,7 +387,7 @@ async function setIframeVideo (args) {
 
             // Get possible timecode args
             let timecode = "0h0m0s";
-            if (location.search.includes("&t=")) timecode = location.search.split("&t=").pop();
+            if (location.search.includes("t=")) timecode = location.search.split("t=").pop();
 
             // set stream
             vodExec = () => {
@@ -458,6 +459,8 @@ async function setIframeVideo (args) {
         break;
 
         case "clip":
+            var clipData;
+
             if (!args.slug) return "Invalid args";
 
             // Enable divs
@@ -478,33 +481,46 @@ async function setIframeVideo (args) {
                 console.log("channelData: ", channelData);
 
                 // set streamer info
-                async function addStremerInfo() {
-                    notFirstInit();
-
-                    // strings
-                    document.querySelector(`[data-a-target="video-title"]`).innerHTML = clipData.title;
-                    document.title = `"${clipData.title}" - ${document.title}`;
-                    if (clipData.game) {
-                        document.querySelector(`[data-a-target="category-holder"]`).classList.remove("tw-hide");
-                        document.querySelector(`[data-a-target="category-title"]`).innerHTML = clipData.game.displayName;
-                        document.querySelector(`[data-a-target="category-title"]`).parentElement.href = `https://www.twitch.tv/directory/category/${clipData.game.slug}`;    
-                    }
-
-                    // imgs
-                    if (clipData.game) {
-                        document.querySelector(`.tw-category-cover`).classList.remove("tw-hide");
-                        document.querySelector(`.tw-category-cover`).src = clipData.game.boxArtURL;
-                    }
-
-                    // ints
-                    document.querySelector(`.channel-info-bar__action-container .tw-flex`).classList.remove("tw-hide");
-                    document.querySelector(`.channel-header__item[data-a-target="followers-channel-header-item"] .channel-header__item-count span`).innerHTML = channelData.followerCount;
-                    if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
-
-                    document.querySelector(`.tw-stat[data-a-target="viewer-count"]`).classList.add("tw-hide");
-                    totalViewsDiv.querySelector(`.tw-stat__value`).innerHTML = clipData.viewCount;
+                notFirstInit();
+                // strings
+                document.querySelector(`[data-a-target="video-title"]`).innerHTML = clipData.title;
+                document.title = `"${clipData.title}" - ${document.title}`;
+                if (clipData.game) {
+                    document.querySelector(`[data-a-target="category-holder"]`).classList.remove("tw-hide");
+                    document.querySelector(`[data-a-target="category-title"]`).innerHTML = clipData.game.displayName;
+                    document.querySelector(`[data-a-target="category-title"]`).parentElement.href = `https://www.twitch.tv/directory/category/${clipData.game.slug}`;    
                 }
-                addStremerInfo();
+
+                // imgs
+                if (clipData.game) {
+                    document.querySelector(`.tw-category-cover`).classList.remove("tw-hide");
+                    document.querySelector(`.tw-category-cover`).src = clipData.game.boxArtURL;
+                }
+
+                // ints
+                document.querySelector(`.channel-info-bar__action-container .tw-flex`).classList.remove("tw-hide");
+                document.querySelector(`.channel-header__item[data-a-target="followers-channel-header-item"] .channel-header__item-count span`).innerHTML = channelData.followerCount;
+                if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
+
+                document.querySelector(`.tw-stat[data-a-target="viewer-count"]`).classList.add("tw-hide");
+                totalViewsDiv.querySelector(`.tw-stat__value`).innerHTML = clipData.viewCount;
+
+                // extra
+                // watch vod button
+                const vodButton = document.querySelector('[data-a-target="vodview-button"]');
+                vodButton.classList.remove('tw-hide');
+                const clipSeconds = clipData.videoOffsetSeconds;
+                const decodeTime = `${Math.floor(clipSeconds / 3600)}h${Math.floor((clipSeconds % 3600) / 60)}m${clipSeconds % 60 - 30}s`;
+                vodButton.querySelector('button').addEventListener('click', e => { location.href = `https://twitch.tv/videos/${clipData.video.id}?t=${decodeTime}` });
+                // add edit button if owner of clip
+                if (
+                    clipData.curator.displayName == userData.displayName
+                    || clipData.broadcaster.displayName == userData.displayName
+                ) {
+                    const editButton = document.querySelector('[data-a-target="editclip-button"]');
+                    editButton.classList.remove('tw-hide');
+                    editButton.querySelector('button').addEventListener('click', e => { popupAction({ type: "editclip", clip: { host: clipData.curator.login, id: args.slug } }) });
+                }
             };
             if (gql) {
                 gqlAction();
@@ -534,7 +550,7 @@ switch (true) {
         arg1 = pathname.split("/")[1];
         if (arg1.includes("?")) arg1 = arg1.split("?")[0];
         if (pathname.split("/").length > 1 && pathname.includes("/clip/")) setIframeVideo({ type: "clip", slug: pathname.split("clip/").pop(), channel: arg1 })
-        if (location.host == "clips.twitch.tv") setIframeVideo({ type: "clip", slug: pathname.split("/").pop(), channel: null })
+        else if (location.host == "clips.twitch.tv") setIframeVideo({ type: "clip", slug: pathname.split("/").pop(), channel: null })
         else setIframeVideo({ type: "stream", channel: arg1 });
     break;
 }

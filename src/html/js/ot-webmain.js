@@ -194,9 +194,9 @@ if (navbar) {
                 }, 50);
             }
         } else {
-            loginButton.addEventListener('click', () => { accountAction({ type: "login" }) });
-            signupButton.addEventListener('click', () => { accountAction({ type: "signup" }) });
-            document.querySelector('[data-a-target="signup-note"] button').addEventListener('click', () => { accountAction({ type: "signup" }) });
+            loginButton.addEventListener('click', () => { popupAction({ type: "login" }) });
+            signupButton.addEventListener('click', () => { popupAction({ type: "signup" }) });
+            document.querySelector('[data-a-target="signup-note"] button').addEventListener('click', () => { popupAction({ type: "signup" }) });
         }
     });
 }
@@ -361,30 +361,55 @@ function showError(args) {
 // Account popup
 let ifDoc, ifWindow, ifInterval;
 let ifLoaded = false;
-let closeAccountClickListener = (e) => {
-    if (document.querySelector('.oldttv-account-popup')) if (!e.target.closest(`.oldttv-account-popup iframe`)) closeAccountAction();
+let closePopupClickListener = (e) => {
+    if (document.querySelector('.oldttv-popup')) if (!e.target.closest(`.oldttv-popup iframe`)) closePopupAction();
 };
-let closeAccountKeyListener = (e) => {
-    if (document.querySelector('.oldttv-account-popup')) if (e.key == 'Escape') closeAccountAction();
+let closePopupKeyListener = (e) => {
+    if (document.querySelector('.oldttv-popup')) if (e.key == 'Escape') closePopupAction();
 };
 // Show account popup
-function accountAction(args) {
+function popupAction(args) {
     if (!args || !args.type) return console.error("Invalid");
 
+
     // Find or make the popup window
-    let popupWindow = document.querySelector('.oldttv-account-popup');
+    let popupWindow = document.querySelector('.oldttv-popup');
     if (!popupWindow) {
         popupWindow = document.createElement('div');
-        popupWindow.classList.add('oldttv-account-popup');
+        popupWindow.classList.add('oldttv-popup');
         popupWindow.innerHTML = `
-            <div class="oldttv-account-popup__content">
-                <h5 class="tw-md-mg-b-1" style="white">Click anywhere or press the "Escape" key to close this window.</h5>
-                <iframe data-a-target="account-popup-if" src="" width="520" height="300" style="background: black"></iframe>
+            <div class="oldttv-popup__content">
+                <h4 class="tw-md-mg-b-1">Click anywhere or press the "Escape" key to close this window.</h4>
+                <h2 class="tw-md-mg-b-1" data-a-target="oldttv-popup-if-wait" style="max-width">Pleae wait for the iframe to load. If you feel like this goes on for too long, <a href="https://github.com/ktg5/OldTwitch/issues">please report it with the action you tried to do</a>.</h2>
+                <iframe class="tw-hide" data-a-target="oldttv-popup-if" src="" width="520" height="300" style="background: black"></iframe>
             </div>
         `;
         document.body.appendChild(popupWindow);
     }
     let popupWindowIF = popupWindow.querySelector('iframe');
+
+    // Add content depending on the "type" value
+    switch (args.type) {
+        case "signup":
+            popupWindowIF.src = "/signup";
+            args.resizeTarget = '.simplebar-content .Layout-sc-1xcs6mc-0';
+        break;
+    
+        case "login":
+            popupWindowIF.src = "/login";
+            args.resizeTarget = '.simplebar-content .Layout-sc-1xcs6mc-0';
+        break;
+
+        case 'editclip':
+            if (!args.clip && typeof args.clip !== "object") {
+                console.error(`popupAction error`);
+                return alert('stop lel');
+            }
+            popupWindowIF.src = `https://www.twitch.tv/${args.clip.host}/clip/${args.clip.id}?editclip&nooldttv`;
+            args.resizeTarget = '#clip-editor-modal';
+        break;
+    }
+
 
     // iframe listener
     popupWindowIF.addEventListener('load', (e) => {
@@ -417,41 +442,42 @@ function accountAction(args) {
                 }
             }
 
-            // Init
-            initSwapButtons();
+            // Init & resize popup to fit with target
+            if (!args.clip) initSwapButtons();
+            let foundDiv = false;
             ifInterval = setInterval(() => {
-                let targetHeightDiv = ifDoc.querySelector('.simplebar-content .Layout-sc-1xcs6mc-0');
-                if (targetHeightDiv) {
+                let targetDiv = ifDoc.querySelector(args.resizeTarget);
+                if (targetDiv) {
+                    // Unhide everything & start resizin'!
+                    foundDiv = true;
+                    popupWindow.querySelector('[data-a-target="oldttv-popup-if-wait"]').classList.add('tw-hide');
                     popupWindowIF.classList.remove('tw-hide');
-                    popupWindowIF.height = targetHeightDiv.clientHeight;
+                    if (args.clip) {
+                        popupWindowIF.width = window.innerWidth / 1.25;
+                        popupWindowIF.height = window.innerHeight / 1.05;
+                    } else {
+                        popupWindowIF.height = targetDiv.clientHeight;
+                    }
+                } else {
+                    // Close popup if we already found our div
+                    if (foundDiv == true) { closePopupAction(); };
                 }
             }, 10);
 
             // Close listener
             setTimeout(() => {
-                document.addEventListener('click', closeAccountClickListener);
-                ifWindow.addEventListener('keydown', closeAccountKeyListener);
+                document.addEventListener('click', closePopupClickListener);
+                ifWindow.addEventListener('keydown', closePopupKeyListener);
             }, 50);
         // Else, close & reload the whole page
         } else {
-            closeAccountAction();
+            closePopupAction();
             document.location.reload();
         }
     });
-
-    // Add content depending on the "type" value
-    switch (args.type) {
-        case "signup":
-            popupWindowIF.src = "/signup";
-        break;
-    
-        case "login":
-            popupWindowIF.src = "/login";
-        break;
-    }
 }
 
-function closeAccountAction() {
+function closePopupAction() {
     // Clear iframe interval
     clearInterval(ifInterval);
 
@@ -462,10 +488,10 @@ function closeAccountAction() {
     ifLoaded = false;
 
     // Remove popup
-    document.querySelector('.oldttv-account-popup').remove();
+    document.querySelector('.oldttv-popup').remove();
 
     // Remove event listener(s)
-    document.removeEventListener('click', closeAccountClickListener);
+    document.removeEventListener('click', closePopupClickListener);
 }
 
 
