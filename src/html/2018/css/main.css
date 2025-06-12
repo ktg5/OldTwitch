@@ -20,6 +20,7 @@ body {
 .oldttv-notifi {
     align-items: center;
     background: #641b1b;
+    color: white;
     display: flex;
     position: absolute;
     width: 100%;
@@ -30,6 +31,7 @@ body {
 .oldttv-notifi .content {
     font-size: 16px;
     font-weight: bold;
+    font-weight: 100;
     margin-left: 1rem;
 }
 
@@ -480,6 +482,15 @@ body {
 .oldttv-popup__content [data-a-target="oldttv-popup-if-wait"] {
     width: 50vw;
     margin: auto;
+}
+
+
+.tw-interactable {
+    color: #6441a4 !important;
+}
+
+.tw-theme--dark .tw-interactable {
+    color: inherit !important;
 }
 
 
@@ -4081,18 +4092,18 @@ body {
 
 .tw-interactable--hover,.tw-interactable:hover {
     background: #7d5bbe;
-    color: #fff;
+    color: #fff !important;
     text-decoration: none
 }
 
 .tw-theme--dark .tw-interactable--hover,.tw-theme--dark .tw-interactable:hover {
     background: #4b367c;
-    color: #fff
+    color: #fff !important
 }
 
 .tw-theme--light .tw-interactable--hover,.tw-theme--light .tw-interactable:hover {
     background: #7d5bbe;
-    color: #fff
+    color: #fff !important
 }
 
 .tw-interactable:active,.tw-theme--dark .tw-interactable:active,.tw-theme--light .tw-interactable:active {

@@ -317,6 +317,18 @@ async function setIframeVideo (args) {
                         document.querySelector(`.tw-stat[data-a-target="viewer-count"]`).parentElement.classList.add("tw-hide");
                     }
                     if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
+
+                    // clock
+                    const clockStat = document.querySelector('[data-a-target="current-time"] .tw-stat__value');
+                    const startedAt = new Date(channelData.stream.startedAt);
+                    let currentTime = new Date();
+
+                    setInterval(() => {
+                        currentTime = new Date();
+                        clockStat.innerHTML = getDateDiff(currentTime, startedAt);
+                    }, 1000);
+                    clockStat.innerHTML = getDateDiff(currentTime, startedAt);
+                    clockStat.parentElement.parentElement.classList.remove('tw-hide');
                 }
 
                 // add interval to check streamer data
@@ -346,26 +358,59 @@ async function setIframeVideo (args) {
                 chatIframeWindow = chatIframe.contentWindow;
 
                 // Check for dark mode
-                let HTMLDiv = document.querySelector('html');
+                const HTMLDiv = document.querySelector('html');
+                const IfHTMLDiv = chatIframeDoc.querySelector('html');
                 if (HTMLDiv.classList.contains('tw-theme--dark')) {
-                    let IfHTMLDiv = chatIframeDoc.querySelector('html');
-                    IfHTMLDiv.classList.remove('tw-root--theme-light');
-                    IfHTMLDiv.classList.add('tw-root--theme-dark');
+                    // Make sure the stupid browser sets the damn theme
+                    setInterval(() => {
+                        if (
+                            darkTheme
+                            && IfHTMLDiv.classList.contains('tw-root--theme-light')
+                        ) {
+                            IfHTMLDiv.classList.remove('tw-root--theme-light');
+                            IfHTMLDiv.classList.add('tw-root--theme-dark');
+                        }
+                    }, 1000);
 
                     let customRoot = chatIframeDoc.createElement('style');
                     customRoot.innerHTML = `
                     :root {
                         --color-background-body: #0e0c13 !important;
                         --color-background-base: #0e0c13 !important;
+                        --color-background-float: #0e0c13 !important;
                         --color-background-alt:  #2c2541 !important;
-                        --color-background-alt-2: var(--color-background-alt) !important;
+                        --color-background-alt-2: #2c2541 !important;
                         --color-text-base: #ebe9ee !important;
                         --color-text-label: #ebe9ee !important;
                         --color-text-alt: #b8b5c0 !important;
                         --color-text-alt-2: #b8b5c0 !important;
+                        --color-fill-current: rgb(216 216 222) !important;
                         --color-text-link: #a070ea !important;
                         --color-border-input: #392e5c !important;
                         --color-border-input-hover: #635199 !important;
+                        --color-background-input-checkbox-checked-background: black !important;
+                        --color-border-input-checkbox: rgb(216 216 227 / 95%) !important;
+                        --color-border-input-checkbox-hover: var(--color-border-input-checkbox-checked) !important;
+                    }
+                    `;
+                    chatIframeDoc.head.appendChild(customRoot);
+                } else {
+                    let customRoot = chatIframeDoc.createElement('style');
+                    customRoot.innerHTML = `
+                    :root {
+                        --color-background-body: #efeef1 !important;
+                        --color-background-base: #efeef1 !important;
+                        --color-background-float: #efeef1 !important;
+                        --color-background-alt: #efeef1 !important;
+                        --color-background-alt-2: #efeef1 !important;
+                        --color-text-base: black !important;
+                        --color-text-label: black !important;
+                        --color-text-alt: #616064 !important;
+                        --color-text-alt-2: #616064 !important;
+                        --color-fill-current: white !important;
+                        --color-text-link: #6616e0 !important;
+                        --color-border-input: #635199 !important;
+                        --color-border-input-hover: #392e5c !important;
                         --color-background-input-checkbox-checked-background: black !important;
                         --color-border-input-checkbox: rgb(216 216 227 / 95%) !important;
                         --color-border-input-checkbox-hover: var(--color-border-input-checkbox-checked) !important;

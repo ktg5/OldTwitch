@@ -1,4 +1,9 @@
 /* PLAYER BASE */
+.gaSyOh.gaSyOh {
+    --range-size: 8px !important;
+    --color-background-range: black;
+    --color-current-range: linear-gradient(rgb(219 182 237), rgb(173 120 253));
+}
 
 .player-controls {
     background: none !important;
@@ -20,6 +25,10 @@
     background: linear-gradient(rgb(82 82 82), rgb(30 30 30));
     border-bottom: 1px solid black;
     border-top: 1px solid #686868;
+    margin: 0 !important;
+}
+
+#channel-player .gfthzy {
     margin: 0 !important;
 }
 
@@ -54,15 +63,8 @@ figure.ffz-player-icon {
 }
 
 /* VOLUME CONTROL */
-
-.ScRangeFillContainer-sc-q01wc3-2 .jcNjiR {
-    background: linear-gradient(rgb(219 182 237), rgb(173 120 253));
-    height: 8px;
-}
-
-.ScRangeFillContainer-sc-q01wc3-2.cfANnE {
-    background: black;
-    height: 8px;
+.ScRangeFillValue-sc-q01wc3-3.isXtHy {
+    background: var(--color-current-range);
 }
 
 .ScTransitionBase-sc-eg1bd7-0.tw-transition.volume-slider__slider-container {
@@ -73,7 +75,6 @@ figure.ffz-player-icon {
 /* ################################# */
 
 /* VIEWING VODS */
-
 .Layout-sc-nxg1ff-0.fcSUKA {
     padding-right: 0px !important;
     padding-left: 0px !important;

@@ -65,12 +65,15 @@
 
 .tw-root--theme-light .chat-wysiwyg-input__box {
     border: 1px solid #dad8de;
-    background: #fff;
     color: #433f4a
 }
 
-.tw-root--theme-dark .animatedMessageHighlight {
-    background: #392e5c !important;
+.tw-root--theme-light [data-a-target="chat-input"] {
+    background: #fff;
+}
+
+.tw-root--theme-dark [data-a-target="chat-input"] {
+    background: none !important;
 }
 
 
@@ -111,9 +114,26 @@
     color: var(--color-text-base) !important;
 }
 
-.ScCoreButton-sc-ocjdkq-0,.tw-root--theme-dark .ScCoreButton-sc-ocjdkq-0,.tw-theme--light .ScCoreButton-sc-ocjdkq-0 {
+.ScCoreButton-sc-ocjdkq-0 {
     border: 1px solid transparent;
-    background: #6441a4;
+    background: #6441a4 !important;
+    border-radius: 2px !important;
+}
+
+[data-test-selector="community-points-summary"] .Layout-sc-1xcs6mc-0 span,
+.Layout-sc-1xcs6mc-0.iHgHKM button span
+{
+    color: var(--color-fill-current) !important;
+}
+
+button[data-test-selector="chat-viewer-list"], button[data-test-selector="chat-viewer-list"] svg,
+button[data-a-target="chat-badge-carousel-badge-icon"], button[data-a-target="chat-badge-carousel-badge-icon"] svg,
+button[data-a-target="chat-settings"], button[data-a-target="chat-settings"] svg,
+button[data-a-target="emote-picker-button"], button[data-a-target="emote-picker-button"] svg
+{
+    background: transparent !important;
+    color: var(--color-fill-current);
+    fill: var(--color-fill-current);
 }
 
 .ScCoreButton-sc-ocjdkq-0:hover {

@@ -4,7 +4,7 @@ const storage = browser.storage.sync;
 const extension = browser.extension;
 const runtime = browser.runtime;
 const extensionLocation = runtime.getURL('').slice(0, -1);
-var userConfig;
+var userConfig = JSON.parse(localStorage.getItem('oldttv'));
 
 
 setTimeout(() => {
@@ -31,7 +31,7 @@ setTimeout(() => {
 
         case 'www.twitch.tv':
             // Add chat CSS to head
-            document.head.insertAdjacentHTML('afterbegin', `<link id="oldtwitch-css" class="oldtwitch-chat" rel="stylesheet" type="text/css" href="${runtime.getURL('css/chat.css')}">`);
+            document.head.insertAdjacentHTML('afterbegin', `<link id="oldtwitch-css" class="oldtwitch-chat" rel="stylesheet" type="text/css" href="${runtime.getURL(`html/${userConfig.year}/css/chat.css`)}">`);
         break;
     
         default:

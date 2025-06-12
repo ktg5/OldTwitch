@@ -1,4 +1,4 @@
-var userConfig = JSON.parse(document.querySelector('[data-script-type="oldttv-userconfig"]').getAttribute('data-userconfig'));
+var userConfig = JSON.parse(localStorage.getItem('oldttv'));
 var styles3 = [
     'background: linear-gradient(#06d316, #075702)'
     , 'border: 5px solid rgb(255 255 255 / 10%)'
@@ -9,7 +9,7 @@ var styles3 = [
 ].join(';');
 console.log(`%cOLDTTV USER DATA:`, styles3, userConfig);
 
-var tabsClosed = localStorage.getItem("oldttv-tabsClosed");
+var tabsClosed = JSON.parse(localStorage.getItem("oldttv-tabsClosed"));
 if (tabsClosed == null) {
     localStorage.setItem("oldttv-tabsClosed", JSON.stringify({
         left: false,
@@ -18,8 +18,26 @@ if (tabsClosed == null) {
     tabsClosed = JSON.parse(localStorage.getItem("oldttv-tabsClosed"));
 }
 
-var extensionLocation = document.querySelector('body').getAttribute('oldttv');
+extensionLocation = document.querySelector('body').getAttribute('oldttv');
 var latestVersionUrl = `https://raw.githubusercontent.com/ktg5/OldTwitch/refs/heads/main/src/ver.txt`;
+var darkTheme = false;
+const html =  document.querySelector('html');
+
+// Check for dark theme
+if (
+    (
+        userConfig.forceLightMode == true
+        && userConfig.forceWhichLightMode == '1'
+    )
+    || (
+        (userConfig.forceLightMode == undefined || userConfig.forceLightMode == false)
+        && window.matchMedia
+        && window.matchMedia('(prefers-color-scheme: dark)').matches
+    )
+) {
+    html.classList.add(`tw-theme--dark`);
+    darkTheme = true;
+}
 
 
 // Inject requested text to element's innerhtml
@@ -77,6 +95,32 @@ function makeNotification(text, actions) {
 }
 
 
+// Formats a given number with a leading zero if it's less than 10
+function padZero(num) {
+    return num < 10 ? '0' + num : num;
+}
+
+// Get the difference between two dates
+function getDateDiff(d1, d2) {
+    // Calculate the absolute difference in milliseconds
+    let diffMs = Math.abs(d1.getTime() - d2.getTime());
+
+    // Convert milliseconds to seconds, minutes, and hours
+    let diffSeconds = Math.floor(diffMs / 1000);
+    let hours = Math.floor(diffSeconds / 3600);
+    diffSeconds %= 3600; // Remaining seconds after extracting hours
+    let minutes = Math.floor(diffSeconds / 60);
+    let seconds = diffSeconds % 60; // Remaining seconds after extracting minutes
+
+    // Format hours, minutes, and seconds with leading zeros
+    const formattedHours = padZero(hours);
+    const formattedMinutes = padZero(minutes);
+    const formattedSeconds = padZero(seconds);
+
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+}
+
+
 // Get Oauth token via the user's cookies.
 // 
 // If you're looking at this and worried about security, you can read through
@@ -102,7 +146,7 @@ if (document.cookie.split('unique_id')[1]) {
 // Add navbar if found
 let navbar = document.querySelector(".top-nav");
 if (navbar) {
-    fetch(`${extensionLocation}/html/global/topnav.html`).then(async data => {
+    fetch(`${extensionLocation}/html/${userConfig.year}/global/topnav.html`).then(async data => {
         // Inject HTML
         let htmlText = await data.text();
         textToHtml(htmlText, navbar);
@@ -204,7 +248,7 @@ if (navbar) {
 let sidebar = document.querySelector(".side-nav");
 var channels;
 if (sidebar) {
-    fetch(`${extensionLocation}/html/global/sidenav.html`).then(async data => {
+    fetch(`${extensionLocation}/html/${userConfig.year}/global/sidenav.html`).then(async data => {
         // Inject HTML
         let htmlText = await data.text();
         textToHtml(htmlText, sidebar);
@@ -499,6 +543,17 @@ function closePopupAction() {
 var currentVersion;
 setTimeout(async () => {
 
+    // Delete 3rd-party CSS
+    setInterval(() => {
+        document.querySelectorAll('link[rel="stylesheet"]').forEach(e => {
+            switch (true) {
+                case e.href.includes('clips-main.css'):
+                    e.remove();
+                break;
+            }
+        });
+    }, 1000);
+
     if (oauth) {
         let style = document.createElement("style");
         style.innerHTML = `
@@ -569,10 +624,13 @@ setTimeout(async () => {
             if (sideNav.classList.contains(`side-nav--collapsed`)) {
                 sideNav.classList.remove(`side-nav--collapsed`);
                 sideNavArrow.classList.remove(`side-nav__toggle-visibility--open`);
+                tabsClosed.left = false;
             } else {
                 sideNav.classList.add(`side-nav--collapsed`);
                 sideNavArrow.classList.add(`side-nav__toggle-visibility--open`);
+                tabsClosed.left = true;
             }
+            localStorage.setItem("oldttv-tabsClosed", JSON.stringify(tabsClosed));
         });
     }
     if (tabsClosed.left) {

@@ -1,4 +1,4 @@
-<h1 align="center">OldTwitch <kbd>dev2:0.0.6</kbd></h1>
+<h1 align="center">OldTwitch <kbd>dev3:0.0.6</kbd></h1>
 <div font-size="24px" align="center">A browser extension to bring back the old Twitch look.</div>
 <div font-size="16px" align="center"><b>For the moment, please download OldTwitch from the <a href="https://github.com/ktg5/OldTwitch/actions/workflows/build.yml">Actions page for more recent builds</a>, or the <a href="https://github.com/ktg5/OldTwitch/releases">Releases page for older builds</a></b></div>
 <br>
@@ -39,7 +39,7 @@ Screenshots taken from dev3:0.0.4
 - [ ] add the whole 2018 & 2015 twitch site.
     - [x] 2018: https://web.archive.org/web/20180223002421mp_/https://www.twitch.tv/, https://web.archive.org/web/20180223010527/https://www.twitch.tv/xqcow & https://youtu.be/DdQM-YauwJk?t=90s
     - [ ] 2014/15: https://www.webdesignmuseum.org/gallery/twitch-in-2014
-- [ ] remove/replace unused css within `2018.css`. (might just remove the unused ones tbh)
+- [ ] remove/replace unused css within `2018/css/main.css`. (might just remove the unused ones tbh)
 
 - [x] make the extension replace the select pages with custom ones.
     - [ ] make the page replacer better, aka no need to fully replace or refresh the current page.
@@ -57,6 +57,7 @@ Screenshots taken from dev3:0.0.4
 - [x] stream page.
     - [x] show list of streamer's vods & clips via a little category page added within the watch page.
     - [x] make the stupid svgs for the stuff on the stream info thingy idk what to call it lmao.
+    - [ ] fix weird glitch that happens when fullscreening a stream (just pauses a little after fullscreening, it's so weird...)
     - [ ] follow & unfollow. (might be impossible cuz of the `client-integrity` value)
 
 - [x] discovery page.

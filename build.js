@@ -163,7 +163,15 @@ copyDir('./src', firefoxDir).then(async () => {
             }
         });
     };
-    await replaceChromewithMoz(`${firefoxDir}/html/css/`);
+    const htmlDir = `${firefoxDir}/html`;
+    const htmlDirList = fs.readdirSync(htmlDir);
+    htmlDirList.forEach(async folder => {
+        const yearCSSFolder = `${htmlDir}/${folder}/css/`;
+        if (folder.startsWith('20') && fs.existsSync(yearCSSFolder)) {
+            console.log(`${folder}:`);
+            await replaceChromewithMoz(yearCSSFolder);
+        }
+    });
 
     console.log(`Replace complete.`);
 

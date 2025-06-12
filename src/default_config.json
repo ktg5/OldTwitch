@@ -1,4 +1,6 @@
 {
     "year": "2018",
-    "showReleaseNotes": true
+    "showReleaseNotes": true,
+    "forceLightMode": false,
+    "forceWhichLightMode": "0"
 }

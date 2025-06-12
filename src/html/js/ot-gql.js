@@ -602,6 +602,19 @@ class Gql {
                                 "sha256Hash": "0df42c4d26990ec1216d0b815c92cc4a4a806e25b352b66ac1dd91d5a1d59b80"
                             }
                         }
+                    },
+                    {
+                        "operationName": "StreamMetadata",
+                        "variables": {
+                            "channelLogin": name,
+                            "includeIsDJ": true
+                        },
+                        "extensions": {
+                            "persistedQuery": {
+                                "sha256Hash": "b57f9b910f8cd1a4659d894fe7550ccc81ec9052c01e438b290fd66a040b9b93",
+                                "version": 1
+                            }
+                        }
                     }
                 ]),
                 method: "POST"
@@ -626,8 +639,10 @@ class Gql {
                         followerCount: data[3].data.user.followers.totalCount,
                         roles: data[3].data.user.roles,
                         schedule: data[3].data.user.channel.schedule,
-                        primaryTeam: data[3].data.user.primaryTeam
+                        primaryTeam: data[3].data.user.primaryTeam,
+                        lastBroadcast: data[4].data.user.lastBroadcast
                     };
+                    if (cleanData.stream) cleanData.stream.startedAt = data[4].data.user.stream.createdAt;
                     if (gameSlug) cleanData.broadcastSettings.game = await this.getCategory(gameSlug);
 
                     await fetch("https://gql.twitch.tv/gql", {

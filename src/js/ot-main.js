@@ -48,17 +48,29 @@ async function getDefaults() {
 }
 
 // Get the user config
-storage.get(['OTConfig'], async function(result) {
-    if (result == undefined || Object.keys(result).length == 0) {
-        await storage.set({OTConfig: await getDefaults()});
-        userConfig = await storage.get(['OTConfig']);
-        console.log(`%cOLDTTV USER DATA (reset to default):`, styles3, userConfig);
-        window.location.reload();
-    } else userConfig = result.OTConfig;
+async function getUserConfig() {
+    return new Promise(async (resolve, reject) => {
+        async function reset() {
+            userConfig = await getDefaults();
+            localStorage.setItem('oldttv', JSON.stringify(userConfig));
+            handlePageChange();
+        }
 
-    // Initial injection when the page first loads
-    handlePageChange();
-});
+        userConfig = JSON.parse(localStorage.getItem('oldttv'));
+        if (userConfig) {
+            // Check if the userConfig doesn't have any unknown values
+            const defConfig = await getDefaults();
+            for (const key in userConfig) {
+                if (defConfig[key] == undefined) {
+                    reset();
+                    return alert('Your user config was found to have unknown values. For security, it has been reset.');
+                }
+            }
+            handlePageChange();
+        } else reset();
+    });
+}
+getUserConfig();
 
 
 // Block Twitch scripts from adding their own stuff within the inject
@@ -110,37 +122,39 @@ if (html) {
 
 let firstInit = false;
 async function handlePageChange () {
+    const yearDir = `html/${userConfig.year}`;
+
     // First, let's see what page we're working with.
     var injectTarget = '';
     var injectJSTargets = [
-        runtime.getURL('html/js/ot-gql.js'),
-        runtime.getURL('html/lib/twitch-v1.js'),
-        runtime.getURL('html/js/ot-webmain.js'),
-        runtime.getURL('html/js/ot-search.js')
+        runtime.getURL(`html/js/ot-gql.js`),
+        runtime.getURL(`html/lib/twitch-v1.js`),
+        runtime.getURL(`html/js/ot-webmain.js`),
+        runtime.getURL(`html/js/ot-search.js`)
     ];
     switch (true) {
         case location.pathname == "/":
-            injectTarget = runtime.getURL(`html/index.html`);
+            injectTarget = runtime.getURL(`${yearDir}/index.html`);
         break;
 
         case location.pathname.startsWith("/search"):
-            injectTarget = runtime.getURL('html/search.html');
+            injectTarget = runtime.getURL(`${yearDir}/search.html`);
         break;
 
         case location.pathname.startsWith("/directory"):
             if (location.pathname.startsWith("/directory/category")) injectTarget = runtime.getURL('html/directory/category.html');
-            else injectTarget = runtime.getURL('html/directory/index.html');
-            injectJSTargets.push(runtime.getURL('html/js/ot-directory.js'));
+            else injectTarget = runtime.getURL(`${yearDir}/directory/index.html`);
+            injectJSTargets.push(runtime.getURL(`html/js/ot-directory.js`));
         break;
 
         case location.pathname.startsWith("/oldtwitch"):
-            injectTarget = runtime.getURL('html/oldtwitch.html');
+            injectTarget = runtime.getURL(`${yearDir}/oldtwitch.html`);
             injectJSTargets.push(runtime.getURL('lib/coloris.min.js'));
-            injectJSTargets.push(runtime.getURL('html/js/ot-settings.js'));
+            injectJSTargets.push(runtime.getURL(`html/js/ot-settings.js`));
         break;
 
         default:
-            injectTarget = runtime.getURL(`html/watch.html`);
+            injectTarget = runtime.getURL(`${yearDir}/watch.html`);
             injectJSTargets.push(runtime.getURL('html/js/ot-watch.js'));
         break;
     }
@@ -189,19 +203,7 @@ async function handlePageChange () {
             document.head.append(srcDoc);
         });
 
-        // Inject userConfig
-        let userConfigDoc = document.createElement('script');
-        userConfigDoc.id = 'oldttv-js';
-        userConfigDoc.async = "";
-        userConfigDoc.setAttribute('data-script-type', "oldttv-userconfig");
-        userConfigDoc.setAttribute('data-userconfig', JSON.stringify(userConfig ? userConfig : {}));
-        document.head.append(userConfigDoc);
-
         // Stop observer
         blockingObserver.disconnect();
-
-
-        // Check config
-        if (userConfig) if (userConfig.darkMode == true || window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) html.classList.add(`tw-theme--dark`);
     });
 }
