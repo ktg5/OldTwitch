@@ -1,4 +1,4 @@
-<h1 align="center">OldTwitch <kbd>dev3:0.0.6</kbd></h1>
+<h1 align="center">OldTwitch <kbd>dev4:0.0.6</kbd></h1>
 <div font-size="24px" align="center">A browser extension to bring back the old Twitch look.</div>
 <div font-size="16px" align="center"><b>For the moment, please download OldTwitch from the <a href="https://github.com/ktg5/OldTwitch/actions/workflows/build.yml">Actions page for more recent builds</a>, or the <a href="https://github.com/ktg5/OldTwitch/releases">Releases page for older builds</a></b></div>
 <br>
@@ -32,10 +32,6 @@ Screenshots taken from dev3:0.0.4
 </div>
 
 ## Todo
-- [x] version checking.
-
-- [ ] figure out how to get the video-swap script to work for the embeds showing streams & vods. (using as a userscript works fine, but when imported as a html script, no worky) 
-
 - [ ] add the whole 2018 & 2015 twitch site.
     - [x] 2018: https://web.archive.org/web/20180223002421mp_/https://www.twitch.tv/, https://web.archive.org/web/20180223010527/https://www.twitch.tv/xqcow & https://youtu.be/DdQM-YauwJk?t=90s
     - [ ] 2014/15: https://www.webdesignmuseum.org/gallery/twitch-in-2014

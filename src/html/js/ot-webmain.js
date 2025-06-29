@@ -8,6 +8,7 @@ var styles3 = [
     , 'box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 5px 3px -5px rgba(0, 0, 0, 0.5), 0 -13px 5px -10px rgba(255, 255, 255, 0.4) inset'
 ].join(';');
 console.log(`%cOLDTTV USER DATA:`, styles3, userConfig);
+// fetch = window.__nativeFetch__;
 
 var tabsClosed = JSON.parse(localStorage.getItem("oldttv-tabsClosed"));
 if (tabsClosed == null) {
@@ -19,7 +20,6 @@ if (tabsClosed == null) {
 }
 
 extensionLocation = document.querySelector('body').getAttribute('oldttv');
-var latestVersionUrl = `https://raw.githubusercontent.com/ktg5/OldTwitch/refs/heads/main/src/ver.txt`;
 var darkTheme = false;
 const html =  document.querySelector('html');
 
@@ -240,7 +240,13 @@ if (navbar) {
         } else {
             loginButton.addEventListener('click', () => { popupAction({ type: "login" }) });
             signupButton.addEventListener('click', () => { popupAction({ type: "signup" }) });
-            document.querySelector('[data-a-target="signup-note"] button').addEventListener('click', () => { popupAction({ type: "signup" }) });
+            let tempInt = setInterval(() => {
+                let signupAlert = document.querySelector('[data-a-target="signup-note"] button');
+                if (signupAlert) {
+                    signupAlert.addEventListener('click', () => { popupAction({ type: "signup" }) });
+                    clearInterval(tempInt);
+                }
+            }, 100);
         }
     });
 }
@@ -358,11 +364,6 @@ if (sidebar) {
                         `;
                         targetDiv.appendChild(channelDiv);
                     break;
-
-                    default:
-                        alert('You pulled new data I don\'t know about yet! Check your console & report it to the GitHub! Thanks!');
-                        console.warn(`Hey! Right here! You pulled a new data type that I don't know about: ${stream.__typename}`, stream);
-                    break;
                 }
             });
         }
@@ -478,11 +479,7 @@ function popupAction(args) {
 
                 // Do logic depending on what form
                 function continueFunc() {
-                    if (formDiv.getAttribute('name') == "login-submit-form") {
-                        ifDoc.querySelector('.kBhFFG').addEventListener('click', () => { initSwapButtons() });
-                    } else if (formDiv.getAttribute('data-test-selector') == "signup-form") {
-                        ifDoc.querySelector('.jirWOp').addEventListener('click', () => { initSwapButtons() });
-                    }
+                    ifDoc.querySelector('.ifDSiz').addEventListener('click', () => { initSwapButtons() });
                 }
             }
 
@@ -566,53 +563,6 @@ setTimeout(async () => {
         document.head.appendChild(style);
     }
 
-    currentVersion = document.body.getAttribute(`oldttv-ver`);
-    console.log("currentVersion: ", currentVersion);
-    let currentDevBuild;
-    let isDev = false;
-    if (document.body.getAttribute(`oldttv-ver`).includes("dev")) {
-        isDev = true;
-        currentDevBuild = currentVersion.split("dev")[1].split(":")[0];
-        currentVersion = currentVersion.split(":").pop();
-    }
-    // Pull latest version from GitHub files
-    let latestVersion = await fetch(latestVersionUrl).then(res => res.text());
-    console.log("latestVersion: ", latestVersion);
-    let latestDevBuild;
-    let latestIsDev = false;
-    if (latestVersion.includes("dev")) {
-        latestIsDev = true;
-        latestDevBuild = latestVersion.split("dev")[1].split(":")[0];
-        latestVersion = latestVersion.split(":").pop();
-    }
-    // Basic checking
-    let latestParts = latestVersion.split(".").map(Number);
-    let currentParts = currentVersion.split(".").map(Number);
-    if (!isDev && !latestIsDev || isDev && latestIsDev || isDev && !latestIsDev) {
-        // Check differences between versions
-        for (let i = 0; i < Math.max(currentParts.length, latestParts.length); i++) {
-            if (isDev && latestIsDev || !isDev && !latestIsDev || isDev && !latestIsDev) {
-                let selectCurrent = currentParts[i] || 0;  // Default to 0 if version1 is shorter
-                let selectLatest = latestParts[i] || 0;  // Default to 0 if version2 is shorter
-
-                if (selectCurrent < selectLatest) updateNotification("public");
-                else if ((selectCurrent && selectLatest) !== 0 && selectCurrent <= selectLatest && currentDevBuild < latestDevBuild) updateNotification("dev build");;
-            }
-        }
-    }
-
-    // Make update notification
-    function updateNotification(debug) {
-        if (debug) console.log("notification debug: ", debug);
-        makeNotification(`The current version of OldTwitch you're on is out-of-date. Click the "Update" button to go to the latest update.`, [
-            {
-                key: "update",
-                text: "Update",
-                action: () => location.href = "https://github.com/ktg5/OldTwitch/releases/latest"
-            }
-        ]);
-    }
-
 
     let channelListDiv = document.querySelector(".channel-list");
     // Set side stuff clicks
@@ -634,9 +584,18 @@ setTimeout(async () => {
         });
     }
     if (tabsClosed.left) {
-        let sideNav = document.querySelector(`.side-nav`);
-        sideNav.classList.add(`side-nav--collapsed`);
-        sideNavArrow.classList.add(`side-nav__toggle-visibility--open`);
+        let tempInt = setInterval(() => {
+            // make sure we can get the sidenavarrow
+            sideNavArrow = document.querySelector(`[data-a-target="side-nav-arrow"]`);
+
+            // do da ting
+            let sideNav = document.querySelector(`.side-nav`);
+            sideNav.classList.add(`side-nav--collapsed`);
+            sideNavArrow.classList.add(`side-nav__toggle-visibility--open`);
+
+            // end int
+            clearInterval(tempInt);
+        }, 100);
     }
     // Right
     let rightNavArrow = document.querySelector(`[data-a-target="right-column__toggle-collapse-btn"]`);
@@ -761,7 +720,8 @@ setTimeout(async () => {
                 
                 let targetDiv = document.querySelector(`.tw-flex.tw-flex-nowrap.tw-pd-x-05.tw-pd-y-1`).children[i];
                 if (targetDiv) {
-                    targetDiv.title = `${featuredStream.broadcaster.displayName} - ${featuredStream.game.displayName}`;
+                    if (featuredStream.game) targetDiv.title = `${featuredStream.broadcaster.displayName} - ${featuredStream.game.displayName}`;
+                    else targetDiv.title = `${featuredStream.broadcaster.displayName}`;
                     targetDiv.style.cursor = "pointer";
                     targetDiv.innerHTML = `<img class="tw-image" src="${featuredStream.previewImageURL}">`;
                     if (i == 0) targetDiv.classList.add("channel-selected");

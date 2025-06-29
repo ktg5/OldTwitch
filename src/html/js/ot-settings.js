@@ -98,8 +98,9 @@ async function doSettings() {
         // Make html
         // ${await addButton({ key: 'year', type: 'select', title: 'Select Year', desc: 'Select the year you\'d like to display.', values: yearOptions })}
         injectDiv.innerHTML = `
-            ${await addButton({ key: 'showReleaseNotes', type: 'toggle', title: 'Show Release Notes', desc: 'When enabled, this option will show release notes when updated to a new release.' })}
-            ${await addButton({ key: 'forceLightMode', type: 'toggle', title: 'Force Light Mode', desc: 'When enabled, OldTwitch will force the light mode that is set in the "Force Which Light Mode" option.' })}
+            ${await addButton({ key: 'showReleaseNotes', type: 'toggle', title: 'Show Update Notes', desc: 'This option will show update notes when updated to a new version of OldTwitch.' })}
+            ${await addButton({ key: 'alertUpdates', type: 'toggle', title: 'Alert Me When Out-of-date', desc: 'OldTwitch will show a banner at the top of the page, alerting the user to update to the latest version of OldTwitch.' })}
+            ${await addButton({ key: 'forceLightMode', type: 'toggle', title: 'Force Light Mode', desc: 'OldTwitch will force the light mode that is set in the "Force Which Light Mode" option.' })}
             ${await addButton({ key: 'forceWhichLightMode', type: 'select', title: 'Force Which Light Mode', desc: 'Will force either light or dark mode on all pages.', values: lightOptions })}
         `;
 

@@ -6,7 +6,7 @@
 }
 
 @font-face {
-    src: url("chrome-extension://__MSG_@@extension_id__/html/css/font/neue-r.otf");
+    src: url("chrome-extension://__MSG_@@extension_id__/html/2018/css/font/neue-r.otf");
     font-family: "Helvetica Neue";
 }
 
@@ -9034,7 +9034,7 @@ body {
 
 .anon-front__featured-section {
     background-color: #17141f;
-    background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/homepage_gradient_background.png),url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/homepage_player_background.jpg);
+    background-image: url(chrome-extension://__MSG_@@extension_id__/html/2018/img/homepage_gradient_background.png),url(chrome-extension://__MSG_@@extension_id__/html/2018/img/homepage_player_background.jpg);
     background-repeat: no-repeat;
     background-position: top;
     color: #b8b5c0;
@@ -9044,7 +9044,7 @@ body {
 
 .anon-front__social-container {
     background-color: #fff;
-    background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/homepage_social_background.png);
+    background-image: url(chrome-extension://__MSG_@@extension_id__/html/2018/img/homepage_social_background.png);
     background-repeat: no-repeat;
     background-position: 50%
 }
@@ -10817,7 +10817,7 @@ body {
 }
 
 .crates-holiday-background {
-    background: 50% 3rem/100% url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/blue-background.svg) no-repeat
+    background: 50% 3rem/100% url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/2018/img/blue-background.svg) no-repeat
 }
 
 .owl-2018-introduction__banner-background {
@@ -11628,11 +11628,11 @@ body {
 }
 
 .crate-notification__holiday-background {
-    background: 50% calc(100% + 5.3rem)/150% url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/blue-background-adea57802e0be2bedd5a83578f0976c5.svg) no-repeat
+    background: 50% calc(100% + 5.3rem)/150% url(chrome-extension://__MSG_@@extension_id__/html/2018/img/blue-background-adea57802e0be2bedd5a83578f0976c5.svg) no-repeat
 }
 
 .gift-notification__holiday-background {
-    background: 50% calc(100% + 2rem)/150% url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/blue-background-adea57802e0be2bedd5a83578f0976c5.svg) no-repeat
+    background: 50% calc(100% + 2rem)/150% url(chrome-extension://__MSG_@@extension_id__/html/2018/img/blue-background-adea57802e0be2bedd5a83578f0976c5.svg) no-repeat
 }
 
 .blizzard-account-link__logo {
@@ -11976,13 +11976,13 @@ body {
 }
 
 .commerce-content-item__placeholder {
-    background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/404_boxart-285x380.jpg);
+    background-image: url(chrome-extension://__MSG_@@extension_id__/html/2018/img/404_boxart-285x380.jpg);
     background-size: contain;
     width: 5rem
 }
 
 .commerce-content-item__placeholder--balloon {
-    background-image: url(chrome-extension://cinplffpgbhfogjlloganodbededelhd/html/img/404_boxart-285x380.jpg);
+    background-image: url(chrome-extension://__MSG_@@extension_id__/html/2018/img/404_boxart-285x380.jpg);
     background-size: contain;
     width: 15rem
 }

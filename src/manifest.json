@@ -58,6 +58,6 @@
 
     "web_accessible_resources": [{
         "matches": ["*://*.twitch.tv/*"],
-        "resources": ["html/*", "html/img/*", "js/*", "css/*", "lib/*", "ver.txt", "default_config.json"]
+        "resources": ["html/*", "js/*", "css/*", "lib/*", "ver.txt", "default_config.json"]
     }]
 }

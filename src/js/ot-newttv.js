@@ -30,9 +30,9 @@ window.addEventListener('load', () => {
     // Check for search params
     if (location.search.includes('editclip')) {
         const editButtonInt = setInterval(() => {
-            let editButtonChild = document.querySelector('[data-test-selector] .ScCoreButtonLabel-sc-s7h2b7-0.fLCDTs');
-            if (editButtonChild) {
-                editButtonChild.parentElement.click();
+            var editButton = document.querySelector('.reedit-clip-button button');
+            if (editButton) {
+                editButton.click();
                 if (document.querySelector('#clip-editor-modal')) clearInterval(editButtonInt);
             }
         }, 200);

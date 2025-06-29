@@ -3,9 +3,14 @@
 }
 
 
+.tw-root--theme-dark .chat-room {
+    background: var(--color-background-body) !important;
+}
+
 .Layout-sc-1xcs6mc-0 .stream-chat-header {
     justify-content: left !important;
     padding-left: 2rem !important;
+    min-height: 5rem;
 }
 
 .tw-root--theme-dark .stream-chat-header {
@@ -22,6 +27,10 @@
 
 .jxaBAK, .community-highlight {
     box-shadow: none !important;
+}
+
+.sticky-community-highlight strong {
+    color: var(--color-text-base) !important;
 }
 
 
