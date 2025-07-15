@@ -315,16 +315,18 @@ async function setIframeVideo (args) {
 
                         
                         // clock
-                        const clockStat = document.querySelector('[data-a-target="current-time"] .tw-stat__value');
-                        const startedAt = new Date(channelData.stream.startedAt);
-                        let currentTime = new Date();
+                        if (funcargs == null || !funcargs.includes("not-first-init")) {
+                            const clockStat = document.querySelector('[data-a-target="current-time"] .tw-stat__value');
+                            const startedAt = new Date(channelData.stream.startedAt);
+                            let currentTime = new Date();
 
-                        setInterval(() => {
-                            currentTime = new Date();
+                            setInterval(() => {
+                                currentTime = new Date();
+                                clockStat.innerHTML = getDateDiff(currentTime, startedAt);
+                            }, 1000);
                             clockStat.innerHTML = getDateDiff(currentTime, startedAt);
-                        }, 1000);
-                        clockStat.innerHTML = getDateDiff(currentTime, startedAt);
-                        clockStat.parentElement.parentElement.classList.remove('tw-hide');
+                            clockStat.parentElement.parentElement.classList.remove('tw-hide');
+                        }
                     } else {
                         document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.add("tw-hide");
                         document.querySelector(`.tw-stat[data-a-target="viewer-count"]`).parentElement.classList.add("tw-hide");
@@ -333,6 +335,21 @@ async function setIframeVideo (args) {
 
                 }
 
+                // Make a PubSub listener to listen for stream data changes
+                const pubsub = new PubSub(Number(channelData.id), [
+                    pubSubTopics.streamUpdate
+                ]);
+
+                pubsub.on(pubSubTopics.streamUpdate, async (d) => {
+                    const dataOnEvent = await gql.getChannelSimple(d.channel);
+                    console.log(`dataOnEvent: `, dataOnEvent);
+
+                    channelData.broadcastSettings = dataOnEvent.broadcastSettings;
+                    channelData.stream = dataOnEvent.stream;
+                    console.log(`edited channelData: `, channelData);
+
+                    addStremerInfo(['not-first-init']);
+                });
                 // add interval to check streamer data
                 let streamerCheck = setInterval(async () => {
                     channelData = await gql.getChannel(args.channel);

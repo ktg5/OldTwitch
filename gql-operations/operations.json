@@ -413,6 +413,18 @@
         }
     },
     {
+        "operationName": "UseLiveBroadcast",
+        "variables": {
+            "channelLogin": "ktg5_special"
+        },
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "0b47cc6d8c182acd2e78b81c8ba5414a5a38057f2089b1bbcfa6046aae248bd2"
+            }
+        }
+    },
+    {
         "operationName": "VideoAdBanner",
         "variables": {
             "input": {

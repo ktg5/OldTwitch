@@ -1,4 +1,4 @@
-<h1 align="center">OldTwitch <kbd>dev4:0.0.6</kbd></h1>
+<h1 align="center">OldTwitch <kbd>dev5:0.0.6</kbd></h1>
 <div font-size="24px" align="center">A browser extension to bring back the old Twitch look.</div>
 <div font-size="16px" align="center"><b>For the moment, please download OldTwitch from the <a href="https://github.com/ktg5/OldTwitch/actions/workflows/build.yml">Actions page for more recent builds</a>, or the <a href="https://github.com/ktg5/OldTwitch/releases">Releases page for older builds</a></b></div>
 <br>
@@ -41,7 +41,7 @@ Screenshots taken from dev3:0.0.4
     - [ ] make the page replacer better, aka no need to fully replace or refresh the current page.
 
 - [x] get an api key or something to get the user's stats, such as following, recommends, etc. and also use for streamer stats.
-- [ ] figure out how to get PubSub to worky
+- [z] figure out how to get PubSub to worky
 
 - [x] finish home page.
 

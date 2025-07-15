@@ -10,6 +10,8 @@ class Gql {
     constructor(clientid, oauth) {
         this.clientid = clientid;
         this.oauth = oauth;
+
+        console.log('ot-gql: Twitch GQL instance made.');
     }
 
 
@@ -674,6 +676,72 @@ class Gql {
                         else resolve(cleanData);
                     });
                 }
+            });
+        });
+    }
+
+    async getChannelSimple(name) {
+        if (!name) return console.error(`"name" is required but returned null.`);
+
+        return new Promise(async (resolve, reject) => {
+            await fetch("https://gql.twitch.tv/gql", {
+                headers: {
+                    "client-id": this.clientid,
+                },
+                body: JSON.stringify([
+                    {
+                        "operationName": "UseLive",
+                        "variables": {
+                            "channelLogin": name
+                        },
+                        "extensions": {
+                            "persistedQuery": {
+                                "version": 1,
+                                "sha256Hash": "639d5f11bfb8bf3053b424d9ef650d04c4ebb7d94711d644afb08fe9a0fad5d9"
+                            }
+                        }
+                    },
+                    {
+                        "operationName": "UseViewCount",
+                        "variables": {
+                            "channelLogin": name
+                        },
+                        "extensions": {
+                            "persistedQuery": {
+                                "version": 1,
+                                "sha256Hash": "95e6bd7acfbb2f220c17e387805141b77b43b18e5b27b4f702713e9ddbe6b907"
+                            }
+                        }
+                    },
+                    {
+                        "operationName": "UseLiveBroadcast",
+                        "variables": {
+                            "channelLogin": name
+                        },
+                        "extensions": {
+                            "persistedQuery": {
+                                "version": 1,
+                                "sha256Hash": "0b47cc6d8c182acd2e78b81c8ba5414a5a38057f2089b1bbcfa6046aae248bd2"
+                            }
+                        }
+                    }
+                ]),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+                if (data.errors) resolve({ errors: data.errors });
+
+                let isLive = data[0].data.user.stream != null;
+
+                let cleanData = {
+                    live: isLive,
+                    id: data[0].data.user.id,
+                    login: data[0].data.user.login,
+                    stream: data[1].data.user.stream,
+                    broadcastSettings: data[2].data.user.lastBroadcast
+                };
+                cleanData.broadcastSettings.game = await gql.getCategory(cleanData.broadcastSettings.game.slug);
+                resolve(cleanData);
             });
         });
     }
