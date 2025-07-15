@@ -41,7 +41,7 @@ Screenshots taken from dev3:0.0.4
     - [ ] make the page replacer better, aka no need to fully replace or refresh the current page.
 
 - [x] get an api key or something to get the user's stats, such as following, recommends, etc. and also use for streamer stats.
-- [ ] figure out if there's a way to make event listeners from the gql api. (like listen for when a streamer goes live or viewer count changes & not have to call the api with a internal or somethin')
+- [ ] figure out how to get PubSub to worky
 
 - [x] finish home page.
 

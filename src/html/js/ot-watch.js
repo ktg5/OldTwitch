@@ -312,23 +312,25 @@ async function setIframeVideo (args) {
                         document.querySelector(`.channel-info-bar__action-container .tw-flex`).classList.remove("tw-hide");
                         document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.remove("tw-hide");
                         document.querySelector(`.tw-stat[data-a-target="viewer-count"] .tw-stat__value`).innerHTML = channelData.stream.viewersCount;
+
+                        
+                        // clock
+                        const clockStat = document.querySelector('[data-a-target="current-time"] .tw-stat__value');
+                        const startedAt = new Date(channelData.stream.startedAt);
+                        let currentTime = new Date();
+
+                        setInterval(() => {
+                            currentTime = new Date();
+                            clockStat.innerHTML = getDateDiff(currentTime, startedAt);
+                        }, 1000);
+                        clockStat.innerHTML = getDateDiff(currentTime, startedAt);
+                        clockStat.parentElement.parentElement.classList.remove('tw-hide');
                     } else {
                         document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.add("tw-hide");
                         document.querySelector(`.tw-stat[data-a-target="viewer-count"]`).parentElement.classList.add("tw-hide");
                     }
                     if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
 
-                    // clock
-                    const clockStat = document.querySelector('[data-a-target="current-time"] .tw-stat__value');
-                    const startedAt = new Date(channelData.stream.startedAt);
-                    let currentTime = new Date();
-
-                    setInterval(() => {
-                        currentTime = new Date();
-                        clockStat.innerHTML = getDateDiff(currentTime, startedAt);
-                    }, 1000);
-                    clockStat.innerHTML = getDateDiff(currentTime, startedAt);
-                    clockStat.parentElement.parentElement.classList.remove('tw-hide');
                 }
 
                 // add interval to check streamer data
