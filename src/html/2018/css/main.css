@@ -456,6 +456,7 @@ body {
     width: 100vw;
     height: 100vh;
     z-index: 9000;
+    top: 0;
 }
 
 .oldttv-popup:before {

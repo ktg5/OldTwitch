@@ -583,7 +583,7 @@ async function setIframeVideo (args) {
                 ) {
                     const editButton = document.querySelector('[data-a-target="editclip-button"]');
                     editButton.classList.remove('tw-hide');
-                    editButton.querySelector('button').addEventListener('click', e => { popupAction({ type: "editclip", clip: { host: clipData.curator.login, id: args.slug } }) });
+                    editButton.querySelector('button').addEventListener('click', e => { location.href = `https://www.twitch.tv/${clipData.curator.login}/clip/${args.slug}?editclip&nooldttv` });
                 }
             };
             if (gql) {
