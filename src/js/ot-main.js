@@ -128,7 +128,7 @@ async function handlePageChange () {
     var injectTarget = '';
     var injectJSTargets = [
         runtime.getURL(`html/js/ot-gql.js`),
-        runtime.getURL(`html/js/ot-pubsub.js`),
+        runtime.getURL(`html/js/ot-hermes.js`),
         runtime.getURL(`lib/twitch-v1.js`),
         runtime.getURL(`html/js/ot-webmain.js`),
         runtime.getURL(`html/js/ot-search.js`)

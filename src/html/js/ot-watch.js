@@ -335,12 +335,12 @@ async function setIframeVideo (args) {
 
                 }
 
-                // Make a PubSub listener to listen for stream data changes
-                const pubsub = new PubSub(Number(channelData.id), [
-                    pubSubTopics.streamUpdate
-                ]);
 
-                pubsub.on(pubSubTopics.streamUpdate, async (d) => {
+                // Make a Hermes listener to listen for stream data changes
+                const hermes = new Hermes(Number(channelData.id), 'all');
+
+                // Stream info update
+                hermes.on('stream_info_update', async (d) => {
                     const dataOnEvent = await gql.getChannelSimple(d.channel);
                     console.log(`dataOnEvent: `, dataOnEvent);
 
@@ -350,12 +350,12 @@ async function setIframeVideo (args) {
 
                     addStremerInfo(['not-first-init']);
                 });
-                // add interval to check streamer data
-                let streamerCheck = setInterval(async () => {
-                    channelData = await gql.getChannel(args.channel);
+
+                // Viewer count update
+                hermes.on('viewcount', async (d) => {
+                    channelData.stream.viewersCount = d.viewers;
                     addStremerInfo(['not-first-init']);
-                }, 60000);
-                addStremerInfo();
+                });
             };
             if (gql) {
                 gqlAction();
