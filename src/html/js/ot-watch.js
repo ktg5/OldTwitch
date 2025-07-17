@@ -241,6 +241,7 @@ async function setIframeVideo (args) {
                 }, 50);
             }
 
+            let streamClock;
             gqlAction = async () => {
                 channelData = await gql.getChannel(args.channel);
                 if (!channelData) showError({ id: 404 })
@@ -320,7 +321,7 @@ async function setIframeVideo (args) {
                             const startedAt = new Date(channelData.stream.startedAt);
                             let currentTime = new Date();
 
-                            setInterval(() => {
+                            streamClock = setInterval(() => {
                                 currentTime = new Date();
                                 clockStat.innerHTML = getDateDiff(currentTime, startedAt);
                             }, 1000);
@@ -328,16 +329,29 @@ async function setIframeVideo (args) {
                             clockStat.parentElement.parentElement.classList.remove('tw-hide');
                         }
                     } else {
+                        clearInterval(streamClock);
+                        streamClock = null;
+                        // Hide all stream info
                         document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.add("tw-hide");
                         document.querySelector(`.tw-stat[data-a-target="viewer-count"]`).parentElement.classList.add("tw-hide");
+                        document.querySelector(`.tw-stat[data-a-target="current-time"]`).parentElement.classList.add("tw-hide");
                     }
                     if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
 
                 }
+                addStremerInfo();
 
 
                 // Make a Hermes listener to listen for stream data changes
                 const hermes = new Hermes(Number(channelData.id), 'all');
+
+                // Stream end
+                hermes.on('stream_end', async (d) => {
+                    channelData.stream = null;
+                    channelData.live = false;
+
+                    addStremerInfo(['not-first-init']);
+                });
 
                 // Stream info update
                 hermes.on('stream_info_update', async (d) => {
@@ -346,6 +360,7 @@ async function setIframeVideo (args) {
 
                     channelData.broadcastSettings = dataOnEvent.broadcastSettings;
                     channelData.stream = dataOnEvent.stream;
+                    if (channelData.stream == null) channelData.live = false;
                     console.log(`edited channelData: `, channelData);
 
                     addStremerInfo(['not-first-init']);

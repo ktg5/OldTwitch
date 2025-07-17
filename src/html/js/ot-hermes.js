@@ -29,6 +29,15 @@ const HermesTopics = {
 }
 
 
+// Event type
+/**
+ * @typedef {"stream_down" | "stream_info_update" | "viewcount" | "reward_redeem" |
+ *           "clips_leaderboard_update" | "poll" | "event_created" | "event_updated" |
+ *           "raid_update" | "raid_cancel" | "hype_train_update" | "hype_train_lvl_up" |
+ *           "sub_gifts_sent" | "bits"} HermesEvents
+ */
+
+
 // Main
 const hermesUrl = `wss://hermes.twitch.tv/v1?clientId=${anonId}`; // anonId defined at the top of ot-gql.js
 class Hermes extends EventTarget {
@@ -54,7 +63,21 @@ class Hermes extends EventTarget {
 
     #handleEventName(message) {
         let eventName = null;
+
+        if (!message.type) {
+            if (message.event.domain) message.type = message.event.domain;
+        }
+
+        /* 
+         * ##############################
+         * UPDATE THE FUCKING TYPEDEF WHEN ADDING MORE IN HERE FFS
+         * I KNOW YOU'LL FUCKING FORGET IT & YOU'LL BE LIKE, "where's my auto-fill????", YOU DUMBASS
+         * ##############################
+         */
         switch (message.type) {
+            case "stream-down":
+                eventName = "stream_down";
+            break;
             case "broadcast_settings_update":
                 eventName = 'stream_info_update';
             break;
@@ -63,7 +86,11 @@ class Hermes extends EventTarget {
             break;
 
             case "reward-redeemed":
-                eventName = message.type;
+                eventName = 'reward_redeem';
+            break;
+
+            case "clips-leaderboard-update":
+                eventName = "clips_leaderboard_update";
             break;
 
             case "POLL_CREATE":
@@ -71,10 +98,10 @@ class Hermes extends EventTarget {
             break;
 
             case "event-created":
-                eventName = message.type;
+                eventName = 'event_created';
             break;
             case 'event-updated':
-                eventName = message.type;
+                eventName = 'event_updated';
             break;
 
             case "raid_update_v2":
@@ -82,6 +109,21 @@ class Hermes extends EventTarget {
             break;
             case "raid_cancel_v2":
                 eventName = 'raid_cancel';
+            break;
+
+            case "hype-train-progression":
+                eventName = 'hype_train_update';
+            break;
+            case "hype-train-level-up":
+                eventName = 'hype_train_lvl_up';
+            break;
+
+            case "sub-gifts-sent":
+                eventName = 'sub_gifts_sent'
+            break;
+
+            case "bits-usage-by-channel-v1":
+                eventName = 'bits';
             break;
         
 
@@ -158,6 +200,7 @@ class Hermes extends EventTarget {
                 const data = JSON.parse(event.data);
                 // If it's just a keepalive, it's just confirming we're still here
                 if (data.type == "welcome") return console.log('ot-hermes: Hermes said, "welcome"!');
+                if (data.type == "authenticateResponse") return console.log('ot-hermes: Authenticate user to Hermes complete!!');
                 if (data.type == "keepalive") return;
                 // return console.log('ot-hermes: Got "keepalive" response back from Twitch.');
                 if (data.type == 'subscribeResponse') return;
@@ -165,11 +208,13 @@ class Hermes extends EventTarget {
                 // On any errors
                 if (data.error && data.error != '') return console.error(`ot-hermes: Hermes returned error on response:`, data.error);
 
+
                 // Get message data
                 var message = JSON.parse(data.notification.pubsub);
 
                 // Events known types
                 let eventName = this.#handleEventName(message);
+
                 message.eventName = eventName;
                 // Send it out if we found it
                 if (eventName != null) {
@@ -215,6 +260,11 @@ class Hermes extends EventTarget {
     }
 
     // On event
+    /**
+     * @template {HermesEvents} K
+     * @param {K} event
+     * @param {(data: EventPayloads[K]) => void} callback
+     */
     on(event, callback) {
         this.#eventTarget.addEventListener(event, (e) => {
             callback(e.detail);
