@@ -36,41 +36,9 @@ const runtime = browser.runtime;
 const extensionLocation = runtime.getURL('').slice(0, -1);
 var userConfig;
 
-// Default config
-async function getDefaults() {
-    return new Promise(async (resolve, reject) => {
-        await fetch(runtime.getURL('default_config.json')).then(async rawData => {
-            let data = await rawData.json();
 
-            resolve(data);
-        });
-    });
-}
-
-// Get the user config
-async function getUserConfig() {
-    return new Promise(async (resolve, reject) => {
-        async function reset() {
-            userConfig = await getDefaults();
-            localStorage.setItem('oldttv', JSON.stringify(userConfig));
-            handlePageChange();
-        }
-
-        userConfig = JSON.parse(localStorage.getItem('oldttv'));
-        if (userConfig) {
-            // Check if the userConfig doesn't have any unknown values
-            const defConfig = await getDefaults();
-            for (const key in userConfig) {
-                if (defConfig[key] == undefined) {
-                    reset();
-                    return alert('Your user config was found to have unknown values. For security, it has been reset.');
-                }
-            }
-            handlePageChange();
-        } else reset();
-    });
-}
-getUserConfig();
+// Set userConfig -- details in ot-config.js
+getUserConfig(handlePageChange);
 
 
 // Block Twitch scripts from adding their own stuff within the inject
@@ -120,8 +88,65 @@ if (html) {
 };
 
 
+// Listen for messages from the client
+window.addEventListener('message', async (e) => {
+    if (e.source !== window) return;
+
+    if (e.data) switch (e.data.type) {
+        // User config stuff
+        case "ot-get-config":
+			storage.get(['OTConfig'], (res) => {
+				window.postMessage({ type: "ot-get-config-res", res: res.OTConfig });
+			});
+		return true;
+
+		case `ot-set-config`:
+			// Check that no different objects are set
+            let foundWeird = false;
+            const def_ot_config = await getDefaults();
+            for (const key in e.data.config) {
+                if (def_ot_config[key] == undefined) foundWeird = true;
+            }
+
+            // Send back to all pages
+            if (!foundWeird) {
+                userConfig = e.data.config;
+                storage.set({ OTConfig: userConfig });
+
+                window.postMessage({
+                    type: "ot-update-userconfig",
+                    config: userConfig
+                })
+            }
+		return true;
+
+
+        // Fetch from the background script
+        case "ot-demand":
+            // Send to the background,
+            runtime.sendMessage({
+                type: "fetch",
+                url: e.data.url,
+                options: e.data.options
+            }, (res) => {
+                // then get the res & send it back to the client
+                window.postMessage({
+                    type: 'ot-demand-res',
+                    id: e.data.id,
+                    res: res
+                }, '*');
+            });
+        break;
+    }
+});
+
+
 let firstInit = false;
-async function handlePageChange () {
+async function handlePageChange() {
+    // Check if OldTwitch is already loaded
+    if (document.body.getAttribute('oldttv') == extensionLocation) location.reload();
+
+
     const yearDir = `html/${userConfig.year}`;
 
     // First, let's see what page we're working with.
@@ -143,7 +168,7 @@ async function handlePageChange () {
         break;
 
         case location.pathname.startsWith("/directory"):
-            if (location.pathname.startsWith("/directory/category")) injectTarget = runtime.getURL('html/directory/category.html');
+            if (location.pathname.startsWith('/directory/category')) injectTarget = runtime.getURL(`${yearDir}/directory/category.html`);
             else injectTarget = runtime.getURL(`${yearDir}/directory/index.html`);
             injectJSTargets.push(runtime.getURL(`html/js/ot-directory.js`));
         break;

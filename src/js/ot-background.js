@@ -3,27 +3,38 @@ var storage = browser.storage.sync;
 var extension = browser.extension;
 var runtime = browser.runtime;
 
-// On extension update
-runtime.onInstalled.addListener((reason) => {
-	storage.get(['OTConfig'], function(result) {
-		var userConfig = result.OTConfig;
-		// Check to see if user would like to get release notes
-		if (userConfig.showReleaseNotes !== false) {
-			// Check if previous version is not equal to current version
-			if (reason.previousVersion !== runtime.getManifest().version) {
-				// Make sure that only these specific reasons can create tabs
-				switch (reason.reason) {
-					// case 'install':
-					// 	browser.tabs.create({
-					// 		url: `./html/${reason.reason}.html`
-					// 	});
-					// break;
 
-					case 'update':
-						
-					break;
+// Extension socket listener
+runtime.onMessage.addListener((msg, sender, sendResponse) => {
+	switch (msg.type) {
+		case `fetch`:
+			fetch(msg.url, msg.options || {})
+			.then(async res => {
+				const contentType = res.headers.get("content-type");
+				let body;
+
+				// Set body depending on contentType
+				if (contentType && contentType.includes("application/json")) body = await res.json();
+				else body = await res.text();
+
+				// Send back data
+				const resultData = {
+					ok: true,
+					status: res.status,
+					body
 				}
-			}
-		}
-	});
+				console.log('ok', resultData);
+				sendResponse(resultData);
+			})
+			.catch(err => {
+				// Send back error data
+				const resultData = {
+					ok: false,
+					error: err.message
+				}
+				console.error('error', resultData);
+				sendResponse(resultData);
+			});
+		return true;
+	}
 });

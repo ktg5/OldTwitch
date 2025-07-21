@@ -1,4 +1,4 @@
-var userConfig = JSON.parse(localStorage.getItem('oldttv'));
+var userConfig, channels;
 var styles3 = [
     'background: linear-gradient(#06d316, #075702)'
     , 'border: 5px solid rgb(255 255 255 / 10%)'
@@ -7,9 +7,86 @@ var styles3 = [
     , 'text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3)'
     , 'box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 5px 3px -5px rgba(0, 0, 0, 0.5), 0 -13px 5px -10px rgba(255, 255, 255, 0.4) inset'
 ].join(';');
-console.log(`%cOLDTTV USER DATA:`, styles3, userConfig);
-// fetch = window.__nativeFetch__;
 
+
+// Handler for extension messages
+function handleExtensionResponse(type, e, callback) {
+    // Exit if
+    if (
+        e.source !== window
+        || e.data.type !== type
+    ) return;
+
+    callback(e.data);
+}
+
+
+// Get user config & then let everything that needs it run
+function userConfigInit() {
+    // If we get a response back from the main script
+    function onMessage(event) {
+        handleExtensionResponse('ot-get-config-res', event, (data) => {
+            window.removeEventListener('message', onMessage);
+            userConfig = data.res;
+            console.log(`%cOLDTTV USER DATA:`, styles3, userConfig);
+            addGlobals();
+        });
+    }
+    // Listen for responses back from the background
+    window.addEventListener('message', onMessage);
+
+    // Send the message out the main script
+    window.postMessage({
+        type: 'ot-get-config',
+    }, '*');
+}
+userConfigInit();
+
+// Listen for any updates to userconfig
+window.addEventListener('message', async (e) => {
+    if (e.data && e.data.type == 'ot-update-userconfig') {
+        if (userConfig.year !== e.data.config.year) location.reload();
+        userConfig = e.data.config;
+        console.log('Got userConfig update. Set userConfig to the latest we got.');
+        initCmdsForConfig();
+    }
+});
+
+
+// Custom fetch command since Twitch likes to not give us "fetch()" sometimes
+// 
+// This goes from the client, to "js/ot-main" (the extension's main script), and
+// then to the background script ("js/ot-background") to then send it all the
+// way back to the client.
+// 
+// And yes, it's called, "demand".
+function demand(url, options = {}) {
+    return new Promise((resolve) => {
+        // ID to make sure we don't get another demand's res data
+        const id = Math.random().toString(36).slice(2);
+
+        function onMessage(e) {
+            handleExtensionResponse('ot-demand-res', e, (data) => {
+                // If the ID we get does not match the ID with this demand,
+                // ignore it.
+                if (data.id !== id) return;
+                window.removeEventListener('message', onMessage);
+                resolve(data.res);
+            });
+        }
+        window.addEventListener('message', onMessage);
+
+        window.postMessage({
+            type: 'ot-demand',
+            id,
+            url,
+            options
+        }, '*');
+    });
+}
+
+
+// Check if the tabs that are closed
 var tabsClosed = JSON.parse(localStorage.getItem("oldttv-tabsClosed"));
 if (tabsClosed == null) {
     localStorage.setItem("oldttv-tabsClosed", JSON.stringify({
@@ -19,25 +96,10 @@ if (tabsClosed == null) {
     tabsClosed = JSON.parse(localStorage.getItem("oldttv-tabsClosed"));
 }
 
+// Get more global vars
 extensionLocation = document.querySelector('body').getAttribute('oldttv');
 var darkTheme = false;
 const html =  document.querySelector('html');
-
-// Check for dark theme
-if (
-    (
-        userConfig.forceLightMode == true
-        && userConfig.forceWhichLightMode == '1'
-    )
-    || (
-        (userConfig.forceLightMode == undefined || userConfig.forceLightMode == false)
-        && window.matchMedia
-        && window.matchMedia('(prefers-color-scheme: dark)').matches
-    )
-) {
-    html.classList.add(`tw-theme--dark`);
-    darkTheme = true;
-}
 
 
 // Inject requested text to element's innerhtml
@@ -143,231 +205,262 @@ if (document.cookie.split('unique_id')[1]) {
 }
 
 
-// Add navbar if found
-let navbar = document.querySelector(".top-nav");
-if (navbar) {
-    fetch(`${extensionLocation}/html/${userConfig.year}/global/topnav.html`).then(async data => {
-        // Inject HTML
-        let htmlText = await data.text();
-        textToHtml(htmlText, navbar);
+// Init everything that needs the userConfig to be init'd first
+function initCmdsForConfig() {
+    // Check for dark theme
+    if (
+        (
+            userConfig.forceLightMode == true
+            && userConfig.forceWhichLightMode == '1'
+        )
+        || (
+            (userConfig.forceLightMode == undefined || userConfig.forceLightMode == false)
+            && window.matchMedia
+            && window.matchMedia('(prefers-color-scheme: dark)').matches
+        )
+    ) {
+        html.classList.add(`tw-theme--dark`);
+        darkTheme = true;
+    } else if ( userConfig.forceLightMode == true ) {
+        html.classList.remove(`tw-theme--dark`);
+        darkTheme = false;
+    }
+}
 
-        // On click handlers
-        document.querySelector('button[data-a-target="newtwitch-button"]').addEventListener('click', (e) => {
-            if (location.search.includes('?')) location.search += "&nooldttv";
-            else location.search = "?nooldttv";
-        });
+
+// Add global html elements, like the top & side navs
+function addGlobals() {
+    // Run stuff for userConfig
+    initCmdsForConfig();
+
+    // Add navbar if found
+    let navbar = document.querySelector(".top-nav");
+    if (navbar) {
+        demand(`${extensionLocation}/html/${userConfig.year}/global/topnav.html`).then(async data => {
+            // Inject HTML
+            let htmlText = await data.body;
+            textToHtml(htmlText, navbar);
+
+            // On click handlers
+            document.querySelector('button[data-a-target="newtwitch-button"]').addEventListener('click', (e) => {
+                if (location.search.includes('?')) location.search += "&nooldttv";
+                else location.search = "?nooldttv";
+            });
 
 
-        let loginButton = document.querySelector('[data-a-target="login-button"]');
-        let signupButton = document.querySelector('[data-a-target="signup-button"]');
-        // Do stuff with gql
-        if (oauth != null) {
-            let gqlAction = async () => {
-                userData = await gql.getCurrentUser(oauth);
-                console.log(`userData: `, userData);
-            
-                if (userData != null) {
-                    // ### set user info
-                    // remove login & signup buttons
-                    loginButton.parentElement.remove();
-                    signupButton.parentElement.remove();
+            let loginButton = document.querySelector('[data-a-target="login-button"]');
+            let signupButton = document.querySelector('[data-a-target="signup-button"]');
+            // Do stuff with gql
+            if (oauth != null) {
+                let gqlAction = async () => {
+                    userData = await gql.getCurrentUser(oauth);
+                    console.log(`userData: `, userData);
+                
+                    if (userData != null) {
+                        // ### set user info
+                        // remove login & signup buttons
+                        loginButton.parentElement.remove();
+                        signupButton.parentElement.remove();
 
-                    // name & pfp
-                    let targetCard = document.createElement('div');
-                    targetCard.classList.add("user-info", "tw-relative");
-                    targetCard.insertAdjacentHTML('beforeend', `
-                        <button>
-                            <div class="tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
-                                <div class="channel-header__user-avatar channel-header__user-avatar--active tw-align-items-stretch tw-flex tw-flex-shrink-0 tw-mg-r-1">
-                                    <div class="tw-relative">
-                                        <figure class="tw-avatar tw-avatar--size-30">
-                                            <div class="tw-overflow-hidden">
-                                                <img class="tw-image" src="${userData.profileImageURL}">
-                                            </div>
-                                        </figure>
+                        // name & pfp
+                        let targetCard = document.createElement('div');
+                        targetCard.classList.add("user-info", "tw-relative");
+                        targetCard.setAttribute('data-toggle-balloon-id', 'user-info');
+                        targetCard.insertAdjacentHTML('beforeend', `
+                            <button>
+                                <div class="tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
+                                    <div class="channel-header__user-avatar channel-header__user-avatar--active tw-align-items-stretch tw-flex tw-flex-shrink-0 tw-mg-r-1">
+                                        <div class="tw-relative">
+                                            <figure class="tw-avatar tw-avatar--size-30">
+                                                <div class="tw-overflow-hidden">
+                                                    <img class="tw-image" src="${userData.profileImageURL}">
+                                                </div>
+                                            </figure>
+                                        </div>
+                                    </div>
+                                    <div class="tw-align-items-center">
+                                        <span>
+                                            <span>${userData.displayName}</span>
+                                        </span>
                                     </div>
                                 </div>
-                                <div class="tw-align-items-center">
-                                    <span>
-                                        <span>${userData.displayName}</span>
-                                    </span>
+                            </button>
+
+                            <div class="tw-balloon tw-balloon--sm tw-balloon--down tw-balloon--right tw-block tw-absolute tw-hide" data-a-target="overflow-menu">
+                                <div class="tw-balloon__tail tw-overflow-hidden tw-absolute">
+                                    <div class="tw-balloon__tail-symbol tw-border-t tw-border-r tw-border-b tw-border-l tw-border-radius-small tw-c-background  tw-absolute"></div>
+                                </div>
+                                <div class="tw-border-t tw-border-r tw-border-b tw-border-l tw-elevation-1 tw-border-radius-small tw-c-background">
+                                    <div class="tw-pd-1">
+                                        <a href="https://www.twitch.tv/${userData.displayName}" class="tw-interactable" data-a-target="channel-link">
+                                            <div class="tw-pd-x-1 tw-pd-y-05">Channel</div>
+                                        </a>
+                                        <a href="https://dashboard.twitch.tv/u/${userData.displayName}/home" class="tw-interactable" data-a-target="dashboard-link">
+                                            <div class="tw-pd-x-1 tw-pd-y-05">Creator Dashboard</div>
+                                        </a>
+                                        <a href="https://www.twitch.tv/subscriptions" class="tw-interactable" data-a-target="subscriptions-link">
+                                            <div class="tw-pd-x-1 tw-pd-y-05">Subscriptions</div>
+                                        </a>
+                                        <a href="https://www.twitch.tv/inventory" class="tw-interactable" data-a-target="inventory-link">
+                                            <div class="tw-pd-x-1 tw-pd-y-05">Drops & Inventory</div>
+                                        </a>
+                                        <a href="https://www.twitch.tv/oldtwitch" class="tw-interactable" data-a-target="oldtwitch-settings-link">
+                                            <div class="tw-pd-x-1 tw-pd-y-05">OldTwitch Configuration</div>
+                                        </a>
+                                        <a href="https://www.twitch.tv/settings" class="tw-interactable" data-a-target="settings-link">
+                                            <div class="tw-pd-x-1 tw-pd-y-05">Settings</div>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </button>
+                        `);
 
-                        <div class="tw-balloon tw-balloon--sm tw-balloon--down tw-balloon--right tw-block tw-absolute tw-hide" data-a-target="overflow-menu">
-                            <div class="tw-balloon__tail tw-overflow-hidden tw-absolute">
-                                <div class="tw-balloon__tail-symbol tw-border-t tw-border-r tw-border-b tw-border-l tw-border-radius-small tw-c-background  tw-absolute"></div>
-                            </div>
-                            <div class="tw-border-t tw-border-r tw-border-b tw-border-l tw-elevation-1 tw-border-radius-small tw-c-background">
-                                <div class="tw-pd-1">
-                                    <a href="https://www.twitch.tv/${userData.displayName}" class="tw-interactable" data-a-target="channel-link">
-                                        <div class="tw-pd-x-1 tw-pd-y-05">Channel</div>
-                                    </a>
-                                    <a href="https://dashboard.twitch.tv/u/${userData.displayName}/home" class="tw-interactable" data-a-target="dashboard-link">
-                                        <div class="tw-pd-x-1 tw-pd-y-05">Creator Dashboard</div>
-                                    </a>
-                                    <a href="https://www.twitch.tv/subscriptions" class="tw-interactable" data-a-target="subscriptions-link">
-                                        <div class="tw-pd-x-1 tw-pd-y-05">Subscriptions</div>
-                                    </a>
-                                    <a href="https://www.twitch.tv/inventory" class="tw-interactable" data-a-target="inventory-link">
-                                        <div class="tw-pd-x-1 tw-pd-y-05">Drops & Inventory</div>
-                                    </a>
-                                    <a href="https://www.twitch.tv/oldtwitch" class="tw-interactable" data-a-target="oldtwitch-settings-link">
-                                        <div class="tw-pd-x-1 tw-pd-y-05">OldTwitch Configuration</div>
-                                    </a>
-                                    <a href="https://www.twitch.tv/settings" class="tw-interactable" data-a-target="settings-link">
-                                        <div class="tw-pd-x-1 tw-pd-y-05">Settings</div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    `);
-
-                    document.querySelector(`[data-a-target="user-card"]`).appendChild(targetCard);
-                }
-            }
-            if (gql) {
-                gqlAction();
-            } else {
-                let tempInit = setInterval(() => {
-                    if (gql) {
-                        gqlAction();
-                        clearInterval(tempInit);
+                        document.querySelector(`[data-a-target="user-card"]`).appendChild(targetCard);
                     }
-                }, 50);
-            }
-        } else {
-            loginButton.addEventListener('click', () => { popupAction({ type: "login" }) });
-            signupButton.addEventListener('click', () => { popupAction({ type: "signup" }) });
-            let tempInt = setInterval(() => {
-                let signupAlert = document.querySelector('[data-a-target="signup-note"] button');
-                if (signupAlert) {
-                    signupAlert.addEventListener('click', () => { popupAction({ type: "signup" }) });
-                    clearInterval(tempInt);
                 }
-            }, 100);
-        }
-    });
-}
-// Add sidebar if found
-let sidebar = document.querySelector(".side-nav");
-var channels;
-if (sidebar) {
-    fetch(`${extensionLocation}/html/${userConfig.year}/global/sidenav.html`).then(async data => {
-        // Inject HTML
-        let htmlText = await data.text();
-        textToHtml(htmlText, sidebar);
-
-
-        // Get channels
-        channels = await gql.getSideNavData(oauth, [localStorage.getItem("oldttv-currentchannel"), localStorage.getItem("oldttv-lastchannel")]);
-        let followsDiv = document.querySelector(".tw-mg-b-1 .channel-list");
-        let featuresDiv = document.querySelector(".tw-mg-b-2 .channel-list");
-        let streamerFeaturesDiv = document.querySelector(".tw-mg-b-3 .channel-list");
-        console.log('allChannels: ', channels);
-
-        // Turn on lists in sidebar if detected
-        for (const channelList of channels) {
-            let targetDiv;
-            switch (channelList.id) {
-                case "provider-side-nav-followed-channels-1":
-                    followsDiv.parentElement.classList.remove("tw-hide");
-                break;
-
-                case "provider-side-nav-recommended-streams-1":
-                    featuresDiv.parentElement.classList.remove("tw-hide");
-                break;
-
-                case "provider-side-nav-similar-streamer-currently-watching-1":
-                    streamerFeaturesDiv.parentElement.classList.remove("tw-hide");
-                    let streamerFeaturesDivTitle = document.querySelector(`.tw-mg-b-3 [data-a-target="side-nav-header-expanded"] .tw-c-text-alt`);
-                    streamerFeaturesDivTitle.innerHTML = streamerFeaturesDivTitle.innerHTML.replace("[__STREAMER__]", localStorage.getItem("oldttv-currentchannel"));
-                break;
+                if (gql) {
+                    gqlAction();
+                } else {
+                    let tempInit = setInterval(() => {
+                        if (gql) {
+                            gqlAction();
+                            clearInterval(tempInit);
+                        }
+                    }, 50);
+                }
+            } else {
+                loginButton.addEventListener('click', () => { popupAction({ type: "login" }) });
+                signupButton.addEventListener('click', () => { popupAction({ type: "signup" }) });
+                document.querySelector('[data-a-target="oldtwitch-settings"]').addEventListener('click', () => { location.href = "/oldtwitch" });
+                let tempInt = setInterval(() => {
+                    let signupAlert = document.querySelector('[data-a-target="signup-note"] button');
+                    if (signupAlert) {
+                        signupAlert.addEventListener('click', () => { popupAction({ type: "signup" }) });
+                        clearInterval(tempInt);
+                    }
+                }, 100);
             }
-        }
+        });
+    }
+    // Add sidebar if found
+    let sidebar = document.querySelector(".side-nav");
+    var channels;
+    if (sidebar) {
+        demand(`${extensionLocation}/html/${userConfig.year}/global/sidenav.html`).then(async data => {
+            // Inject HTML
+            let htmlText = await data.body;
+            textToHtml(htmlText, sidebar);
 
-        // Set channels in the left sidebar
-        for (const channelList of channels) {
-            let targetDiv;
-            switch (channelList.id) {
-                case "provider-side-nav-followed-channels-1":
-                    targetDiv = followsDiv;
-                break;
 
-                case "provider-side-nav-recommended-streams-1":
-                    targetDiv = featuresDiv;
-                break;
+            // Get channels
+            channels = await gql.getSideNavData(oauth, [localStorage.getItem("oldttv-currentchannel"), localStorage.getItem("oldttv-lastchannel")]);
+            let followsDiv = document.querySelector(".tw-mg-b-1 .channel-list");
+            let featuresDiv = document.querySelector(".tw-mg-b-2 .channel-list");
+            let streamerFeaturesDiv = document.querySelector(".tw-mg-b-3 .channel-list");
+            console.log('allChannels: ', channels);
 
-                case "provider-side-nav-similar-streamer-currently-watching-1":
-                    targetDiv = streamerFeaturesDiv;
-                break;
-            }
-
-            channelList.items.forEach(stream => {
-                let channelDiv;
-
-                if (stream === null) return console.warn('null stream, possibly banned or deleted: ', stream);
-                switch (stream.__typename) {
-                    case "Stream":
-                        let categoryTxt, viewCountTxt = null;
-                        if (stream.game) categoryTxt = stream.game.displayName;
-                        if (stream.viewersCount) viewCountTxt = stream.viewersCount;
-
-                        // make div
-                        channelDiv = document.createElement("a");
-                        channelDiv.classList.add("channel");
-
-                        // sometimes the gql returns null, idk why it even pulls it, but whatever.
-                        if (!stream.broadcaster) return console.warn('no user, stream: ', stream);
-
-                        channelDiv.href = `https://twitch.tv/${stream.broadcaster.login}`;
-                        if (stream.broadcaster) channelDiv.title = stream.broadcaster.broadcastSettings.title;
-                        channelDiv.innerHTML = `
-                        <figure class="tw-avatar tw-avatar--size-30">
-                            <div class="tw-overflow-hidden">
-                                <img class="tw-image" src="${stream.broadcaster.profileImageURL}">
-                            </div>
-                        </figure>
-                        <div class="channel-info">
-                            <div class="left">
-                                <span class="title">${stream.broadcaster.displayName}</span>
-                                <span class="category">${categoryTxt ? categoryTxt : ""}</span>
-                            </div>
-                            <div class="right">
-                                ${viewCountTxt ? viewCountTxt : "0"}
-                            </div>
-                        </div>
-                        `;
-                        targetDiv.appendChild(channelDiv);
+            // Turn on lists in sidebar if detected
+            for (const channelList of channels) {
+                let targetDiv;
+                switch (channelList.id) {
+                    case "provider-side-nav-followed-channels-1":
+                        followsDiv.parentElement.classList.remove("tw-hide");
                     break;
 
-                    case "User":
-                        // make div
-                        channelDiv = document.createElement("a");
-                        channelDiv.classList.add("channel");
-        
-                        channelDiv.href = `https://twitch.tv/${stream.login}`;
-                        if (stream.content) channelDiv.title = stream.broadcastSettings.title;
-                        channelDiv.innerHTML = `
-                        <figure class="tw-avatar tw-avatar--size-30">
-                            <div class="tw-overflow-hidden">
-                                <img class="tw-image" src="${stream.profileImageURL}">
-                            </div>
-                        </figure>
-                        <div class="channel-info">
-                            <div class="left">
-                                <span class="title">${stream.displayName}</span>
-                            </div>
-                            <div class="right tw-hide"}"></div>
-                        </div>
-                        `;
-                        targetDiv.appendChild(channelDiv);
+                    case "provider-side-nav-recommended-streams-1":
+                        featuresDiv.parentElement.classList.remove("tw-hide");
+                    break;
+
+                    case "provider-side-nav-similar-streamer-currently-watching-1":
+                        streamerFeaturesDiv.parentElement.classList.remove("tw-hide");
+                        let streamerFeaturesDivTitle = document.querySelector(`.tw-mg-b-3 [data-a-target="side-nav-header-expanded"] .tw-c-text-alt`);
+                        streamerFeaturesDivTitle.innerHTML = streamerFeaturesDivTitle.innerHTML.replace("[__STREAMER__]", localStorage.getItem("oldttv-currentchannel"));
                     break;
                 }
-            });
-        }
-    });
+            }
+
+            // Set channels in the left sidebar
+            for (const channelList of channels) {
+                let targetDiv;
+                switch (channelList.id) {
+                    case "provider-side-nav-followed-channels-1":
+                        targetDiv = followsDiv;
+                    break;
+
+                    case "provider-side-nav-recommended-streams-1":
+                        targetDiv = featuresDiv;
+                    break;
+
+                    case "provider-side-nav-similar-streamer-currently-watching-1":
+                        targetDiv = streamerFeaturesDiv;
+                    break;
+                }
+
+                channelList.items.forEach(stream => {
+                    let channelDiv;
+
+                    if (stream === null) return console.warn('null stream, possibly banned or deleted: ', stream);
+                    switch (stream.__typename) {
+                        case "Stream":
+                            let categoryTxt, viewCountTxt = null;
+                            if (stream.game) categoryTxt = stream.game.displayName;
+                            if (stream.viewersCount) viewCountTxt = stream.viewersCount;
+
+                            // make div
+                            channelDiv = document.createElement("a");
+                            channelDiv.classList.add("channel");
+
+                            // sometimes the gql returns null, idk why it even pulls it, but whatever.
+                            if (!stream.broadcaster) return console.warn('no user, stream: ', stream);
+
+                            channelDiv.href = `https://twitch.tv/${stream.broadcaster.login}`;
+                            if (stream.broadcaster) channelDiv.title = stream.broadcaster.broadcastSettings.title;
+                            channelDiv.innerHTML = `
+                            <figure class="tw-avatar tw-avatar--size-30">
+                                <div class="tw-overflow-hidden">
+                                    <img class="tw-image" src="${stream.broadcaster.profileImageURL}">
+                                </div>
+                            </figure>
+                            <div class="channel-info">
+                                <div class="left">
+                                    <span class="title">${stream.broadcaster.displayName}</span>
+                                    <span class="category">${categoryTxt ? categoryTxt : ""}</span>
+                                </div>
+                                <div class="right">
+                                    ${viewCountTxt ? viewCountTxt : "0"}
+                                </div>
+                            </div>
+                            `;
+                            targetDiv.appendChild(channelDiv);
+                        break;
+
+                        case "User":
+                            // make div
+                            channelDiv = document.createElement("a");
+                            channelDiv.classList.add("channel");
+            
+                            channelDiv.href = `https://twitch.tv/${stream.login}`;
+                            if (stream.content) channelDiv.title = stream.broadcastSettings.title;
+                            channelDiv.innerHTML = `
+                            <figure class="tw-avatar tw-avatar--size-30">
+                                <div class="tw-overflow-hidden">
+                                    <img class="tw-image" src="${stream.profileImageURL}">
+                                </div>
+                            </figure>
+                            <div class="channel-info">
+                                <div class="left">
+                                    <span class="title">${stream.displayName}</span>
+                                </div>
+                                <div class="right tw-hide"}"></div>
+                            </div>
+                            `;
+                            targetDiv.appendChild(channelDiv);
+                        break;
+                    }
+                });
+            }
+        });
+    }
 }
 
 
@@ -437,12 +530,12 @@ function popupAction(args) {
     switch (args.type) {
         case "signup":
             popupWindowIF.src = "/signup";
-            args.resizeTarget = '.simplebar-content .Layout-sc-1xcs6mc-0';
+            args.resizeTarget = '.scrollable-area .Layout-sc-1xcs6mc-0';
         break;
     
         case "login":
             popupWindowIF.src = "/login";
-            args.resizeTarget = '.simplebar-content .Layout-sc-1xcs6mc-0';
+            args.resizeTarget = '.scrollable-area .Layout-sc-1xcs6mc-0';
         break;
 
         case 'editclip':
@@ -665,16 +758,31 @@ setTimeout(async () => {
 
 
     // Set balloon toggles
-    document.querySelectorAll('.tw-balloon').forEach(balloon => {
-        let balloonToggler = balloon.parentElement.children[0];
-        document.addEventListener('click', (e) => {
-            if (
-                (e.target === balloon || balloon.contains(e.target)) || 
-                (e.target === balloonToggler || balloonToggler.contains(e.target))
-            ) {
-                if (balloonToggler.getAttribute("data-a-target") != "nav-search-input") balloon.classList.remove('tw-hide');
-            } else balloon.classList.add('tw-hide');
-        });
+    document.querySelectorAll('[data-toggle-balloon-id]').forEach(balloonParent => {
+        let balloonToggler = balloonParent.children[0];
+        const balloon = balloonParent.children[1];
+        if (balloonToggler.tagName !== "BUTTON") balloonToggler = balloonParent.children[0].querySelectorAll('button')[0];
+
+        if (
+            balloonToggler
+            && balloonToggler.getAttribute("data-a-target") !== "nav-search-input"
+        ) {
+            balloonToggler.setAttribute('data-balloon-toggler', null);
+            balloonToggler.addEventListener('click', () => {
+                balloonParent.children[1].classList.toggle('tw-hide');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!
+                    (
+                        (e.target === balloon || balloon.contains(e.target))
+                        || (e.target === balloonToggler || balloonToggler.contains(e.target))
+                    )
+                    && balloonToggler.getAttribute("data-a-target") != "nav-search-input"
+                ) balloon.classList.add('tw-hide');
+            });
+        
+        }
     });
 
 

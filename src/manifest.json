@@ -11,8 +11,8 @@
     "permissions": [
         "storage",
         "cookies",
-        "webRequest",
-        "webRequestBlocking"
+        "scripting",
+        "webRequest"
     ],
 
     "content_scripts": [
@@ -26,31 +26,31 @@
                 "*://www.twitch.tv/signup", "*://www.twitch.tv/login", "*://www.twitch.tv/user/*",
                 "*://clips.twitch.tv/embed*", "*://clips.twitch.tv/create*"
             ],
-            "js": ["js/ot-main.js"],
+            "js": ["js/ot-config.js", "js/ot-main.js"],
             "all_frames": true,
             "run_at": "document_start"
         },
 
         {
             "matches": ["*://www.twitch.tv/*?*nooldttv*"],
-            "js": ["js/ot-newttv.js"],
+            "js": ["js/ot-config.js", "js/ot-newttv.js"],
             "run_at": "document_end"
         },
         {
             "matches": ["*://www.twitch.tv/*?*editclip*"],
-            "js": ["js/ot-newttv.js"],
+            "js": ["js/ot-config.js", "js/ot-newttv.js"],
             "all_frames": true,
             "run_at": "document_end"
         },
         {
             "matches": ["*://www.twitch.tv/embed/*", "*://clips.twitch.tv/embed*"],
-            "js": ["js/ot-embed.js"],
+            "js": ["js/ot-config.js", "js/ot-embed.js"],
             "all_frames": true,
             "run_at": "document_end"
         },
         {
             "matches": ["*://player.twitch.tv/*"],
-            "js": ["js/ot-embed.js"],
+            "js": ["js/ot-config.js", "js/ot-embed.js"],
             "all_frames": true,
             "run_at": "document_start"
         }

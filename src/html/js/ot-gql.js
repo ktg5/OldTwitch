@@ -29,7 +29,7 @@ class Gql {
         if (oauth && !this.oauth) this.oauth = oauth;
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/integrity", {
+            await demand("https://gql.twitch.tv/integrity", {
                 "headers": {
                     "authorization": `OAuth ${oauth}`,
                     "client-id": this.clientid,
@@ -38,7 +38,7 @@ class Gql {
                 "body": null,
                 "method": "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -65,7 +65,7 @@ class Gql {
         if (oauth && !this.oauth) this.oauth = oauth;
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "authorization": `OAuth ${oauth}`,
                     "client-id": this.clientid,
@@ -83,7 +83,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.currentUser);
@@ -111,7 +111,7 @@ class Gql {
                 await this.getClientInteg(oauth);
             }
 
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "authorization": `OAuth ${oauth}`,
                     "client-id": this.clientid,
@@ -136,7 +136,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -173,7 +173,7 @@ class Gql {
         }
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                     "x-device-id": "0"
@@ -222,7 +222,7 @@ class Gql {
                 ]),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 data.forEach(element => {
                     if (element.errors) {
@@ -279,7 +279,7 @@ class Gql {
         }
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: Headers,
                 body: JSON.stringify({
                     "operationName": "BrowsePage_AllDirectories",
@@ -302,7 +302,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors || data.error) resolve({ errors: data.errors ? data.errors : data.message });
                 else {
@@ -386,12 +386,12 @@ class Gql {
         }
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: Headers,
                 body: JSON.stringify(Body),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) return resolve({ errors: data.errors });
 
@@ -426,7 +426,7 @@ class Gql {
         if (!string) return console.error(`"string" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid
                 },
@@ -447,7 +447,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -469,7 +469,7 @@ class Gql {
         if (!string) return console.error(`"string" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid
                 },
@@ -494,7 +494,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -550,7 +550,7 @@ class Gql {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {   
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -621,7 +621,7 @@ class Gql {
                 ]),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -647,7 +647,7 @@ class Gql {
                     if (cleanData.stream) cleanData.stream.startedAt = data[4].data.user.stream.createdAt;
                     if (gameSlug) cleanData.broadcastSettings.game = await this.getCategory(gameSlug);
 
-                    await fetch("https://gql.twitch.tv/gql", {
+                    await demand("https://gql.twitch.tv/gql", {
                         headers: {
                             "client-id": this.clientid,
                         },
@@ -665,7 +665,7 @@ class Gql {
                         }),
                         method: "POST"
                     }).then(async rawDataT => {
-                        let dataT = await rawDataT.json();
+                        let dataT = rawDataT.body;
 
                         cleanData = {
                             ...cleanData,
@@ -684,7 +684,7 @@ class Gql {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -728,7 +728,7 @@ class Gql {
                 ]),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
                 if (data.errors) resolve({ errors: data.errors });
 
                 let isLive = data[0].data.user.stream != null;
@@ -756,7 +756,7 @@ class Gql {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -778,7 +778,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
                 if (data.errors) resolve({ errors: data.errors });
 
                 let cleanData = [];
@@ -810,7 +810,7 @@ class Gql {
         else console.warn("filter arg not set, going with \"LAST_WEEK\".");
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -834,7 +834,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
 
@@ -857,7 +857,7 @@ class Gql {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -877,7 +877,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                const data = await rawData.json();
+                const data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 const subList = data.data.user.subscriptionProducts;
@@ -909,7 +909,7 @@ class Gql {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -927,7 +927,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 if (data.data.user.stream == null) {
@@ -954,7 +954,7 @@ class Gql {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -972,7 +972,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 if (data.data.user.stream != null) {
@@ -995,7 +995,7 @@ class Gql {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -1013,7 +1013,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 if (data.data.user.stream != null) resolve(true);
@@ -1046,7 +1046,7 @@ class Gql {
                 await this.getClientInteg(oauth);
             }
 
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "authorization": `OAuth ${oauth}`,
                     "client-id": this.clientid,
@@ -1070,7 +1070,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.followUser);
@@ -1100,7 +1100,7 @@ class Gql {
                 await this.getClientInteg(oauth);
             }
 
-            await fetch("https://gql.twitch.tv/gql", {
+            await demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "authorization": `OAuth ${oauth}`,
                     "client-id": this.clientid,
@@ -1123,7 +1123,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
                 console.log(data);
 
                 if (data.errors) resolve({ errors: data.errors });
@@ -1143,7 +1143,7 @@ class Gql {
         if (!query) return console.error(`"query" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            fetch("https://gql.twitch.tv/gql", {
+            demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -1168,7 +1168,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve({
@@ -1223,7 +1223,7 @@ class Gql {
         }
 
         return new Promise(async (resolve, reject) => {
-            fetch("https://gql.twitch.tv/gql", {
+            demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -1306,7 +1306,7 @@ class Gql {
                 ]),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -1344,7 +1344,7 @@ class Gql {
         if (!slug) return console.error(`"slug" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            fetch("https://gql.twitch.tv/gql", {
+            demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -1362,7 +1362,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.game);
@@ -1402,7 +1402,7 @@ class Gql {
         }
 
         return new Promise(async (resolve, reject) => {
-            fetch("https://gql.twitch.tv/gql", {
+            demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -1437,7 +1437,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -1464,7 +1464,7 @@ class Gql {
         if (!Array.isArray(tags)) tags = [tags]; 
 
         return new Promise((resolve, reject) => {
-            fetch("https://gql.twitch.tv/gql", {
+            demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -1496,7 +1496,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.streams.edges);
@@ -1514,7 +1514,7 @@ class Gql {
         if (!id) return console.error(`"id" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            fetch("https://gql.twitch.tv/gql", {
+            demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -1537,8 +1537,8 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
-                if (data.data.video) await fetch("https://gql.twitch.tv/gql", {
+                let data = rawData.body;
+                if (data.data.video) await demand("https://gql.twitch.tv/gql", {
                     headers: {
                         "client-id": this.clientid,
                     },
@@ -1557,7 +1557,7 @@ class Gql {
                     }),
                     method: "POST"
                 }).then(async rawDataT => {
-                    let dataT = await rawDataT.json();
+                    let dataT = rawDataT.body;
 
                     if (dataT.errors) resolve({ errors: dataT.errors });
                     else resolve(dataT.data.video);
@@ -1579,7 +1579,7 @@ class Gql {
         if (!id) return console.error(`"id" is required but returned null.`);
 
         return new Promise((resolve, reject) => {
-            fetch("https://gql.twitch.tv/gql", {
+            demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -1598,7 +1598,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.video.comments.edges);
@@ -1615,7 +1615,7 @@ class Gql {
         if (!slug) return console.error(`"slug" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            fetch("https://gql.twitch.tv/gql", {
+            demand("https://gql.twitch.tv/gql", {
                 headers: {
                     "client-id": this.clientid,
                 },
@@ -1633,7 +1633,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
+                let data = rawData.body;
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.clip);

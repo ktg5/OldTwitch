@@ -31,10 +31,11 @@ const HermesTopics = {
 
 // Event type
 /**
- * @typedef {"stream_down" | "stream_info_update" | "viewcount" | "reward_redeem" |
- *           "clips_leaderboard_update" | "poll" | "event_created" | "event_updated" |
- *           "raid_update" | "raid_cancel" | "hype_train_update" | "hype_train_lvl_up" |
- *           "sub_gifts_sent" | "bits"} HermesEvents
+ * @typedef {"stream-down" | "stream-info_update" | "stream-viewcount" | "reward-redeem" |
+ *           "clips_leaderboard" | "poll" | "event-created" | "event-updated" |
+ *           "raid-update" | "raid-cancel" | "hype_train-update" | "hype_train-lvl_up" |
+ *           "sub_gifts" | "bits" | "chat-pin_message" | "chat-unpin_message" | "goal-update" |
+ *           "stream-room-update" | "stream-commercial"} HermesEvents
  */
 
 
@@ -76,21 +77,34 @@ class Hermes extends EventTarget {
          */
         switch (message.type) {
             case "stream-down":
-                eventName = "stream_down";
+                eventName = message.type;
             break;
             case "broadcast_settings_update":
-                eventName = 'stream_info_update';
+                eventName = 'stream-info_update';
             break;
             case "viewcount":
-                eventName = message.type;
+                eventName = 'stream-viewcount';
+            break;
+            case "updated_room":
+                eventName = 'stream-room-update';
+            break;
+            case "commercial":
+                eventName = 'stream-commercial';
+            break;
+
+            case "pin-message":
+                eventName = 'chat-pin_message';
+            break;
+            case "unpin-message":
+                eventName = 'chat-unpin_message';
             break;
 
             case "reward-redeemed":
-                eventName = 'reward_redeem';
+                eventName = 'reward-redeem';
             break;
 
             case "clips-leaderboard-update":
-                eventName = "clips_leaderboard_update";
+                eventName = "clips_leaderboard";
             break;
 
             case "POLL_CREATE":
@@ -98,28 +112,32 @@ class Hermes extends EventTarget {
             break;
 
             case "event-created":
-                eventName = 'event_created';
+                eventName = 'event-created';
             break;
             case 'event-updated':
-                eventName = 'event_updated';
+                eventName = 'event-updated';
+            break;
+
+            case 'goal_updated':
+                eventName = 'goal-update';
             break;
 
             case "raid_update_v2":
-                eventName = 'raid_update';
+                eventName = 'raid-update';
             break;
             case "raid_cancel_v2":
-                eventName = 'raid_cancel';
+                eventName = 'raid-cancel';
             break;
 
             case "hype-train-progression":
-                eventName = 'hype_train_update';
+                eventName = 'hype_train-update';
             break;
             case "hype-train-level-up":
-                eventName = 'hype_train_lvl_up';
+                eventName = 'hype_train-lvl_up';
             break;
 
             case "sub-gifts-sent":
-                eventName = 'sub_gifts_sent'
+                eventName = 'sub_gifts'
             break;
 
             case "bits-usage-by-channel-v1":
@@ -128,7 +146,7 @@ class Hermes extends EventTarget {
         
 
             default:
-                console.log('ot-hermes: Got a notification message that doesn\'t have a [custom] event name (yet), using the type returned: ', {
+                console.log('ot-hermes: Got a notification message that doesn\'t have a [custom] event name (yet) returned: ', {
                     type: message.type,
                     message: message
                 });
@@ -262,7 +280,7 @@ class Hermes extends EventTarget {
     // On event
     /**
      * @template {HermesEvents} K
-     * @param {K} event
+     * @param {string} event
      * @param {(data: EventPayloads[K]) => void} callback
      */
     on(event, callback) {

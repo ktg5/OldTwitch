@@ -4,7 +4,11 @@ const storage = browser.storage.sync;
 const extension = browser.extension;
 const runtime = browser.runtime;
 const extensionLocation = runtime.getURL('').slice(0, -1);
-var userConfig = JSON.parse(localStorage.getItem('oldttv'));
+var userConfig;
+
+
+// Set userConfig -- details in ot-config.js
+getUserConfig();
 
 
 setTimeout(() => {

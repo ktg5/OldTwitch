@@ -1,4 +1,5 @@
 /* PLAYER BASE */
+
 .gaSyOh.gaSyOh {
     --range-size: 8px !important;
     --color-background-range: black;
@@ -13,7 +14,7 @@
     transition: none !important;
 }
 
-.Layout-sc-1xcs6mc-0.iNwAOC {
+.Layout-sc-1xcs6mc-0.eeHgUV {
     margin: 0 !important;
 }
 
@@ -32,15 +33,39 @@
     margin: 0 !important;
 }
 
+
 /* ################################# */
+
+
+/* TOP INFO */
+
+.top-bar {
+    background: transparent !important;
+}
+
+.tw-card {
+    display: none !important;
+}
+
+[data-a-target="player-stream-info-social-panel"] {
+    margin-top: 0 !important;
+}
+
+
+/* ################################# */
+
 
 /* SEEKER */
 
-[data-a-target="player-controls"] .Layout-sc-1xcs6mc-0.kqEiLc {
+[data-a-target="player-controls"] .kIqpCX {
     padding: 0 !important;
 }
 
-[data-a-target="player-seekbar"].seekbar-interaction-area {
+[data-a-target="player-controls"] .vod-seekbar-time-labels {
+    padding-inline: 10px !important;
+}
+
+[data-a-target="player-controls"] [data-a-target="player-seekbar"].seekbar-interaction-area {
     padding-bottom: 0 !important;
 }
 
@@ -50,9 +75,23 @@
     height: 8px !important;
 }
 
+
 /* ################################# */
 
-/* BUTTONS */
+
+/* BUTTONS BASE */
+
+.dcNXJO:hover,
+.gGttfb[aria-haspopup="menu"]:hover,
+.tw-root--hover .tw-button-icon--overlay:not(.tw-button-icon--disabled):hover,
+.tw-root--hover .tw-button-icon--overlay:not(:disabled):hover
+{
+    filter: brightness(1.25);
+    background-color: transparent !important;
+}
+
+
+/* BUTTONS COLOR */
 
 #channel-player [aria-haspopup="menu"] svg {
     color: #b5b5b5;
@@ -62,7 +101,9 @@ figure.ffz-player-icon {
     color: #b5b5b5;
 }
 
+
 /* VOLUME CONTROL */
+
 .ScRangeFillValue-sc-q01wc3-3.isXtHy {
     background: var(--color-current-range);
 }
@@ -72,9 +113,26 @@ figure.ffz-player-icon {
     opacity: 1;
 }
 
+/* CLIPS */
+
+.gGttfb[aria-haspopup="menu"] {
+    background-color: transparent !important;
+}
+
+.gGttfb[aria-haspopup="menu"] .kaIUar {
+    padding: 0 !important;
+}
+
+.gGttfb[aria-haspopup="menu"] [data-a-target="tw-core-button-label-text"] {
+    display: none !important;
+}
+
+
 /* ################################# */
 
+
 /* VIEWING VODS */
+
 .Layout-sc-nxg1ff-0.fcSUKA {
     padding-right: 0px !important;
     padding-left: 0px !important;

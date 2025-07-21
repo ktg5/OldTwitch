@@ -367,7 +367,7 @@ async function setIframeVideo (args) {
                 });
 
                 // Viewer count update
-                hermes.on('viewcount', async (d) => {
+                hermes.on('stream-viewcount', async (d) => {
                     channelData.stream.viewersCount = d.viewers;
                     addStremerInfo(['not-first-init']);
                 });

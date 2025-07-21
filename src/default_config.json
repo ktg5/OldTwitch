@@ -2,5 +2,6 @@
     "year": "2018",
     "showReleaseNotes": true,
     "forceLightMode": false,
+    "alertUpdates": false,
     "forceWhichLightMode": "0"
 }
