@@ -304,9 +304,6 @@ function addGlobals() {
                                         <a href="https://www.twitch.tv/inventory" class="tw-interactable" data-a-target="inventory-link">
                                             <div class="tw-pd-x-1 tw-pd-y-05">Drops & Inventory</div>
                                         </a>
-                                        <a href="https://www.twitch.tv/oldtwitch" class="tw-interactable" data-a-target="oldtwitch-settings-link">
-                                            <div class="tw-pd-x-1 tw-pd-y-05">OldTwitch Configuration</div>
-                                        </a>
                                         <a href="https://www.twitch.tv/settings" class="tw-interactable" data-a-target="settings-link">
                                             <div class="tw-pd-x-1 tw-pd-y-05">Settings</div>
                                         </a>
@@ -317,6 +314,7 @@ function addGlobals() {
 
                         document.querySelector(`[data-a-target="user-card"]`).appendChild(targetCard);
                     }
+                    initBalloons();
                 }
                 if (gql) {
                     gqlAction();
@@ -338,6 +336,7 @@ function addGlobals() {
                         signupAlert.addEventListener('click', () => { popupAction({ type: "signup" }) });
                         clearInterval(tempInt);
                     }
+                    initBalloons();
                 }, 100);
             }
         });
@@ -629,6 +628,39 @@ function closePopupAction() {
 }
 
 
+function initBalloons() {
+    document.querySelectorAll('[data-toggle-balloon-id]').forEach(balloonParent => {
+        let balloonToggler = balloonParent.children[0];
+        if (balloonParent.classList.contains('user-info')) console.log(balloonParent);
+        if (balloonToggler.tagName !== "BUTTON") balloonToggler = balloonParent.children[0].querySelectorAll('button')[0];
+        if (balloonParent.classList.contains('user-info')) console.log(balloonToggler);
+        const balloon = balloonParent.children[1];
+
+        if (
+            balloonToggler
+            && balloonToggler.getAttribute("data-a-target") !== "nav-search-input"
+            && balloon
+        ) {
+            balloonToggler.setAttribute('data-balloon-toggler', null);
+            balloonToggler.addEventListener('click', () => {
+                balloonParent.children[1].classList.toggle('tw-hide');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!
+                    (
+                        (e.target === balloon || balloon.contains(e.target))
+                        || (e.target === balloonToggler || balloonToggler.contains(e.target))
+                    )
+                    && balloonToggler.getAttribute("data-a-target") != "nav-search-input"
+                ) balloon.classList.add('tw-hide');
+            });
+        
+        }
+    });
+}
+
+
 // On load
 var currentVersion;
 setTimeout(async () => {
@@ -755,35 +787,6 @@ setTimeout(async () => {
             }
         });
     }
-
-
-    // Set balloon toggles
-    document.querySelectorAll('[data-toggle-balloon-id]').forEach(balloonParent => {
-        let balloonToggler = balloonParent.children[0];
-        const balloon = balloonParent.children[1];
-        if (balloonToggler.tagName !== "BUTTON") balloonToggler = balloonParent.children[0].querySelectorAll('button')[0];
-
-        if (
-            balloonToggler
-            && balloonToggler.getAttribute("data-a-target") !== "nav-search-input"
-        ) {
-            balloonToggler.setAttribute('data-balloon-toggler', null);
-            balloonToggler.addEventListener('click', () => {
-                balloonParent.children[1].classList.toggle('tw-hide');
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!
-                    (
-                        (e.target === balloon || balloon.contains(e.target))
-                        || (e.target === balloonToggler || balloonToggler.contains(e.target))
-                    )
-                    && balloonToggler.getAttribute("data-a-target") != "nav-search-input"
-                ) balloon.classList.add('tw-hide');
-            });
-        
-        }
-    });
 
 
     // If index page, do index page things

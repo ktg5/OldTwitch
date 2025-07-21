@@ -45,7 +45,7 @@ Screenshots taken from dev3:0.0.4
 
 - [x] get an api key or something to get the user's stats, such as following, recommends, etc. and also use for streamer stats.
 - [x] ~~figure out how to get PubSub to worky~~
-- [ ] figure out how to get Hermes WS to worky
+- [x] figure out how to get Hermes WS to worky
 
 - [x] finish home page.
 
