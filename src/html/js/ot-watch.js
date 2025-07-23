@@ -592,7 +592,7 @@ async function setIframeVideo (args) {
                 const decodeTime = `${Math.floor(clipSeconds / 3600)}h${Math.floor((clipSeconds % 3600) / 60)}m${clipSeconds % 60 - 30}s`;
                 vodButton.querySelector('button').addEventListener('click', e => { location.href = `https://twitch.tv/videos/${clipData.video.id}?t=${decodeTime}` });
                 // add edit button if owner of clip
-                if (
+                if (userData) if (
                     clipData.curator.displayName == userData.displayName
                     || clipData.broadcaster.displayName == userData.displayName
                 ) {

@@ -24,7 +24,8 @@
                 "*://www.twitch.tv/inventory", "*://www.twitch.tv/embed-error/*", "*://www.twitch.tv/jobs/*",
                 "*://www.twitch.tv/settings/*", "*://www.twitch.tv/privacy", "*://www.twitch.tv/subscriptions",
                 "*://www.twitch.tv/signup", "*://www.twitch.tv/login", "*://www.twitch.tv/user/*",
-                "*://clips.twitch.tv/embed*", "*://clips.twitch.tv/create*"
+                "*://clips.twitch.tv/embed*", "*://clips.twitch.tv/create*", "*://www.twitch.tv/settings",
+                "*://www.twitch.tv/drops"
             ],
             "js": ["js/ot-config.js", "js/ot-main.js"],
             "all_frames": true,

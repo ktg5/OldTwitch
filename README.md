@@ -1,4 +1,4 @@
-<h1 align="center">OldTwitch <kbd>dev4:0.0.7</kbd></h1>
+<h1 align="center">OldTwitch <kbd>dev5:0.0.7</kbd></h1>
 <div font-size="24px" align="center">A browser extension to bring back the old Twitch look.</div>
 <div font-size="16px" align="center"><b>For the moment, please download OldTwitch from the <a href="https://github.com/ktg5/OldTwitch/actions/workflows/build.yml">Actions page for more recent builds</a>, or the <a href="https://github.com/ktg5/OldTwitch/releases">Releases page for older builds</a></b></div>
 <br>
@@ -55,6 +55,8 @@ Screenshots taken from dev3:0.0.4
     - [x] channel list show more & less buttons.
 
 - [x] stream page.
+    - [ ] **might** have to make a custom twitch player 'cuz embeds are completely broken at the moment...
+
     - [x] show list of streamer's vods & clips via a little category page added within the watch page.
     - [x] make the stupid svgs for the stuff on the stream info thingy idk what to call it lmao.
     - [ ] fix weird glitch that happens when fullscreening a stream (just pauses a little after fullscreening, it's so weird...)

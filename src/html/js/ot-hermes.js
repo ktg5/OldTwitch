@@ -35,7 +35,7 @@ const HermesTopics = {
  *           "clips_leaderboard" | "poll" | "event-created" | "event-updated" |
  *           "raid-update" | "raid-cancel" | "hype_train-update" | "hype_train-lvl_up" |
  *           "sub_gifts" | "bits" | "chat-pin_message" | "chat-unpin_message" | "goal-update" |
- *           "stream-room-update" | "stream-commercial"} HermesEvents
+ *           "stream-room-update" | "stream-commercial" | "poll-update" | "poll-result"} HermesEvents
  */
 
 
@@ -108,7 +108,13 @@ class Hermes extends EventTarget {
             break;
 
             case "POLL_CREATE":
-                eventName = 'poll';
+                eventName = 'poll-create';
+            break;
+            case "POLL_UPDATE":
+                eventName = 'poll-update';
+            break;
+            case "POLL_COMPLETE":
+                eventName = 'poll-result';
             break;
 
             case "event-created":
