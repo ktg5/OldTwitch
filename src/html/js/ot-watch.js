@@ -371,6 +371,11 @@ async function setIframeVideo (args) {
                     channelData.stream.viewersCount = d.viewers;
                     addStremerInfo(['not-first-init']);
                 });
+
+                // On raid
+                hermes.on('raid-go', async (d) => {
+                    location.href = `/${d.raid.target_login}`;
+                });
             };
             if (gql) {
                 gqlAction();

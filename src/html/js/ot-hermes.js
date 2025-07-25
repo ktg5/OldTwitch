@@ -35,7 +35,8 @@ const HermesTopics = {
  *           "clips_leaderboard" | "poll" | "event-created" | "event-updated" |
  *           "raid-update" | "raid-cancel" | "hype_train-update" | "hype_train-lvl_up" |
  *           "sub_gifts" | "bits" | "chat-pin_message" | "chat-unpin_message" | "goal-update" |
- *           "stream-room-update" | "stream-commercial" | "poll-update" | "poll-result"} HermesEvents
+ *           "stream-room-update" | "stream-commercial" | "poll-update" | "poll-result" |
+ *           ""} HermesEvents
  */
 
 
@@ -133,6 +134,9 @@ class Hermes extends EventTarget {
             break;
             case "raid_cancel_v2":
                 eventName = 'raid-cancel';
+            break;
+            case "raid_go_v2":
+                eventName = 'raid-go';
             break;
 
             case "hype-train-progression":
@@ -285,7 +289,7 @@ class Hermes extends EventTarget {
 
     // On event
     /**
-     * @template {HermesEvents} K
+     * @template {HermesEvents}
      * @param {string} event
      * @param {(data: EventPayloads[K]) => void} callback
      */
