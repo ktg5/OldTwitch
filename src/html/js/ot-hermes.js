@@ -153,6 +153,20 @@ class Hermes extends EventTarget {
             case "bits-usage-by-channel-v1":
                 eventName = 'bits';
             break;
+
+            case "slot-subscribers-deleted":
+                eventName = message.type;
+            break;
+            case "slot-assignments-changed":
+                eventName = message.type;
+            break;
+            case "slot-settings-changed":
+                eventName = message.type;
+            break;
+
+            case "session-role-changed":
+                eventName = message.type;
+            break;
         
 
             default:

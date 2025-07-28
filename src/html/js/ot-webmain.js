@@ -372,7 +372,7 @@ function addGlobals() {
 
                     case "provider-side-nav-similar-streamer-currently-watching-1":
                         streamerFeaturesDiv.parentElement.classList.remove("tw-hide");
-                        let streamerFeaturesDivTitle = document.querySelector(`.tw-mg-b-3 [data-a-target="side-nav-header-expanded"] .tw-c-text-alt`);
+                        let streamerFeaturesDivTitle = document.querySelector(`.tw-mg-b-3 .side-nav-header .tw-c-text-alt`);
                         streamerFeaturesDivTitle.innerHTML = streamerFeaturesDivTitle.innerHTML.replace("[__STREAMER__]", localStorage.getItem("oldttv-currentchannel"));
                     break;
                 }
@@ -458,6 +458,127 @@ function addGlobals() {
                     }
                 });
             }
+
+
+            let channelListDiv = document.querySelector(".channel-list");
+            // Set left side arrow click
+            let sideNavArrow = document.querySelector(`[data-a-target="side-nav-arrow"]`);
+            if (sideNavArrow) {
+                sideNavArrow.addEventListener('click', (e) => {
+                    let sideNav = document.querySelector(`.side-nav`);
+                    if (sideNav.classList.contains(`side-nav--collapsed`)) {
+                        sideNav.classList.remove(`side-nav--collapsed`);
+                        sideNavArrow.classList.remove(`side-nav__toggle-visibility--open`);
+                        tabsClosed.left = false;
+                    } else {
+                        sideNav.classList.add(`side-nav--collapsed`);
+                        sideNavArrow.classList.add(`side-nav__toggle-visibility--open`);
+                        tabsClosed.left = true;
+                    }
+                    localStorage.setItem("oldttv-tabsClosed", JSON.stringify(tabsClosed));
+                });
+            }
+            if (tabsClosed.left) {
+                let tempInt = setInterval(() => {
+                    // make sure we can get the sidenavarrow
+                    sideNavArrow = document.querySelector(`[data-a-target="side-nav-arrow"]`);
+
+                    // do da ting
+                    let sideNav = document.querySelector(`.side-nav`);
+                    sideNav.classList.add(`side-nav--collapsed`);
+                    sideNavArrow.classList.add(`side-nav__toggle-visibility--open`);
+
+                    // end int
+                    clearInterval(tempInt);
+                }, 100);
+            }
+
+
+            // Extend button in left sidebar
+            let extendButton = document.querySelector(`.channel-list-extend`);
+            let unextendButton = document.querySelector(`.channel-list-unextend`);
+            if (extendButton) {
+                extendButton.addEventListener('click', (e) => {
+                    let forceData = channelListDiv.getAttribute('data-target');
+                    if (forceData) {
+                        switch (forceData) {
+                            case "force-all":
+                                channelListDiv.removeAttribute('data-target');
+                            break;
+                        
+                            default:
+                                channelListDiv.setAttribute('data-target', 'force-all');
+                            break;
+                        }
+                    } else {
+                        unextendButton.classList.remove(`tw-hide`);
+                        channelListDiv.setAttribute('data-target', 'first-20');
+                    }
+                });
+            }
+            // Unextend button in left sidebar
+            if (unextendButton) {
+                unextendButton.classList.add(`tw-hide`);
+                unextendButton.addEventListener('click', (e) => {
+                    let forceData = channelListDiv.getAttribute('data-target');
+                    if (forceData) {
+                        switch (forceData) {
+                            case "force-all":
+                                unextendButton.classList.remove(`tw-hide`);
+                                channelListDiv.setAttribute('data-target', 'first-20');
+                            break;
+                        
+                            default:
+                                unextendButton.classList.add(`tw-hide`);
+                                channelListDiv.removeAttribute('data-target');
+                            break;
+                        }
+                    } else {
+                        unextendButton.classList.add(`tw-hide`);
+                        channelListDiv.removeAttribute('data-target');
+                    }
+                });
+            }
+
+
+            // Hover tooltips for collapsed icons
+            document.querySelectorAll('.side-nav .tw-side-nav-icon').forEach(navIcon => {
+                // On hover -- make tooltip
+                navIcon.addEventListener('mouseenter', e => {
+                    // Make sure the side nav is collapsed
+                    if (!document.querySelector('.side-nav--collapsed')) return;
+
+                    // Get target information, which will be used for the tooltip
+                    const element = e.target;
+                    const elementRect = element.getBoundingClientRect();
+                    const elementY = elementRect.y;
+                    const parent = element.parentElement;
+                    const listener = parent.getAttribute('data-a-target');
+                    const titleTxt = parent.querySelector('.tw-c-text-alt').innerText;
+
+                    // Make tooltip
+                    document.querySelector('.twilight-root .tw-full-height').insertAdjacentHTML('beforeend', `
+                        <div class="tooltip-layer" style="left: 0px; top: ${elementY - 14}px; width: 49px; height: 46px;" aria-describedby="${listener}">
+                            <div class="tw-tooltip-wrapper tw-tooltip-wrapper--show tw-inline-flex">
+                                <div style="width: 49px; height: 46px;"></div>
+                                <div class="tw-tooltip tw-tooltip--right tw-tooltip--align-center" data-a-target="tw-tooltip-label" role="tooltip" id="${listener}">${titleTxt}</div>
+                            </div>
+                        </div>
+                    `);
+                });
+
+                // On leave -- delete tooltip
+                navIcon.addEventListener('mouseleave', e => {
+                    // Get target information, which will be used for the tooltip
+                    const element = e.target;
+                    const parent = element.parentElement;
+                    const listener = parent.getAttribute('data-a-target');
+
+                    // Get tooltip by the listener const
+                    const targetToolTip = document.querySelector(`[aria-describedby="${listener}"]`);
+                    if (targetToolTip) targetToolTip.remove();
+                });
+            });
         });
     }
 }
@@ -689,40 +810,7 @@ setTimeout(async () => {
     }
 
 
-    let channelListDiv = document.querySelector(".channel-list");
-    // Set side stuff clicks
-    // Left
-    let sideNavArrow = document.querySelector(`[data-a-target="side-nav-arrow"]`);
-    if (sideNavArrow) {
-        sideNavArrow.addEventListener('click', (e) => {
-            let sideNav = document.querySelector(`.side-nav`);
-            if (sideNav.classList.contains(`side-nav--collapsed`)) {
-                sideNav.classList.remove(`side-nav--collapsed`);
-                sideNavArrow.classList.remove(`side-nav__toggle-visibility--open`);
-                tabsClosed.left = false;
-            } else {
-                sideNav.classList.add(`side-nav--collapsed`);
-                sideNavArrow.classList.add(`side-nav__toggle-visibility--open`);
-                tabsClosed.left = true;
-            }
-            localStorage.setItem("oldttv-tabsClosed", JSON.stringify(tabsClosed));
-        });
-    }
-    if (tabsClosed.left) {
-        let tempInt = setInterval(() => {
-            // make sure we can get the sidenavarrow
-            sideNavArrow = document.querySelector(`[data-a-target="side-nav-arrow"]`);
-
-            // do da ting
-            let sideNav = document.querySelector(`.side-nav`);
-            sideNav.classList.add(`side-nav--collapsed`);
-            sideNavArrow.classList.add(`side-nav__toggle-visibility--open`);
-
-            // end int
-            clearInterval(tempInt);
-        }, 100);
-    }
-    // Right
+    // Set right side arrow click
     let rightNavArrow = document.querySelector(`[data-a-target="right-column__toggle-collapse-btn"]`);
     if (rightNavArrow) {
         rightNavArrow.addEventListener('click', (e) => {
@@ -740,52 +828,6 @@ setTimeout(async () => {
         let rightNav = document.querySelector(`.right-column`);
         rightNav.classList.add(`right-column--collapsed`);
         rightNavArrow.classList.add(`right-column__toggle-visibility--open`);
-    }
-
-    // Extend button in left sidebar
-    let extendButton = document.querySelector(`.channel-list-extend`);
-    let unextendButton = document.querySelector(`.channel-list-unextend`);
-    if (extendButton) {
-        extendButton.addEventListener('click', (e) => {
-            let forceData = channelListDiv.getAttribute('data-target');
-            if (forceData) {
-                switch (forceData) {
-                    case "force-all":
-                        channelListDiv.removeAttribute('data-target');
-                    break;
-                
-                    default:
-                        channelListDiv.setAttribute('data-target', 'force-all');
-                    break;
-                }
-            } else {
-                unextendButton.classList.remove(`tw-hide`);
-                channelListDiv.setAttribute('data-target', 'first-20');
-            }
-        });
-    }
-    // Unextend button in left sidebar
-    if (unextendButton) {
-        unextendButton.classList.add(`tw-hide`);
-        unextendButton.addEventListener('click', (e) => {
-            let forceData = channelListDiv.getAttribute('data-target');
-            if (forceData) {
-                switch (forceData) {
-                    case "force-all":
-                        unextendButton.classList.remove(`tw-hide`);
-                        channelListDiv.setAttribute('data-target', 'first-20');
-                    break;
-                
-                    default:
-                        unextendButton.classList.add(`tw-hide`);
-                        channelListDiv.removeAttribute('data-target');
-                    break;
-                }
-            } else {
-                unextendButton.classList.add(`tw-hide`);
-                channelListDiv.removeAttribute('data-target');
-            }
-        });
     }
 
 

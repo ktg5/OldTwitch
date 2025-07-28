@@ -79,8 +79,43 @@ process.argv.forEach(function (val, index, array) {
 });
 
 
+// For making a web version of a script
+async function makeWebScript(dir) {
+    if (!dir.endsWith('.js')) return console.error('makeWebScript: the requested dir, "' + dir + '" should be a JS script dumbass!!!');
+
+    const copyScriptDir = dir.replace('.js', '-web.js');
+    if (fs.existsSync(copyScriptDir)) {
+        console.log("Deleting old " + copyScriptDir);
+        fs.unlinkSync(copyScriptDir);
+        console.log("Deleted old " + copyScriptDir);
+    }
+
+
+    // Get target script
+    const targetScript = fs.readFileSync(dir, { encoding: 'utf8' });
+    let editedScript = targetScript;
+
+
+    // ### Edits
+    // Replace the "demand()" function with "fetch()"
+    editedScript = editedScript.replaceAll('demand(', 'fetch(');
+    editedScript = editedScript.replaceAll('.body', '.json()');
+
+
+    // Save to new file
+    fs.writeFileSync(copyScriptDir, editedScript);
+}
+
+
+
+
 console.log(`-------------`);
 // Here's we build.
+// Make a "-web" version of the ot-gql script
+// Delete old web script
+makeWebScript('./src/html/js/ot-gql.js');
+
+
 // Make sure to have the dist folder ready.
 if (!fs.existsSync('./dist')) fs.mkdirSync('./dist');
 // Let's copy the src folder for Chrome.

@@ -37,6 +37,10 @@ const extensionLocation = runtime.getURL('').slice(0, -1);
 var userConfig;
 
 
+// Check if OldTwitch is already loaded
+if (document.body && document.body.getAttribute('oldttv') !== null) location.reload();
+
+
 // Set userConfig -- details in ot-config.js
 getUserConfig(handlePageChange);
 
@@ -143,10 +147,6 @@ window.addEventListener('message', async (e) => {
 
 let firstInit = false;
 async function handlePageChange() {
-    // Check if OldTwitch is already loaded
-    if (document.body.getAttribute('oldttv') == extensionLocation) location.reload();
-
-
     const yearDir = `html/${userConfig.year}`;
 
     // First, let's see what page we're working with.

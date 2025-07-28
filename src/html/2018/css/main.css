@@ -176,6 +176,28 @@ body {
 
 
 /* Channel List (Left Column) */
+.side-nav--collapsed [data-a-target="signup-note"] {
+    display: none;
+}
+
+.side-nav--collapsed .side-nav-header .tw-c-text-alt {
+    display: none;
+}
+
+.side-nav-header .tw-side-nav-icon {
+    display: none;
+}
+
+.side-nav--collapsed .side-nav-header .tw-side-nav-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tw-side-nav-icon .tw-svg__asset {
+    fill: rgb(225, 225, 225) !important;
+}
+
 .channel-list {
     position: relative;
 }
