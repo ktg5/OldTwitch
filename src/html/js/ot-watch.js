@@ -244,9 +244,10 @@ async function setIframeVideo (args) {
             let streamClock;
             gqlAction = async () => {
                 channelData = await gql.getChannel(args.channel);
-                if (!channelData) showError({ id: 404 })
-                videosData = await gql.getChannelVods(args.channel);
                 console.log("channelData: ", channelData);
+                if (!channelData) showError({ id: 404 });
+                
+                videosData = await gql.getChannelVods(args.channel);
 
                 // set streamer info
                 function addStremerInfo(funcargs) {
@@ -368,6 +369,17 @@ async function setIframeVideo (args) {
 
                 // Viewer count update
                 hermes.on('stream-viewcount', async (d) => {
+                    // check if stream data is there
+                    if (channelData.stream == null) {
+                        const dataOnEvent = await gql.getChannelSimple(channelData.login);
+                        console.log(`dataOnEvent: `, dataOnEvent);
+
+                        channelData.live = true;
+                        channelData.broadcastSettings = dataOnEvent.broadcastSettings;
+                        channelData.stream = dataOnEvent.stream;
+                    }
+
+                    // Set viewercount
                     channelData.stream.viewersCount = d.viewers;
                     addStremerInfo(['not-first-init']);
                 });
@@ -494,8 +506,9 @@ async function setIframeVideo (args) {
 
             gqlAction = async () => {
                 vodData = await gql.getVodInfo(args.id);
-                if (!vodData) return showError({ id: 404 });
                 console.log("vodData: ", vodData);
+                if (!vodData) return showError({ id: 404 });
+
                 channelData = await gql.getChannel(vodData.owner.login);
                 videosData = await gql.getChannelVods(vodData.owner.login);
                 console.log("channelData: ", channelData);
@@ -560,6 +573,9 @@ async function setIframeVideo (args) {
             gqlAction = async () => {
                 clipData = await gql.getClipInfo(args.slug);
                 console.log("clipData: ", clipData);
+                // check to see if clip exists or not
+                if (!clipData) return showError({ id: 404 });
+
                 channelData = await gql.getChannel(clipData.broadcaster.login);
                 videosData = await gql.getChannelVods(clipData.broadcaster.login);
                 console.log("channelData: ", channelData);

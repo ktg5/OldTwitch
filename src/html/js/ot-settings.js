@@ -8,7 +8,7 @@ function doSettings() {
                 clearInterval(firstInit);
 
 
-                await fetch(`${extensionLocation}/default_config.json`).then(async data => { def_ot_config = await data.json(); });
+                await demand(`${extensionLocation}/default_config.json`).then(async data => { def_ot_config = await data.json(); });
 
                 let injectDiv = document.querySelector('.settings-options');
                 // HTML maker

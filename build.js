@@ -99,7 +99,6 @@ async function makeWebScript(dir) {
     // ### Edits
     // Replace the "demand()" function with "fetch()"
     editedScript = editedScript.replaceAll('demand(', 'fetch(');
-    editedScript = editedScript.replaceAll('.body', '.json()');
 
 
     // Save to new file

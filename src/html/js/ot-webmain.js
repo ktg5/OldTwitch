@@ -71,7 +71,23 @@ function demand(url, options = {}) {
                 // ignore it.
                 if (data.id !== id) return;
                 window.removeEventListener('message', onMessage);
-                resolve(data.res);
+                // Have to rebuild response data
+                resolve({
+                    ok: data.res.ok,
+                    status: data.res.status,
+                    json: async () => {
+                        if (data.res.contentType?.includes("application/json")) return data.res.body;
+                        return null;
+                    },
+                    text: async () => {
+                        if (typeof data.res.body === "string") return res.body;
+                        return JSON.stringify(data.res.body);
+                    },
+                    bytes: async () => {
+                        return new Uint8Array(data.res.body);
+                    },
+                    body: data.res.body
+                });
             });
         }
         window.addEventListener('message', onMessage);
@@ -329,7 +345,6 @@ function addGlobals() {
             } else {
                 loginButton.addEventListener('click', () => { popupAction({ type: "login" }) });
                 signupButton.addEventListener('click', () => { popupAction({ type: "signup" }) });
-                document.querySelector('[data-a-target="oldtwitch-settings"]').addEventListener('click', () => { location.href = "/oldtwitch" });
                 let tempInt = setInterval(() => {
                     let signupAlert = document.querySelector('[data-a-target="signup-note"] button');
                     if (signupAlert) {
@@ -339,6 +354,8 @@ function addGlobals() {
                     initBalloons();
                 }, 100);
             }
+
+            document.querySelector('[data-a-target="oldtwitch-settings"]').addEventListener('click', () => { location.href = "/oldtwitch" });
         });
     }
     // Add sidebar if found

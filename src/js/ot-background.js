@@ -17,13 +17,18 @@ runtime.onMessage.addListener((msg, sender, sendResponse) => {
 				if (contentType && contentType.includes("application/json")) body = await res.json();
 				else body = await res.text();
 
+				// Check if response was okay
+				var isOk = true;
+				if (res.status > 299 || res.status < 200) isOk = false;
+
 				// Send back data
 				const resultData = {
-					ok: true,
+					ok: isOk,
+					contentType,
 					status: res.status,
 					body
 				}
-				console.log('ok', resultData);
+				console.log('data being sent back to client: ', resultData);
 				sendResponse(resultData);
 			})
 			.catch(err => {

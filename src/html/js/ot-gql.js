@@ -38,7 +38,7 @@ class Gql {
                 "body": null,
                 "method": "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -83,7 +83,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.currentUser);
@@ -136,7 +136,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -222,7 +222,7 @@ class Gql {
                 ]),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 data.forEach(element => {
                     if (element.errors) {
@@ -302,7 +302,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors || data.error) resolve({ errors: data.errors ? data.errors : data.message });
                 else {
@@ -391,7 +391,7 @@ class Gql {
                 body: JSON.stringify(Body),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) return resolve({ errors: data.errors });
 
@@ -447,7 +447,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -494,7 +494,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -621,7 +621,7 @@ class Gql {
                 ]),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -665,7 +665,7 @@ class Gql {
                         }),
                         method: "POST"
                     }).then(async rawDataT => {
-                        let dataT = rawDataT.body;
+                        let dataT = await rawDataT.json();
 
                         cleanData = {
                             ...cleanData,
@@ -728,7 +728,7 @@ class Gql {
                 ]),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
                 if (data.errors) resolve({ errors: data.errors });
 
                 let isLive = data[0].data.user.stream != null;
@@ -778,7 +778,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
                 if (data.errors) resolve({ errors: data.errors });
 
                 let cleanData = [];
@@ -834,7 +834,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
 
@@ -877,7 +877,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                const data = rawData.body;
+                const data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 const subList = data.data.user.subscriptionProducts;
@@ -927,7 +927,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 if (data.data.user.stream == null) {
@@ -972,7 +972,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 if (data.data.user.stream != null) {
@@ -1013,7 +1013,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 if (data.data.user.stream != null) resolve(true);
@@ -1070,7 +1070,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.followUser);
@@ -1123,7 +1123,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
                 console.log(data);
 
                 if (data.errors) resolve({ errors: data.errors });
@@ -1168,7 +1168,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve({
@@ -1306,7 +1306,7 @@ class Gql {
                 ]),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -1362,7 +1362,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.game);
@@ -1437,7 +1437,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
@@ -1496,7 +1496,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.streams.edges);
@@ -1537,7 +1537,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
                 if (data.data.video) await demand("https://gql.twitch.tv/gql", {
                     headers: {
                         "client-id": this.clientid,
@@ -1557,7 +1557,7 @@ class Gql {
                     }),
                     method: "POST"
                 }).then(async rawDataT => {
-                    let dataT = rawDataT.body;
+                    let dataT = await rawDataT.json();
 
                     if (dataT.errors) resolve({ errors: dataT.errors });
                     else resolve(dataT.data.video);
@@ -1598,7 +1598,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.video.comments.edges);
@@ -1633,7 +1633,7 @@ class Gql {
                 }),
                 method: "POST"
             }).then(async rawData => {
-                let data = rawData.body;
+                let data = await rawData.json();
 
                 if (data.errors) resolve({ errors: data.errors });
                 else resolve(data.data.clip);
