@@ -1,4 +1,4 @@
-<h1 align="center">OldTwitch <kbd>0.0.7</kbd></h1>
+<h1 align="center">OldTwitch <kbd>dev1:0.0.8</kbd></h1>
 <div font-size="24px" align="center">A browser extension to bring back the old Twitch look.</div>
 <div font-size="16px" align="center"><b>For the moment, please download OldTwitch from the <a href="https://github.com/ktg5/OldTwitch/actions/workflows/build.yml">Actions page for more recent builds</a>, or the <a href="https://github.com/ktg5/OldTwitch/releases">Releases page for older builds</a></b></div>
 <br>
@@ -55,11 +55,8 @@ Screenshots taken from dev3:0.0.4
     - [x] channel list show more & less buttons.
 
 - [x] stream page.
-    - [ ] **might** have to make a custom twitch player 'cuz embeds are completely broken at the moment...
-
     - [x] show list of streamer's vods & clips via a little category page added within the watch page.
     - [x] make the stupid svgs for the stuff on the stream info thingy idk what to call it lmao.
-    - [ ] fix weird glitch that happens when fullscreening a stream (just pauses a little after fullscreening, it's so weird...)
     - [ ] follow & unfollow. (might be impossible cuz of the `client-integrity` value)
 
 - [x] discovery page.
@@ -76,9 +73,9 @@ Screenshots taken from dev3:0.0.4
 - [x] detect if a user is logged in
     - [x] make custom balloon with list of buttons that would appear when clicking
 
-- [ ] search page &/or bar.
+- [x] search page &/or bar.
 
-- [ ] settings page.
+- [x] settings page.
 
 - [x] get 7tv to somehow inject into a embeds. (just use the ffz extension & install the 7tv plugin, works like a charm)
-- [ ] make scripts & css for embedded video & chat. (video & live stream css is up, chat - not yet - have to make)
+- [x] make scripts & css for embedded video & chat. (video & live stream css is up, chat - not yet - have to make)

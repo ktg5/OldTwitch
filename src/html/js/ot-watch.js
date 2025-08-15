@@ -636,21 +636,31 @@ async function setIframeVideo (args) {
     }
 }
 
-
 // Check pathname
-let pathname = location.pathname;
+const pathname = location.pathname;
+// Check link for clips
+const clipCheck1 = location.host == "clips.twitch.tv";
+const clipCheck2 = pathname.split("/").length > 1 && pathname.includes("/clip/")
+// Okay go!!!!!
 switch (true) {
-    case pathname.startsWith("/videos/"):
-        arg1 = pathname.split("/videos/").pop();
+    // Check if link is a video
+    case !pathname.startsWith("/video/") && pathname.includes("/video/"):
+        arg1 = pathname.split("/video/").pop();
         if (arg1.includes("?")) arg1 = arg1.split("?")[0];
         setIframeVideo({ type: "video", id: arg1 });
     break;
 
+    // Check if link is a clip
+    case clipCheck1:
+    case clipCheck2:
+        if (clipCheck1) setIframeVideo({ type: "clip", slug: pathname.split("/").pop(), channel: null });
+        else if (clipCheck2) setIframeVideo({ type: "clip", slug: pathname.split("clip/").pop(), channel: arg1 });
+    break;
+
+    // Probably just a stream
     default:
         arg1 = pathname.split("/")[1];
         if (arg1.includes("?")) arg1 = arg1.split("?")[0];
-        if (pathname.split("/").length > 1 && pathname.includes("/clip/")) setIframeVideo({ type: "clip", slug: pathname.split("clip/").pop(), channel: arg1 })
-        else if (location.host == "clips.twitch.tv") setIframeVideo({ type: "clip", slug: pathname.split("/").pop(), channel: null })
-        else setIframeVideo({ type: "stream", channel: arg1 });
+        setIframeVideo({ type: "stream", channel: arg1 });
     break;
 }
