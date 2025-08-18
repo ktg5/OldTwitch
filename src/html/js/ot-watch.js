@@ -78,20 +78,26 @@ async function setIframeVideo (args) {
                     // href
                     let itemHref, itemType;
                     if (item.__typename == "Clip") { itemHref = `https://www.twitch.tv/${channelData.login}/clips/${item.slug}`; itemType = "clip"; }
-                    else if (item.__typename == "Video") { itemHref = `https://www.twitch.tv/videos/${item.id}`; itemType = "video"; }
+                    else if (item.__typename == "Video") { itemHref = `https://www.twitch.tv/${channelData.login}/video/${item.id}`; itemType = "video"; }
 
                     // subtext - game category
                     let itemSubtext = `<a href="https://www.twitch.tv/directory/category/${item.game.slug}">${item.game.displayName ? item.game.displayName : item.game.name}</a>`;
 
                     // subtext 2
                     let itemSubtext2 = "";
+                    let vodDateTxt;
                     if (itemType == "clip") itemSubtext2 = `<p class="item-subtext tw-font-size-7">Clipped by <a href="https://www.twitch.tv/${item.curator.login}">${item.curator.displayName}</a></p>`;
+                    else if (itemType == "video") {
+                        const vodDate = new Date(item.publishedAt);
+                        vodDateTxt = formatDate(vodDate).usFormat;
+                        itemSubtext2 = `<p class="item-subtext tw-font-size-7" title="${vodDateTxt}">${calcDateDiffToTxt(currentDate, vodDate)} ago</p>`;
+                    }
 
                     let streamerDiv = document.createElement('div');
                     streamerDiv.className = "directory-item";
                     streamerDiv.innerHTML = `
                     <div class="tw-mg-b-2">
-                        <div class="tw-mg-b-05">
+                        <div class="tw-mg-b-05" ${vodDateTxt ? `title="${vodDateTxt}"` : ""}>
                             <figure class="tw-aspect tw-aspect--16x9 tw-aspect--align-top">
                                 <a href="${itemHref}">
                                     <img class="tw-image" src="${item.animatedPreviewURL ? item.animatedPreviewURL : item.thumbnailURL}">
@@ -101,7 +107,7 @@ async function setIframeVideo (args) {
                         <div class="item-info">
                             <a href="https://www.twitch.tv/directory/category/${item.game.slug}" style="display: contents;"><img class="tw-image item-category-img" src="${item.game.boxArtURL}"></a>
                             <div class="item-text">
-                                <p class="item-name"><a href="${itemHref}">${item.title}</a></p>
+                                <p class="item-name" title="${item.title}"><a href="${itemHref}">${item.title}</a></p>
                                 <p class="item-subtext tw-font-size-7">${itemSubtext}</p>
                                 ${itemSubtext2}
                             </div>
@@ -211,6 +217,7 @@ async function setIframeVideo (args) {
     }
 
     const totalViewsDiv = document.querySelector('[data-a-target="total-views-count"]');
+    const timeDiv = document.querySelector(`[data-a-target="time-count"]`);
 
     switch (args.type) {
         case "stream":
@@ -248,6 +255,7 @@ async function setIframeVideo (args) {
                 if (!channelData) showError({ id: 404 });
                 
                 videosData = await gql.getChannelVods(args.channel);
+                console.log("videosData: ", videosData);
 
                 // set streamer info
                 function addStremerInfo(funcargs) {
@@ -318,7 +326,7 @@ async function setIframeVideo (args) {
                         
                         // clock
                         if (funcargs == null || !funcargs.includes("not-first-init")) {
-                            const clockStat = document.querySelector('[data-a-target="current-time"] .tw-stat__value');
+                            const clockStat = timeDiv.querySelector('.tw-stat__value');
                             const startedAt = new Date(channelData.stream.startedAt);
                             let currentTime = new Date();
 
@@ -327,7 +335,7 @@ async function setIframeVideo (args) {
                                 clockStat.innerHTML = getDateDiff(currentTime, startedAt);
                             }, 1000);
                             clockStat.innerHTML = getDateDiff(currentTime, startedAt);
-                            clockStat.parentElement.parentElement.classList.remove('tw-hide');
+                            timeDiv.classList.remove('tw-hide');
                         }
                     } else {
                         clearInterval(streamClock);
@@ -335,7 +343,7 @@ async function setIframeVideo (args) {
                         // Hide all stream info
                         document.querySelector(`.channel-info-bar__action-container .tw-tooltip-wrapper`).classList.add("tw-hide");
                         document.querySelector(`.tw-stat[data-a-target="viewer-count"]`).parentElement.classList.add("tw-hide");
-                        document.querySelector(`.tw-stat[data-a-target="current-time"]`).parentElement.classList.add("tw-hide");
+                        timeDiv.parentElement.classList.add("tw-hide");
                     }
                     if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
 
@@ -540,6 +548,8 @@ async function setIframeVideo (args) {
 
                     document.querySelector(`.tw-stat[data-a-target="viewer-count"]`).classList.add("tw-hide");
                     totalViewsDiv.querySelector(`.tw-stat__value`).innerHTML = vodData.viewCount;
+                    timeDiv.parentElement.classList.remove('tw-hide');
+                    timeDiv.querySelector('.tw-stat__value').innerHTML = `${calcDateDiffToTxt(currentDate, new Date(vodData.createdAt))} ago`;
                 }
                 addStremerInfo();
             };
@@ -610,8 +620,8 @@ async function setIframeVideo (args) {
                 const vodButton = document.querySelector('[data-a-target="vodview-button"]');
                 vodButton.classList.remove('tw-hide');
                 const clipSeconds = clipData.videoOffsetSeconds;
-                const decodeTime = `${Math.floor(clipSeconds / 3600)}h${Math.floor((clipSeconds % 3600) / 60)}m${clipSeconds % 60 - 30}s`;
-                vodButton.querySelector('button').addEventListener('click', e => { location.href = `https://twitch.tv/videos/${clipData.video.id}?t=${decodeTime}` });
+                const decodeTime = `${Math.floor(clipSeconds / 3600)}h${Math.floor((clipSeconds % 3600) / 60)}m${clipSeconds % 60}s`;
+                vodButton.querySelector('button').addEventListener('click', e => { location.href = `https://twitch.tv/${channelData.login}/video/${clipData.video.id}?t=${decodeTime}` });
                 // add edit button if owner of clip
                 if (userData) if (
                     clipData.curator.displayName == userData.displayName
@@ -638,28 +648,34 @@ async function setIframeVideo (args) {
 
 // Check pathname
 const pathname = location.pathname;
+const pathnameSplit = pathname.split("/");
+// Check for videos
+const videoCheck1 = !pathname.startsWith("/video/") && pathname.includes("/video/");
+const videoCheck2 = pathname.startsWith("/videos/");
 // Check link for clips
 const clipCheck1 = location.host == "clips.twitch.tv";
-const clipCheck2 = pathname.split("/").length > 1 && pathname.includes("/clip/")
+const clipCheck2 = pathnameSplit.length > 1 && pathname.includes("/clip/")
 // Okay go!!!!!
+let arg1 = pathnameSplit[pathnameSplit.length - 1];
 switch (true) {
     // Check if link is a video
-    case !pathname.startsWith("/video/") && pathname.includes("/video/"):
-        arg1 = pathname.split("/video/").pop();
-        if (arg1.includes("?")) arg1 = arg1.split("?")[0];
+    case videoCheck1:
+    case videoCheck2:
+        if (videoCheck1) pathname.split("/video/").pop();
+        else if (videoCheck2) pathname.split("/videos/").pop();
+        if (pathname.includes("?")) arg1 = arg1.split("?")[0];
         setIframeVideo({ type: "video", id: arg1 });
     break;
 
     // Check if link is a clip
     case clipCheck1:
     case clipCheck2:
-        if (clipCheck1) setIframeVideo({ type: "clip", slug: pathname.split("/").pop(), channel: null });
+        if (clipCheck1) setIframeVideo({ type: "clip", slug: pathnameSplit.pop(), channel: null });
         else if (clipCheck2) setIframeVideo({ type: "clip", slug: pathname.split("clip/").pop(), channel: arg1 });
     break;
 
     // Probably just a stream
     default:
-        arg1 = pathname.split("/")[1];
         if (arg1.includes("?")) arg1 = arg1.split("?")[0];
         setIframeVideo({ type: "stream", channel: arg1 });
     break;

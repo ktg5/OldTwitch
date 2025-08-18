@@ -102,6 +102,63 @@ function demand(url, options = {}) {
 }
 
 
+const currentDate = new Date;
+// Date difference into text
+function calcDateDiffToTxt(date1 = new Date, date2 = new Date) {
+    let diffMs = date1 - date2;
+    console.log(date1 - date2);
+    let diffSeconds = diffMs / 1000;
+    let diffMinutes = diffSeconds / 60;
+    let diffHours = diffMinutes / 60;
+    let diffDays = diffHours / 24;
+
+    switch (true) {
+        case diffDays >= 1:
+            txt = `${diffDays.toFixed(0)} day${diffDays.toFixed(0) == 1 ? "" : "s"}`;
+        break;
+
+        case diffHours >= 1:
+            txt = `${diffHours.toFixed(0)} hour${diffHours.toFixed(0) == 1 ? "" : "s"}`;
+        break;
+
+        case diffMinutes >= 1:
+            txt = `${diffMinutes.toFixed(0)} minute${diffMinutes.toFixed(0) == 1 ? "" : "s"}`;
+        break;
+
+        case diffSeconds >= 1:
+            txt = `${diffSeconds.toFixed(0)} second${diffSeconds.toFixed(0) == 1 ? "" : "s"}`;
+        break;
+    }
+
+    return txt;
+}
+
+// Format date to readable strings
+function formatDate(date) {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+
+    // Get month name, both short (default) & long
+    const shortMonthNames = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    const shortMonthName = shortMonthNames[date.getMonth()];
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    const monthName = monthNames[date.getMonth()];
+  
+    return {
+        usFormat: `${shortMonthName} ${dd}, ${yyyy}`, // shortMonthName DD, YYYY
+        usFormatLong: `${monthName} ${dd}, ${yyyy}`, // monthName DD, YYYY
+        isoFormat: `${yyyy}-${mm}-${dd}`  // YYYY-MM-DD
+    };
+}
+
+
 // Check if the tabs that are closed
 var tabsClosed = JSON.parse(localStorage.getItem("oldttv-tabsClosed"));
 if (tabsClosed == null) {
