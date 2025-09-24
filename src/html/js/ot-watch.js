@@ -283,7 +283,7 @@ async function setIframeVideo (args) {
                                 <div data-test-selector="description_panel">
                                     <div class="tw-typeset">
                                         <div class="panel-description">
-                                            <p>${panel.description}</p>
+                                            ${twitchMarkdown(panel.description)}
                                         </div>
                                     </div>
                                 </div>
@@ -335,7 +335,7 @@ async function setIframeVideo (args) {
                                 clockStat.innerHTML = getDateDiff(currentTime, startedAt);
                             }, 1000);
                             clockStat.innerHTML = getDateDiff(currentTime, startedAt);
-                            timeDiv.classList.remove('tw-hide');
+                            timeDiv.parentElement.classList.remove('tw-hide');
                         }
                     } else {
                         clearInterval(streamClock);
@@ -355,46 +355,50 @@ async function setIframeVideo (args) {
                 const hermes = new Hermes(Number(channelData.id), 'all');
 
                 // Stream end
-                hermes.on('stream_end', async (d) => {
-                    channelData.stream = null;
-                    channelData.live = false;
+                hermes.on('data', async (d) => {
+                    switch (d.type) {
+                        case "stream-down":
+                            channelData.stream = null;
+                            channelData.live = false;
 
-                    addStremerInfo(['not-first-init']);
-                });
+                            addStremerInfo(['not-first-init']);
+                        break;
 
-                // Stream info update
-                hermes.on('stream_info_update', async (d) => {
-                    const dataOnEvent = await gql.getChannelSimple(d.channel);
-                    console.log(`dataOnEvent: `, dataOnEvent);
+                        // Stream info update
+                        case "broadcast_settings_update":
+                            const dataOnEvent = await gql.getChannelSimple(d.channel);
+                            console.log(`dataOnEvent: `, dataOnEvent);
+        
+                            channelData.broadcastSettings = dataOnEvent.broadcastSettings;
+                            channelData.stream = dataOnEvent.stream;
+                            if (channelData.stream == null) channelData.live = false;
+                            console.log(`edited channelData: `, channelData);
+        
+                            addStremerInfo(['not-first-init']);
+                        break;
 
-                    channelData.broadcastSettings = dataOnEvent.broadcastSettings;
-                    channelData.stream = dataOnEvent.stream;
-                    if (channelData.stream == null) channelData.live = false;
-                    console.log(`edited channelData: `, channelData);
+                        // Viewer count update
+                        case "viewcount":
+                            // check if stream data is there
+                            if (channelData.stream == null) {
+                                const dataOnEvent = await gql.getChannelSimple(channelData.login);
+                                console.log(`dataOnEvent: `, dataOnEvent);
 
-                    addStremerInfo(['not-first-init']);
-                });
+                                channelData.live = true;
+                                channelData.broadcastSettings = dataOnEvent.broadcastSettings;
+                                channelData.stream = dataOnEvent.stream;
+                            }
 
-                // Viewer count update
-                hermes.on('stream-viewcount', async (d) => {
-                    // check if stream data is there
-                    if (channelData.stream == null) {
-                        const dataOnEvent = await gql.getChannelSimple(channelData.login);
-                        console.log(`dataOnEvent: `, dataOnEvent);
+                            // Set viewercount
+                            channelData.stream.viewersCount = d.viewers;
+                            addStremerInfo(['not-first-init']);
+                        break;
 
-                        channelData.live = true;
-                        channelData.broadcastSettings = dataOnEvent.broadcastSettings;
-                        channelData.stream = dataOnEvent.stream;
+                        // On raid sent
+                        case "raid_go_v2":
+                            location.href = `/${d.raid.target_login}`;
+                        break;
                     }
-
-                    // Set viewercount
-                    channelData.stream.viewersCount = d.viewers;
-                    addStremerInfo(['not-first-init']);
-                });
-
-                // On raid
-                hermes.on('raid-go', async (d) => {
-                    location.href = `/${d.raid.target_login}`;
                 });
             };
             if (gql) {
@@ -581,7 +585,7 @@ async function setIframeVideo (args) {
             document.querySelector(`#iframe-insert`).appendChild(iframe);
 
             gqlAction = async () => {
-                clipData = await gql.getClipInfo(args.slug);
+                clipData = await gql.getClip(args.slug);
                 console.log("clipData: ", clipData);
                 // check to see if clip exists or not
                 if (!clipData) return showError({ id: 404 });
@@ -656,7 +660,7 @@ const videoCheck2 = pathname.startsWith("/videos/");
 const clipCheck1 = location.host == "clips.twitch.tv";
 const clipCheck2 = pathnameSplit.length > 1 && pathname.includes("/clip/")
 // Okay go!!!!!
-let arg1 = pathnameSplit[pathnameSplit.length - 1];
+let arg1 = pathnameSplit[pathnameSplit.length - 1].split("?")[0];
 switch (true) {
     // Check if link is a video
     case videoCheck1:
@@ -676,6 +680,7 @@ switch (true) {
 
     // Probably just a stream
     default:
+        arg1 = pathnameSplit[1];
         if (arg1.includes("?")) arg1 = arg1.split("?")[0];
         setIframeVideo({ type: "stream", channel: arg1 });
     break;

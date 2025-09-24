@@ -3,9 +3,18 @@
 
 ## so what is Hermes?
 
-within Twitch's internal list of websockets & apis, Hermes is a websocket that is hosted under `wss://hermes.twitch.tv/v1`. which on the main twitch site, is used for getting PubSub events and more.
+within Twitch's internal list of websockets & apis, which on the main twitch site, is used for getting Twitch's PubSub events and possibly more. Hermes is hosted under `wss://hermes.twitch.tv/v1`.
 
-it's not meant to send information to the servers--that would be the GQL's usage--but instead basically be a event listener for when a PubSub topic is received for the selected channel.
+it's not meant to send information to the servers--that would be the GQL's usage--but instead is a "subscription"-based event listener that receives any events that the user "subscribes" to. Hermes isn't the main store for most of the data it receives, instead you can refer to it as a container for multiple Twitch websockets.
+
+if you were to use Hermes & have knowledge about PubSub, you can use the same or sometimes similarly named event subscriptions that PubSub uses.
+
+
+## what is Twitch's PubSub?
+
+Twitch's PubSub is the original websocket event listener that is still used to this day--[even know Twitch tells people to not use it](https://dev.twitch.tv/docs/pubsub/), but is still used by probably most people since they haven't shut it down yet. Twitch's PubSub can be found under `wss://pubsub-edge.twitch.tv/v1`.
+
+PubSub itself is a "subscription"-based event listener that can get any event that the server--in this case being Twitch--sends back to the user if they're "subscribed" to that event or topic. [learn more here](https://cloud.google.com/pubsub/docs/overview).
 
 
 ## how do i listen for events?

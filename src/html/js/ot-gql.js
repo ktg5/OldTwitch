@@ -1,5 +1,5 @@
 const anonId = "kimne78kx3ncx6brgo4mv6wki5h1ko";
-class Gql {
+class GqlClient {
     clientid = "";
     oauth = "";
     integToken = {
@@ -740,7 +740,7 @@ class Gql {
                     stream: data[1].data.user.stream,
                     broadcastSettings: data[2].data.user.lastBroadcast
                 };
-                cleanData.broadcastSettings.game = await gql.getCategory(cleanData.broadcastSettings.game.slug);
+                cleanData.broadcastSettings.game = await this.getCategory(cleanData.broadcastSettings.game.slug);
                 resolve(cleanData);
             });
         });
@@ -1611,7 +1611,7 @@ class Gql {
      * @param {string} slug - The slug of the clip to fetch information for.
      * @returns {Promise<Object>} - A promise that resolves to an object containing the clip's information. The object will contain the following properties:
      */
-    async getClipInfo(slug) {
+    async getClip(slug) {
         if (!slug) return console.error(`"slug" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
@@ -1641,5 +1641,3 @@ class Gql {
         });
     }
 }
-
-var gql = new Gql(anonId);

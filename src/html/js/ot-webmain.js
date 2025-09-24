@@ -1,5 +1,6 @@
+const gql = new GqlClient(anonId);
 var userConfig, channels;
-var styles3 = [
+const styles3 = [
     'background: linear-gradient(#06d316, #075702)'
     , 'border: 5px solid rgb(255 255 255 / 10%)'
     , 'color: white'
@@ -253,6 +254,19 @@ function getDateDiff(d1, d2) {
     const formattedSeconds = padZero(seconds);
 
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+}
+
+
+// Turn text into Twitch markdown
+function twitchMarkdown(string) {
+    // Check for HTML code, if detected--returned nothing
+    if (/<[a-zA-Z/][\s\S]*?>/.test(string)) return "";
+
+
+    // To be added...
+
+
+    return string;
 }
 
 

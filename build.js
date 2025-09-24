@@ -100,6 +100,13 @@ async function makeWebScript(dir) {
     // Replace the "demand()" function with "fetch()"
     editedScript = editedScript.replaceAll('demand(', 'fetch(');
 
+    // Edit depending on filename
+    switch (path.basename(dir)) {
+        case "ot-gql.js":
+            
+        break;
+    }
+
 
     // Save to new file
     fs.writeFileSync(copyScriptDir, editedScript);

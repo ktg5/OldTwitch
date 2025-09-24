@@ -1,21 +1,21 @@
 // Topics
 const HermesTopics = {
-    streamUpdate: "broadcast-settings-update", // has event listener
-    rewardRedeem: "community-points-channel-v1", // has event listener
+    streamUpdate: "broadcast-settings-update",
+    rewardRedeem: "community-points-channel-v1",
     streamChat: "stream-chat-room-v1",
     charityDonation: 'charity-campaign-donation-events-v1',
     videoPlaybackId: 'video-playback-by-id',
     pinnedMsg: 'pinned-chat-updates-v1',
-    predication: 'predictions-channel-v1', // has event listener
+    predication: 'predictions-channel-v1',
     sharedChat: 'shared-chat-channel-v1',
-    raid: 'raid', // has event listener(s)
+    raid: 'raid',
     creatorGoals: 'creator-goals-events-v1',
     giftSub: 'channel-sub-gifts-v1',
     shoutout: 'shoutout',
     requestToJoin: 'request-to-join-channel-v1',
     hypeTrain: 'hype-train-events-v2',
     channelBounty: 'channel-bounty-board-events.cta',
-    poll: 'polls', // has event listener
+    poll: 'polls',
     guestStarChannel: 'guest-star-channel-v1',
     leaderBoardBits: (id) => {
         return `leaderboard-events-v1.bits-usage-by-channel-v1-${id}-WEEK`;
@@ -29,24 +29,15 @@ const HermesTopics = {
 }
 
 
-// Event type
-/**
- * @typedef {"stream-down" | "stream-info_update" | "stream-viewcount" | "reward-redeem" |
- *           "clips_leaderboard" | "poll" | "event-created" | "event-updated" |
- *           "raid-update" | "raid-cancel" | "hype_train-update" | "hype_train-lvl_up" |
- *           "sub_gifts" | "bits" | "chat-pin_message" | "chat-unpin_message" | "goal-update" |
- *           "stream-room-update" | "stream-commercial" | "poll-update" | "poll-result" |
- *           ""} HermesEvents
- */
-
-
 // Main
-const hermesUrl = `wss://hermes.twitch.tv/v1?clientId=${anonId}`; // anonId defined at the top of ot-gql.js
 class Hermes extends EventTarget {
-    #socket = new WebSocket(hermesUrl);
+    /**
+     * @type {WebSocket}
+     */
+    #socket;
     #eventTarget = new EventTarget();
-    userid;
-    userTopics;
+    #userid;
+    #topics;
 
 
     #generateId(length = 22) {
@@ -63,133 +54,89 @@ class Hermes extends EventTarget {
         return time.toISOString();
     }
 
-    #handleEventName(message) {
-        let eventName = null;
 
-        if (!message.type) {
-            if (message.event.domain) message.type = message.event.domain;
-        }
-
-        /* 
-         * ##############################
-         * UPDATE THE FUCKING TYPEDEF WHEN ADDING MORE IN HERE FFS
-         * I KNOW YOU'LL FUCKING FORGET IT & YOU'LL BE LIKE, "where's my auto-fill????", YOU DUMBASS
-         * ##############################
-         */
-        switch (message.type) {
-            case "stream-down":
-                eventName = message.type;
-            break;
-            case "broadcast_settings_update":
-                eventName = 'stream-info_update';
-            break;
-            case "viewcount":
-                eventName = 'stream-viewcount';
-            break;
-            case "updated_room":
-                eventName = 'stream-room-update';
-            break;
-            case "commercial":
-                eventName = 'stream-commercial';
-            break;
-
-            case "pin-message":
-                eventName = 'chat-pin_message';
-            break;
-            case "unpin-message":
-                eventName = 'chat-unpin_message';
-            break;
-
-            case "reward-redeemed":
-                eventName = 'reward-redeem';
-            break;
-
-            case "clips-leaderboard-update":
-                eventName = "clips_leaderboard";
-            break;
-
-            case "POLL_CREATE":
-                eventName = 'poll-create';
-            break;
-            case "POLL_UPDATE":
-                eventName = 'poll-update';
-            break;
-            case "POLL_COMPLETE":
-                eventName = 'poll-result';
-            break;
-
-            case "event-created":
-                eventName = 'event-created';
-            break;
-            case 'event-updated':
-                eventName = 'event-updated';
-            break;
-
-            case 'goal_updated':
-                eventName = 'goal-update';
-            break;
-
-            case "raid_update_v2":
-                eventName = 'raid-update';
-            break;
-            case "raid_cancel_v2":
-                eventName = 'raid-cancel';
-            break;
-            case "raid_go_v2":
-                eventName = 'raid-go';
-            break;
-
-            case "hype-train-progression":
-                eventName = 'hype_train-update';
-            break;
-            case "hype-train-level-up":
-                eventName = 'hype_train-lvl_up';
-            break;
-
-            case "sub-gifts-sent":
-                eventName = 'sub_gifts'
-            break;
-
-            case "bits-usage-by-channel-v1":
-                eventName = 'bits';
-            break;
-
-            case "slot-subscribers-deleted":
-                eventName = message.type;
-            break;
-            case "slot-assignments-changed":
-                eventName = message.type;
-            break;
-            case "slot-settings-changed":
-                eventName = message.type;
-            break;
-
-            case "session-role-changed":
-                eventName = message.type;
-            break;
-        
-
-            default:
-                console.log('ot-hermes: Got a notification message that doesn\'t have a [custom] event name (yet) returned: ', {
-                    type: message.type,
-                    message: message
-                });
-                eventName = message.type;
-            break;
-        }
-
-        return eventName;
+    // Re-init websocket connection
+    #reInit() {
+        try {
+            this.#socket.close();
+        } catch {}
+        this.#connect(true);
     }
 
 
+    /**
+     * Connect to all topics
+     * @param {boolean} [notFirstInit] 
+     */
+    #connect(notFirstInit) {
+        const anonId = "kimne78kx3ncx6brgo4mv6wki5h1ko";
+        const hermesUrl = `wss://hermes.twitch.tv/v1?clientId=${anonId}`;
+        this.#socket = new WebSocket(hermesUrl);
 
+
+        // OPEN IT UP!!!!!!!!!!!!!!!!!!!
+        this.#socket.addEventListener('open', () => {
+            // Init topics
+            if (this.#topics) this.#topics.forEach(topic => { this.addTopic(topic) });
+
+            // When we get info back from Twitch
+            this.#socket.addEventListener('message', (event) => {
+                let message = null;
+                const wsData = JSON.parse(event.data);
+                // If it's just a keepalive, it's just confirming we're still here
+                if (wsData.type == "welcome") return;
+                if (wsData.type == "authenticateResponse") return;
+                if (wsData.type == 'subscribeResponse') return;
+                // return console.log('ot-hermes: Got topic-add (aka subscribeResponse) respnose: ', data.subscribeResponse)
+                if (wsData.type == "keepalive") return;
+                // return console.log('ot-hermes: Got "keepalive" response back from Twitch.');
+                // On any errors
+                if (wsData.error && wsData.error != '') return console.error(`ot-hermes: Hermes returned error on response:`, wsData.error);
+                // Hermes wants us to use a new link.
+                if (wsData.reconnect) {
+                    console.log('ot-hermes: Got "reconnect" data. Making new connection...');
+                    return this.#reInit();
+                }
+
+
+                // Get message data
+                if (wsData.notification && wsData.notification.pubsub) {
+                    // console.log("HERMES DEBUG :: RETURNED TYPE: ", JSON.parse(wsData.notification.pubsub).type);
+                    message = JSON.parse(wsData.notification.pubsub);
+                }
+                // console.log('HERMES DEBUG :: RETURNED DATA: ', message);
+                // Send it out if we found it
+                if (message != null) this.#emit('data', message);
+                else console.warn(`ot-hermes: Unknown data received: `, wsData);
+            });
+
+
+            // Send init to clients
+            if (!notFirstInit) this.#emit('init');
+
+
+            // Remake socket when 24 hours pass since creation
+            setInterval(() => {
+                console.log('ot-hermes: Making new connection to account for possible no data after specific time...');
+                this.#reInit();
+            }, 24 * 60 * 60 * 1000);
+        });
+    }
+
+
+    /**
+     * Creates a Twitch Hermes listener
+     * @param {number} userid
+     * @param {"all" | [string]} [topics]
+     * @returns 
+     */
     constructor(userid, topics) {
         super();
 
 
         // Checks
         if (!userid || typeof userid !== 'number') return console.error('"userid" is either not defined or not a number/int.');
-        this.userid = userid;
+        this.#userid = userid;
 
         // Get all HermesTopics to put em into userTopics
         const tempTopics = [];
@@ -212,60 +159,16 @@ class Hermes extends EventTarget {
         // Checks
         if (topics) {
             if (topics == 'all') topics = tempTopics;
-            else if (typeof topics !== "object" || topics.constructor !== [].constructor) return console.error('"topics" is either not defined or is not a JSON list. You can find all the topics via the "Hermes.topics" object.')
+            else if (
+                typeof topics !== "object"
+                || topics.constructor !== [].constructor
+            ) return console.error('"topics" is either undefined or is not a JSON list. You can find all the topics via the "Hermes.topics" object.')
         }
+        this.#topics = topics;
 
 
-        // OPEN IT UP!!!!!!!!!!!!!!!!!!!
-        this.#socket.addEventListener('open', () => {
-            // Auth user with socket if oauth is found
-            if (oauth !== null) {
-                const message = {
-                    id: "ot-" + this.#generateId(),
-                    type: "authenticate",
-                    authenticate: {
-                        token: oauth
-                    },
-                    timestamp: this.#generateTimestamp()
-                };
-
-                this.#socket.send(JSON.stringify(message));
-            }
-
-
-            // Init topics
-            if (topics) topics.forEach(topic => { this.addTopic(topic) });
-
-
-            // When we get info back from Twitch
-            this.#socket.addEventListener('message', (event) => {
-                const data = JSON.parse(event.data);
-                // If it's just a keepalive, it's just confirming we're still here
-                if (data.type == "welcome") return console.log('ot-hermes: Hermes said, "welcome"!');
-                if (data.type == "authenticateResponse") return console.log('ot-hermes: Authenticate user to Hermes complete!!');
-                if (data.type == "keepalive") return;
-                // return console.log('ot-hermes: Got "keepalive" response back from Twitch.');
-                if (data.type == 'subscribeResponse') return;
-                // return console.log('ot-hermes: Got topic-add (aka subscribeResponse) respnose: ', data.subscribeResponse)
-                // On any errors
-                if (data.error && data.error != '') return console.error(`ot-hermes: Hermes returned error on response:`, data.error);
-
-
-                // Get message data
-                var message = JSON.parse(data.notification.pubsub);
-
-                // Events known types
-                let eventName = this.#handleEventName(message);
-
-                message.eventName = eventName;
-                // Send it out if we found it
-                if (eventName != null) {
-                    // console.log('HERMES DEBUG :: RETURNED DATA: ', message);
-                    this.#emit(eventName, message);
-                    this.#emit('all', message);
-                }
-            });
-        });
+        // Goto connect
+        this.#connect();
     }
 
 
@@ -273,7 +176,7 @@ class Hermes extends EventTarget {
     addTopic(topic) {
         if (
             !topic.startsWith('leaderboard-events-v1')
-        ) topic = `${topic}.${this.userid}`;
+        ) topic = `${topic}.${this.#userid}`;
 
         const message = {
             type: "subscribe",
@@ -303,7 +206,6 @@ class Hermes extends EventTarget {
 
     // On event
     /**
-     * @template {HermesEvents}
      * @param {string} event
      * @param {(data: EventPayloads[K]) => void} callback
      */
@@ -313,8 +215,20 @@ class Hermes extends EventTarget {
         });
     }
     
-    // Disable event
+    /**
+     * @param {string} event
+     * @param {(data: EventPayloads[K]) => void} callback
+     */
     off(event, callback) {
         this.#eventTarget.removeEventListener(event, callback);
+    }
+
+
+    /**
+     * Close this session
+     * @returns {void}
+     */
+    close() {
+        this.#socket.close();
     }
 }
