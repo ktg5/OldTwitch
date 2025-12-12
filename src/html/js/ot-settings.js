@@ -1,5 +1,5 @@
 var def_ot_config;
-extensionLocation = document.querySelector('body').getAttribute('oldttv');
+extensionLocation = document.querySelector('body').getAttribute('oldttv-url');
   
 function doSettings() {
     return new Promise((resolve, reject) => {
@@ -8,10 +8,49 @@ function doSettings() {
                 clearInterval(firstInit);
 
 
+                // Function for making list options in a option of lists peowjiuhjnwpofnhwrpkgjnbwrfpkjwebnfpkejngerlf
+                function makeListOptions(list, selectedValue) {
+                    return Object.entries(list)
+                        .map(([value, label]) =>
+                            `<option value="${value}"${value == selectedValue ? " selected" : ""}>${label}</option>`
+                        )
+                        .join(" ");
+                }
+
+
+                // Get default config
                 await demand(`${extensionLocation}/default_config.json`).then(async data => { def_ot_config = await data.json(); });
 
+                // Get all langs
+                let langOptionsJson = {};
+                let langOptions = '';
+                let langIndexFetch = await demand(`${extensionLocation}/lang/index.json`);
+                if (langIndexFetch.ok) {
+                    let langIndex = await langIndexFetch.json();
+                    // For each language defined in the lang index file, get folder files
+                    for (let i = 0; i < langIndex.index.length; i++) {
+                        const lang = langIndex.index[i];
+                        // Get lang folder
+                        let langFolder = `${extensionLocation}/lang/${lang}`
+                        let langFetch = await demand(`${langFolder}/index.json`)
+
+                        // Make sure all the files required for each language are here
+                        if (langFetch.ok) langOptionsJson[lang] = (await langFetch.json()).displayName;
+                        else {
+                            console.error(`OldTwitch Language Fetch Error: The language file(s) for \"${lang}\" couldn't be found. Fetch data: `, langFetch);
+                            alert(`Error when getting the list of languages, please check the developer console. If you're not developing a language for OldTwitch, report this issue onto the GitHub please with the console log!`)
+                        }
+                    }
+
+                    // Make options HTML
+                    console.log(langOptionsJson);
+                    langOptions = makeListOptions(langOptionsJson, userConfig.lang);
+                    console.log(langOptions);
+                } else alert('Extension language index file couldn\'t be demanded. Reload & try again, else report this on the GitHub!');
+
+
+                // Make HTML for page
                 let injectDiv = document.querySelector('.settings-options');
-                // HTML maker
                 async function addButton(args) {
                     let returnedNull;
                     switch (true) {
@@ -72,31 +111,17 @@ function doSettings() {
                 }
 
 
-                /// Get year options for menu
-                var years = [2018, 2014];
-                var yearOptions = '';
-                years.forEach(element => {
-                    if (element == userConfig['year']) {
-                        yearOptions += `<option value="${element}" selected>${element}</option> `
-                    } else {
-                        yearOptions += `<option value="${element}">${element}</option> `
-                    }
-                });
-                /// Get light mode options for menu
-                var lightModes = {0:"Light", 1:"Dark"};
-                var lightOptions = '';
-                for (const value in lightModes) {
-                    if (Object.hasOwnProperty.call(lightModes, value)) {
-                        const txt = lightModes[value];
-                        
-                        if (value == userConfig['forceWhichLightMode']) {
-                            lightOptions += `<option value="${value}" selected>${txt}</option> `
-                        } else {
-                            lightOptions += `<option value="${value}">${txt}</option> `
-                        }
-                    }
-                }
-                console.log(lightOptions);
+                
+                /// Yyear options
+                const years = [2018, 2014];
+                const yearOptions = makeListOptions(
+                    Object.fromEntries(years.map(y => [y, y])),
+                    userConfig.year
+                );
+
+                /// Light mode options
+                const lightModes = {0: "Light", 1: "Dark"};
+                const lightOptions = makeListOptions(lightModes, userConfig.forceWhichColorMode);
 
 
                 // Make html
@@ -104,8 +129,10 @@ function doSettings() {
                 injectDiv.innerHTML = `
                     ${await addButton({ key: 'showReleaseNotes', type: 'toggle', title: 'Show Update Notes', desc: 'This option will show update notes when updated to a new version of OldTwitch.' })}
                     ${await addButton({ key: 'alertUpdates', type: 'toggle', title: 'Alert Me When Out-of-date', desc: 'Shows a banner at the top of the page to update OldTwitch. Not recommended unless not using a webstore version.' })}
-                    ${await addButton({ key: 'forceLightMode', type: 'toggle', title: 'Force Light Mode', desc: 'OldTwitch will force the light mode that is set in the "Force Which Light Mode" option.' })}
-                    ${await addButton({ key: 'forceWhichLightMode', type: 'select', title: 'Force Which Light Mode', desc: 'Will force either light or dark mode on all pages.', values: lightOptions })}
+                    ${await addButton({ key: 'lang', type: 'select', title: langStrings.settings.lang.title, desc: langStrings.settings.lang.desc, values: langOptions })}
+                    ${await addButton({ key: 'year', type: 'select', title: langStrings.settings.year.title, desc: langStrings.settings.year.desc, values: yearOptions })}
+                    ${await addButton({ key: 'forceColorMode', type: 'toggle', title: 'Force Light Mode', desc: 'OldTwitch will force the light mode that is set in the "Force Which Light Mode" option.' })}
+                    ${await addButton({ key: 'forceWhichColorMode', type: 'select', title: 'Force Which Light Mode', desc: 'Will force either light or dark mode on all pages.', values: lightOptions })}
                 `;
 
 

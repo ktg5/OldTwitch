@@ -1,3 +1,26 @@
 {
-    
+    "showReleaseNotes": {
+        "title": "Show Update Notes",
+        "desc": "This option will show update notes when updated to a new version of OldTwitch."
+    },
+    "alertUpdates": {
+        "title": "Alert Me When Out-of-date",
+        "desc": "Shows a banner at the top of the page to update OldTwitch. Recommended for those using builds from GitHub."
+    },
+    "lang": {
+        "title": "Set Language",
+        "desc": "Change the language of all of OldTwitch. (Help grow the list--contribute on the GitHub page!)"
+    },
+    "year": {
+        "title": "Year Theme",
+        "desc": "Change the current theme for OldTwitch. (Currently work in progress!!!)"
+    },
+    "forceColorMode": {
+        "title": "Force Color Mode",
+        "desc": "OldTwitch will force the color mode that is set in the \"Force Which Color Mode\" option."
+    },
+    "forceWhichColorMode": {
+        "title": "Force Which Color Mode",
+        "desc": "Will force either light or dark mode on all pages."
+    }
 }

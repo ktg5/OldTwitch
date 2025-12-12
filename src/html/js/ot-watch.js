@@ -74,11 +74,15 @@ async function setIframeVideo (args) {
                 if (!data) return alert("Invalid data");
                 if (data.length < 1) return divInject.innerHTML = `<h4 style="max-width: 100%; width: 100%;">There doesn't seem to be anything here...</h4>`;
 
+                if (sideargs.tab == "clips") document.querySelector('[data-a-target="sort-bar"]').classList.remove('tw-hide');
+                else document.querySelector('[data-a-target="sort-bar"]').classList.add('tw-hide');
+
                 data.forEach(item => {
                     // href
                     let itemHref, itemType;
-                    if (item.__typename == "Clip") { itemHref = `https://www.twitch.tv/${channelData.login}/clips/${item.slug}`; itemType = "clip"; }
-                    else if (item.__typename == "Video") { itemHref = `https://www.twitch.tv/${channelData.login}/video/${item.id}`; itemType = "video"; }
+                    let itemId = item.id ? item.id : item.slug;
+                    if (item.__typename == "Clip") { itemHref = `https://www.twitch.tv/${channelData.login}/clips/${itemId}`; itemType = "clip"; }
+                    else if (item.__typename == "Video") { itemHref = `https://www.twitch.tv/${channelData.login}/video/${itemId}`; itemType = "video"; }
 
                     // subtext - game category
                     let itemSubtext = `<a href="https://www.twitch.tv/directory/category/${item.game.slug}">${item.game.displayName ? item.game.displayName : item.game.name}</a>`;
@@ -96,11 +100,11 @@ async function setIframeVideo (args) {
                     let streamerDiv = document.createElement('div');
                     streamerDiv.className = "directory-item";
                     streamerDiv.innerHTML = `
-                    <div class="tw-mg-b-2">
+                    <div class="tw-mg-b-2" id="${itemId}">
                         <div class="tw-mg-b-05" ${vodDateTxt ? `title="${vodDateTxt}"` : ""}>
                             <figure class="tw-aspect tw-aspect--16x9 tw-aspect--align-top">
                                 <a href="${itemHref}">
-                                    <img class="tw-image" src="${item.animatedPreviewURL ? item.animatedPreviewURL : item.thumbnailURL}">
+                                    <img class="tw-image tw-absolute" src="${item.animatedPreviewURL ? item.animatedPreviewURL : item.thumbnailURL}">
                                 </a>
                             </figure>
                         </div>
@@ -115,6 +119,51 @@ async function setIframeVideo (args) {
                     </div>
                     `;
                     divInject.appendChild(streamerDiv);
+
+
+                    // Divs
+                    const elmnt = document.querySelector(`.tw-mg-b-2[id="${itemId}"`);
+                    const figureDiv = elmnt.querySelector('.tw-mg-b-05 figure');
+                    const figMaxHeight = figureDiv.clientHeight;
+                    const thumbDiv = figureDiv.querySelector('.tw-image');
+                    const thumbLength = Math.round(thumbDiv.clientHeight / figMaxHeight);
+
+                    // Set thumb preview (just the middle one)
+                    function setThumbPosDefault() {
+                        const calc = figMaxHeight * (thumbLength / 2);
+                        thumbDiv.style.top = `-${calc}px`;
+                    }
+                    setThumbPosDefault();
+
+                    // Scroll thumbnail preview
+                    let scrollInt;
+                    elmnt.addEventListener('mouseover', (e) => {
+                        let i = 0;
+
+                        function scrollThumb() {
+                            // Get current i & height
+                            let calc = figMaxHeight * i;
+                            // If calc is short of calculator--ok actually, if `calc` is more than the thumbnail preview image
+                            if (calc > thumbDiv.clientHeight) {
+                                calc = 0;
+                                i = 0;
+                            }
+
+                            // Set pos
+                            thumbDiv.style.top = `-${calc}px`;
+
+                            // End
+                            i++;
+                        }
+                        scrollThumb();
+                        scrollInt = setInterval(() => scrollThumb(), 800);
+                    });
+
+                    // Clear past scroller & set back to default
+                    elmnt.addEventListener('mouseout', (e) => {
+                        clearInterval(scrollInt);
+                        setThumbPosDefault();
+                    });
                 });
             }
 
@@ -128,7 +177,7 @@ async function setIframeVideo (args) {
                 case "clips":
                     sidePageRoot.classList.remove("tw-hide");
 
-                    if (!clipsData) clipsData = await gql.getChannelClips(args.channel);
+                    if (!clipsData) clipsData = await gql.getChannelMedia(args.channel, "CLIPS");
                     setTabData(clipsData);
                 break;
             }
@@ -254,7 +303,7 @@ async function setIframeVideo (args) {
                 console.log("channelData: ", channelData);
                 if (!channelData) showError({ id: 404 });
                 
-                videosData = await gql.getChannelVods(args.channel);
+                videosData = await gql.getChannelMedia(args.channel, "VIDEOS");
                 console.log("videosData: ", videosData);
 
                 // set streamer info
@@ -522,7 +571,7 @@ async function setIframeVideo (args) {
                 if (!vodData) return showError({ id: 404 });
 
                 channelData = await gql.getChannel(vodData.owner.login);
-                videosData = await gql.getChannelVods(vodData.owner.login);
+                videosData = await gql.getChannelMedia(vodData.owner.login, "VIDEOS");
                 console.log("channelData: ", channelData);
 
                 // set streamer info
@@ -591,7 +640,7 @@ async function setIframeVideo (args) {
                 if (!clipData) return showError({ id: 404 });
 
                 channelData = await gql.getChannel(clipData.broadcaster.login);
-                videosData = await gql.getChannelVods(clipData.broadcaster.login);
+                videosData = await gql.getChannelMedia(clipData.broadcaster.login, "VIDEOS");
                 console.log("channelData: ", channelData);
 
                 // set streamer info

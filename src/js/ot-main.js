@@ -38,7 +38,7 @@ var userConfig;
 
 
 // Check if OldTwitch is already loaded
-if (document.body && document.body.getAttribute('oldttv') !== null) location.reload();
+if (document.body && document.body.getAttribute('oldttv-url') !== null) location.reload();
 
 
 // Set userConfig -- details in ot-config.js
@@ -191,7 +191,7 @@ async function handlePageChange() {
 
         // Inject HTML
         let htmlText = await data.text();
-        htmlText = htmlText.replace('<body', `<body oldttv="${extensionLocation}" oldttv-ver="${currentVersion}"`);
+        htmlText = htmlText.replace('<body', `<body oldttv-url="${extensionLocation}" oldttv-ver="${currentVersion}"`);
         htmlText = htmlText.replace(/__([a-zA-Z0-9_]+)__/g, (match, key) => {
             switch (key) {
                 case "EXTENSION_URL":

@@ -77,11 +77,11 @@
     color: #433f4a
 }
 
-.tw-root--theme-light [data-a-target="chat-input"] {
+.tw-root--theme-light .chat-input .chat-wysiwyg-input-box {
     background: #fff;
 }
 
-.tw-root--theme-dark [data-a-target="chat-input"] {
+.tw-root--theme-dark .chat-input .chat-wysiwyg-input-box {
     background: none !important;
 }
 

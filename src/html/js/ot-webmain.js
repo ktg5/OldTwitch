@@ -26,11 +26,11 @@ function handleExtensionResponse(type, e, callback) {
 function userConfigInit() {
     // If we get a response back from the main script
     function onMessage(event) {
-        handleExtensionResponse('ot-get-config-res', event, (data) => {
+        handleExtensionResponse('ot-get-config-res', event, async (data) => {
             window.removeEventListener('message', onMessage);
             userConfig = data.res;
             console.log(`%cOLDTTV USER DATA:`, styles3, userConfig);
-            addGlobals();
+            await addGlobals();
         });
     }
     // Listen for responses back from the background
@@ -54,13 +54,26 @@ window.addEventListener('message', async (e) => {
 });
 
 
-// Custom fetch command since Twitch likes to not give us "fetch()" sometimes
-// 
 // This goes from the client, to "js/ot-main" (the extension's main script), and
 // then to the background script ("js/ot-background") to then send it all the
 // way back to the client.
 // 
 // And yes, it's called, "demand".
+/**
+ * @typedef {Object} Demand
+ * @prop {Boolean} ok - If the demand request went through
+ * @prop {Number} status - The HTML status code returned
+ * @prop {string} body - The body of the request
+ * @prop {function(): Promise<Uint8Array>} bytes - Returns a `Uint8Array` of the data sent back
+ * @prop {function(): Promise<String>} text - Returns the data returned into a string
+ * @prop {function(): Promise<JSON>} json - Returns the JSON data sent back
+ */
+/**
+ * Custom fetch command since Twitch likes to not give us "fetch()" sometimes
+ * @param {string} url 
+ * @param {object} options 
+ * @returns {Promise<Demand>}
+ */
 function demand(url, options = {}) {
     return new Promise((resolve) => {
         // ID to make sure we don't get another demand's res data
@@ -107,7 +120,6 @@ const currentDate = new Date;
 // Date difference into text
 function calcDateDiffToTxt(date1 = new Date, date2 = new Date) {
     let diffMs = date1 - date2;
-    console.log(date1 - date2);
     let diffSeconds = diffMs / 1000;
     let diffMinutes = diffSeconds / 60;
     let diffHours = diffMinutes / 60;
@@ -171,7 +183,7 @@ if (tabsClosed == null) {
 }
 
 // Get more global vars
-extensionLocation = document.querySelector('body').getAttribute('oldttv');
+extensionLocation = document.querySelector('body').getAttribute('oldttv-url');
 var darkTheme = false;
 const html =  document.querySelector('html');
 
@@ -293,32 +305,54 @@ if (document.cookie.split('unique_id')[1]) {
 
 
 // Init everything that needs the userConfig to be init'd first
-function initCmdsForConfig() {
+var langStrings = {
+    current: '',
+    page: {},
+    settings: {}
+};
+async function initCmdsForConfig() {
     // Check for dark theme
     if (
         (
-            userConfig.forceLightMode == true
-            && userConfig.forceWhichLightMode == '1'
+            userConfig.forceColorMode == true
+            && userConfig.forceWhichColorMode == '1'
         )
         || (
-            (userConfig.forceLightMode == undefined || userConfig.forceLightMode == false)
+            (userConfig.forceColorMode == undefined || userConfig.forceColorMode == false)
             && window.matchMedia
             && window.matchMedia('(prefers-color-scheme: dark)').matches
         )
     ) {
         html.classList.add(`tw-theme--dark`);
         darkTheme = true;
-    } else if ( userConfig.forceLightMode == true ) {
+    } else if ( userConfig.forceColorMode == true ) {
         html.classList.remove(`tw-theme--dark`);
         darkTheme = false;
+    }
+
+
+    // Get current language
+    if (!userConfig.lang) userConfig.lang = "en";
+    langStrings.current = userConfig.lang;
+    // Fetch for lang jsons
+    var pagesLangJson = await demand(`${extensionLocation}/lang/${langStrings.current}/pages.json`);
+    var settingsLangJson = await demand(`${extensionLocation}/lang/${langStrings.current}/settings.json`);
+    if (
+        pagesLangJson.ok
+        && settingsLangJson.ok
+    ) {
+        langStrings.page = await pagesLangJson.json();
+        langStrings.settings = await settingsLangJson.json();
+    } else {
+        // Reset config--something isn't right here
     }
 }
 
 
 // Add global html elements, like the top & side navs
-function addGlobals() {
+async function addGlobals() {
     // Run stuff for userConfig
-    initCmdsForConfig();
+    await initCmdsForConfig();
 
     // Add navbar if found
     let navbar = document.querySelector(".top-nav");

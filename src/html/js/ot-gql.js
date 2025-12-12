@@ -149,17 +149,155 @@ class GqlClient {
         });
     }
 
+    /**
+     * Returns an object with two values which include badge information of the current user in the current channel
+     * @param {string} channel The Twitch channel to check for badges on
+     * @param {string} oauth The OAuth token for user auth
+     * @returns {Promise<Object>} Returns `selectedBadge`--current user badge--& `availableBadges`--all badges that the user can apply
+     */
+    async getUserBadges(oauth, channel) {
+        if (this.oauth != undefined) oauth = this.oauth;
+        if (!channel) return console.error(`"channel" is required but returned null.`);
+        if (!oauth) return console.error(`"oauth" is required but returned null.`);
+        if (oauth && !this.oauth) this.oauth = oauth;
+
+        return new Promise(async (resolve, reject) => {
+            await demand("https://gql.twitch.tv/gql", {
+                headers: {
+                    "authorization": `OAuth ${oauth}`,
+                    "client-id": this.clientid,
+                    "x-device-id": deviceId,
+                },
+                body: JSON.stringify({
+                    "operationName": "ChatSettings_Badges",
+                    "variables": {
+                        "channelLogin": `${channel}`
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "sha256Hash": "a0300a9d8c43ec7a6bf653d46478948cc943d4ad9b2b28654241916b621dbfe5",
+                            "version": 1
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+
+                if (data.errors) resolve({ errors: data.errors });
+                else resolve({
+                    selectedBadge: data.data.currentUser.selectedBadge,
+                    availableBadges: data.data.currentUser.availableBadges
+                });
+            });
+        });
+    }
+
+    /**
+     * Set the user badge to the value in `badgeId`
+     * @param {string} oauth The OAuth token for user auth
+     * @param {string} badgeId Badge information can be found by using `Client.getUserBadges`
+     * @param {number} badgeVersion Badge information can be found by using `Client.getUserBadges`
+     * @returns {Promise<Object>} Returns the `selectedBadge` object, aka the badge selected
+     */
+    async setUserBadge(oauth, badgeId, badgeVersion) {
+        if (this.oauth != undefined) oauth = this.oauth;
+        if (!channel) return console.error(`"channel" is required but returned null.`);
+        if (!oauth) return console.error(`"oauth" is required but returned null.`);
+        if (oauth && !this.oauth) this.oauth = oauth;
+
+        return new Promise(async (resolve, reject) => {
+            await demand("https://gql.twitch.tv/gql", {
+                headers: {
+                    "authorization": `OAuth ${oauth}`,
+                    "client-id": this.clientid,
+                    "x-device-id": deviceId,
+                },
+                body: JSON.stringify({
+                    "operationName": "ChatSettings_SelectGlobalBadge",
+                    "variables": {
+                        "input": {
+                            "badgeSetID": `${badgeId}`,
+                            "badgeSetVersion": `${badgeVersion}`
+                        }
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "sha256Hash": "5e1b7f0ba771ca8eb81c0fcd5b8f4ff559ec2dc71cc9256e04ec2665049fc4e5",
+                            "version": 1
+                        }
+                    },
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+
+                if (data.errors) resolve({ errors: data.errors });
+                else resolve(data.data.selectGlobalBadge.user.selectedBadge);
+            });
+        });
+    }
+
+    /**
+     * Send a message to a channel
+     * @param {string} oauth The OAuth token for user auth
+     * @param {number} channelID The Twitch channel ID to send a message to
+     * @param {string} message The Message In Question
+     * @param {number} replyingTo The message ID that the user is replying to
+     * @returns {Promise<Object>} Returns `sendChatMessage`
+     */
+    async sendMessage(oauth, channelID, message, replyingTo) {
+        if (this.oauth != undefined) oauth = this.oauth;
+        if (!channelID) return console.error(`"channelID" is required but returned null.`);
+        if (!oauth) return console.error(`"oauth" is required but returned null.`);
+        if (!message) return console.error(`"oauth" is required but returned null.`);
+        if (oauth && !this.oauth) this.oauth = oauth;
+
+        return new Promise(async (resolve, reject) => {
+            await demand("https://gql.twitch.tv/gql", {
+                headers: {
+                    "authorization": `OAuth ${oauth}`,
+                    "client-id": this.clientid,
+                    "x-device-id": deviceId,
+                },
+                body: JSON.stringify({
+                    "operationName": "sendChatMessage",
+                    "variables": {
+                        "input": {
+                            "channelID": `${channelID}`,
+                            "message": `${message}`,
+                            "nonce": "lol",
+                            "replyParentMessageID": replyingTo ? replyingTo : null
+                        }
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "sha256Hash": "0435464292cf380ed4b3d905e4edcb73078362e82c06367a5b2181c76c822fa2",
+                            "version": 1
+                        }
+                    },
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+
+                if (data.errors) resolve({ errors: data.errors });
+                else resolve(data.data.sendChatMessage);
+            });
+        });
+    }
+
 
     /**
      * Fetches the home page data from the Twitch GraphQL API.
      *
-     * @param {string} lang - The language in which to fetch the data.
+     * @param {string} [lang="en"] - The language in which to fetch the data. Defaults to `"en"`
      * @param {number} streamsAmount - Optional. The number of streams to fetch. Maximum is 10 within GQL. Defaults to 6 if not provided.
      * @param {number} shelvesItemAmount - Optional. The number of streams to fetch. Defaults to 12 if not provided.
      * @returns {Promise<Object>} A promise that resolves to an object containing featured streams and shelf data.
      *                            Logs any errors if encountered during the fetch.
      */
-    async getHomePage(lang, streamsAmount, shelvesItemAmount) {
+    async getHomePage(lang = "en", streamsAmount, shelvesItemAmount) {
         // if (!lang) return console.error("Invaild args");
 
         if (!streamsAmount) {
@@ -630,7 +768,10 @@ class GqlClient {
                     let isLive = data[0].data.user.stream != null;
 
                     let gameSlug;
-                    if (data[0].data.user.broadcastSettings.game) gameSlug = data[0].data.user.broadcastSettings.game.slug;
+                    if (
+                        data[0].data.user.broadcastSettings
+                        && data[0].data.user.broadcastSettings.game
+                    ) gameSlug = data[0].data.user.broadcastSettings.game.slug;
                     let cleanData = {
                         live: isLive,
                         ...data[0].data.user,
@@ -747,80 +888,43 @@ class GqlClient {
     }
 
     /**
-     * @description Gets a list of videos from a channel.
-     * @param {string} name The name of the channel.
-     * @param {number} [limit=100] Optional. The limit of videos to get. Defaults to `100`.
-     * @returns {Promise.<Array.<Object>>} A promise that resolves to an array of video objects.
+     * Get VODs, highlights or clips from a channel.
+     * @param {string} name Name of channel.
+     * @param {string} type The type of media to look for. That being:
+     * * `"ARCHIVE"` - VODs
+     * * `"HIGHLIGHT"`,
+     * * `"VIDEOS"` - will show all videos
+     * * `"CLIPS"`
+     * @param {number} [limit] The amount of items to return back. (Defaults to 30)
+     * @param {string} [sort] This is mostly used for clips, but used to be for everything on a channels page.
+     * 
+     * Clips sorts (Will default to "LAST_WEEK"):
+     * * `"LAST_DAY"`
+     * * `"LAST_WEEK"`
+     * * `"LAST_MONTH"`
+     * * `"ALL_TIME"`
+     * @returns {object} Returns a list of objects that include data for each media fetched.
      */
-    async getChannelVods(name, limit) {
+    async getChannelMedia(name, type, limit, sort) {
         if (!name) return console.error(`"name" is required but returned null.`);
+        name = name.toString();
+        if (!type) return console.error(`"type" is required but returned null.`);
+        type = type.toString();
+        if (!limit || typeof limit !== "number") {
+            limit = 30;
+            console.warn("limit arg not set, going with \"30\".");
+        }
 
-        return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
-                headers: {
-                    "client-id": this.clientid,
-                },
-                body: JSON.stringify({
-                    "operationName": "FilterableVideoTower_Videos",
-                    "variables": {
-                        "includePreviewBlur": false,
-                        "limit": limit ? limit : 100,
-                        "channelOwnerLogin": name,
-                        "broadcastType": "ARCHIVE",
-                        "videoSort": "TIME"
-                    },
-                    "extensions": {
-                        "persistedQuery": {
-                            "version": 1,
-                            "sha256Hash": "acea7539a293dfd30f0b0b81a263134bb5d9a7175592e14ac3f7c77b192de416"
-                        }
-                    }
-                }),
-                method: "POST"
-            }).then(async rawData => {
-                let data = await rawData.json();
-                if (data.errors) resolve({ errors: data.errors });
-
-                let cleanData = [];
-                if (!data.data.user) resolve(null);
-                for (let i = 0; i < data.data.user.videos.edges.length; i++) {
-                    const element = data.data.user.videos.edges[i];
-                    cleanData[i] = element.node;
-                }
-                resolve(cleanData);
-            });
-        });
-    }
-
-    /**
-     * @description Gets a list of clips from a given channel.
-     * @param {string} name - The name of the channel.
-     * @param {string} [filter] - Optional. The filter to apply to the clips. Can be set to `LAST_DAY`, `LAST_WEEK, `LAST_MONTH, or `ALL_TIME. Defaults to "LAST_WEEK".
-     * @param {number} [limit=100] - Optional. The number of clips to return. Defaults to `100`.
-     * @returns {Promise<Array<Object>>} A promise that resolves with an array of clips.
-     */
-    async getChannelClips(name, filter, limit) {
-        if (!name) return console.error(`"name" is required but returned null.`);
-
-        // "filter": "LAST_MONTH",
-        // "filter": "LAST_DAY",
-        // "filter": "ALL_TIME",
-        let filterTxt = "LAST_WEEK";
-        if (filter) filterTxt = filter;
-        else console.warn("filter arg not set, going with \"LAST_WEEK\".");
-
-        return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
-                headers: {
-                    "client-id": this.clientid,
-                },
-                body: JSON.stringify({
+        let bodyString = "";
+        switch (type) {
+            case "CLIPS":
+                bodyString = JSON.stringify({
                     "operationName": "ClipsCards__User",
                     "variables": {
                         "login": name,
-                        "limit": limit ? limit : 100,
+                        "limit": limit,
                         "criteria": {
-                            "filter": filterTxt,
+                            "filter": sort ? sort : "LAST_WEEK",
                             "shouldFilterByDiscoverySetting": true
                         },
                         "cursor": null
@@ -828,22 +932,58 @@ class GqlClient {
                     "extensions": {
                         "persistedQuery": {
                             "version": 1,
-                            "sha256Hash": "4eb8f85fc41a36c481d809e8e99b2a32127fdb7647c336d27743ec4a88c4ea44"
+                            "sha256Hash": "90c33f5e6465122fba8f9371e2a97076f9ed06c6fed3788d002ab9eba8f91d88"
                         }
                     }
-                }),
+                });
+            break;
+        
+            default:
+                if (type == "VIDEOS") type = null;
+                bodyString = JSON.stringify({
+                    "operationName": "FilterableVideoTower_Videos",
+                    "variables": {
+                        "includePreviewBlur": false,
+                        "limit": limit,
+                        "channelOwnerLogin": name,
+                        "broadcastType": type,
+                        "videoSort": "TIME"
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "67004f7881e65c297936f32c75246470629557a393788fb5a69d6d9a25a8fd5f"
+                        }
+                    }
+                });
+            break;
+        }
+
+        return new Promise(async (res, rej) => {
+            await demand("https://gql.twitch.tv/gql", {
+                headers: {
+                    "client-id": this.clientid
+                },
+                body: bodyString,
                 method: "POST"
             }).then(async rawData => {
-                let data = await rawData.json();
-
+                const data = await rawData.json();
                 if (data.errors) resolve({ errors: data.errors });
 
                 let cleanData = [];
-                for (let i = 0; i < data.data.user.clips.edges.length; i++) {
-                    const element = data.data.user.clips.edges[i];
+                if (!data.data.user) resolve(null);
+                
+                // Get edges list from whatever type we're trying to fetch
+                let edgesList;
+                if (data.data.user.videos) edgesList = data.data.user.videos.edges;
+                if (data.data.user.clips) edgesList = data.data.user.clips.edges;
+                // Put edges for the type we got back into a list
+                for (let i = 0; i < edgesList.length; i++) {
+                    const element = edgesList[i];
                     cleanData[i] = element.node;
                 }
-                resolve(cleanData);
+                // Resolve
+                res(cleanData);
             });
         });
     }
