@@ -47,15 +47,17 @@ async function setIframeVideo (args) {
         });
 
 
+        // Side page
+        const sidePageSortBar = new SortBar(document.querySelector('[data-a-target="sort-bar"]'));
+        const sidePageLoading = new LoadingSpinner(sidePageSortBar.div, true);
         let sidePageRoot = document.querySelector(`[data-target="watch-side-page"]`);
         // Load the desired data of a streamer on watch page
         async function loadStreamerSidePage(sideargs) {
             if (!sideargs.elmnt) return alert("Invalid element");
             if (!sideargs.tab) return alert("Invalid tab");
 
-            // clear old data
             let divInject = document.querySelector(`[data-a-target="directory-data-container"] .tw-tower`);
-            divInject.innerHTML = "";
+            clearPageData();
 
             let currentClickedTab = document.querySelector('.channel-header__user--selected');
             if (currentClickedTab == null) currentClickedTab = document.querySelector('.channel-header__item--selected');
@@ -69,23 +71,112 @@ async function setIframeVideo (args) {
             playerRoot.classList.add("player-popout");
 
 
+            function clearPageData(forceSpinner) {
+                divInject.innerHTML = "";
+                sidePageLoading.toggle(forceSpinner !== null && typeof forceSpinner == "boolean" ? forceSpinner : true);
+            }
+
+
+            // Set sort bar data depending on page
+            switch (sideargs.tab) {
+                case "clips":
+                    sidePageSortBar.setOptions([
+                        {
+                            id: "clips",
+                            textBeforeSelect: "Show from",
+                            selections: [
+                                {
+                                    id: "last_day",
+                                    displayName: "the Last Day",
+                                    onSelect: async (d) => {
+                                        clearPageData();
+                                        setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "LAST_DAY"));
+                                    }
+                                },
+                                {
+                                    id: "last_week",
+                                    displayName: "the Last Week",
+                                    onSelect: async (d) => {
+                                        clearPageData();
+                                        setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "LAST_WEEK"));
+                                    }
+                                },
+                                {
+                                    id: "last_month",
+                                    displayName: "the Last Month",
+                                    onSelect: async (d) => {
+                                        clearPageData();
+                                        setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "LAST_MONTH"));
+                                    }
+                                },
+                                {
+                                    id: "all_time",
+                                    displayName: "All Time",
+                                    onSelect: async (d) => {
+                                        clearPageData();
+                                        setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "ALL_TIME"));
+                                    }
+                                }
+                            ]
+                        }
+                    ])
+                break;
+
+                case "videos":
+                    sidePageSortBar.setOptions([
+                        {
+                            id: "vod",
+                            textBeforeSelect: "Show all",
+                            selections: [
+                                {
+                                    id: "videos",
+                                    displayName: "Videos",
+                                    onSelect: async (d) => {
+                                        clearPageData();
+                                        setTabData(await gql.getChannelMedia(args.channel, "VIDEOS"));
+                                    }
+                                },
+                                {
+                                    id: "archives",
+                                    displayName: "Archives",
+                                    onSelect: async (d) => {
+                                        clearPageData();
+                                        setTabData(await gql.getChannelMedia(args.channel, "ARCHIVE"));
+                                    }
+                                },
+                                {
+                                    id: "highlights",
+                                    displayName: "Highlights",
+                                    onSelect: async (d) => {
+                                        clearPageData();
+                                        setTabData(await gql.getChannelMedia(args.channel, "HIGHLIGHT"));
+                                    }
+                                }
+                            ]
+                        }
+                    ])
+                break;
+            };
+
+
             // set data
             function setTabData(data) {
-                if (!data) return alert("Invalid data");
+                if (!data) return alert("setTabData: Invalid data");
+
+                clearPageData(false);
+                // Check if there wasn't any data from the GQL request
                 if (data.length < 1) return divInject.innerHTML = `<h4 style="max-width: 100%; width: 100%;">There doesn't seem to be anything here...</h4>`;
-
-                if (sideargs.tab == "clips") document.querySelector('[data-a-target="sort-bar"]').classList.remove('tw-hide');
-                else document.querySelector('[data-a-target="sort-bar"]').classList.add('tw-hide');
-
-                data.forEach(item => {
+                // Make HTML
+                else data.forEach(item => {
                     // href
                     let itemHref, itemType;
-                    let itemId = item.id ? item.id : item.slug;
-                    if (item.__typename == "Clip") { itemHref = `https://www.twitch.tv/${channelData.login}/clips/${itemId}`; itemType = "clip"; }
+                    let itemId = item.slug ? item.slug : item.id;
+                    if (item.__typename == "Clip") { itemHref = `https://www.twitch.tv/${channelData.login}/clip/${itemId}`; itemType = "clip"; }
                     else if (item.__typename == "Video") { itemHref = `https://www.twitch.tv/${channelData.login}/video/${itemId}`; itemType = "video"; }
 
                     // subtext - game category
-                    let itemSubtext = `<a href="https://www.twitch.tv/directory/category/${item.game.slug}">${item.game.displayName ? item.game.displayName : item.game.name}</a>`;
+                    let itemSubtext = "";
+                    if (item.game) itemSubtext = `<a href="https://www.twitch.tv/directory/category/${item.game.slug}">${item.game.displayName ? item.game.displayName : item.game.name}</a>`;
 
                     // subtext 2
                     let itemSubtext2 = "";
@@ -104,12 +195,12 @@ async function setIframeVideo (args) {
                         <div class="tw-mg-b-05" ${vodDateTxt ? `title="${vodDateTxt}"` : ""}>
                             <figure class="tw-aspect tw-aspect--16x9 tw-aspect--align-top">
                                 <a href="${itemHref}">
-                                    <img class="tw-image tw-absolute" src="${item.animatedPreviewURL ? item.animatedPreviewURL : item.thumbnailURL}">
+                                    <img class="tw-image tw-absolute tw-full-width" src="${item.animatedPreviewURL ? item.animatedPreviewURL : item.thumbnailURL}">
                                 </a>
                             </figure>
                         </div>
                         <div class="item-info">
-                            <a href="https://www.twitch.tv/directory/category/${item.game.slug}" style="display: contents;"><img class="tw-image item-category-img" src="${item.game.boxArtURL}"></a>
+                            ${item.game ? `<a href="https://www.twitch.tv/directory/category/${item.game.slug}" style="display: contents;"><img class="tw-image item-category-img" src="${item.game.boxArtURL}"></a>` : ""}
                             <div class="item-text">
                                 <p class="item-name" title="${item.title}"><a href="${itemHref}">${item.title}</a></p>
                                 <p class="item-subtext tw-font-size-7">${itemSubtext}</p>
@@ -128,57 +219,58 @@ async function setIframeVideo (args) {
                     const thumbDiv = figureDiv.querySelector('.tw-image');
                     const thumbLength = Math.round(thumbDiv.clientHeight / figMaxHeight);
 
-                    // Set thumb preview (just the middle one)
-                    function setThumbPosDefault() {
-                        const calc = figMaxHeight * (thumbLength / 2);
-                        thumbDiv.style.top = `-${calc}px`;
-                    }
-                    setThumbPosDefault();
 
-                    // Scroll thumbnail preview
-                    let scrollInt;
-                    elmnt.addEventListener('mouseover', (e) => {
-                        let i = 0;
-
-                        function scrollThumb() {
-                            // Get current i & height
-                            let calc = figMaxHeight * i;
-                            // If calc is short of calculator--ok actually, if `calc` is more than the thumbnail preview image
-                            if (calc > thumbDiv.clientHeight) {
-                                calc = 0;
-                                i = 0;
-                            }
-
-                            // Set pos
+                    // For animated previews--aka make 'em scroll!
+                    if (item.animatedPreviewURL) {
+                        // Set thumb preview (just the middle one)
+                        function setThumbPosDefault() {
+                            const calc = figMaxHeight * (thumbLength / 2);
                             thumbDiv.style.top = `-${calc}px`;
-
-                            // End
-                            i++;
                         }
-                        scrollThumb();
-                        scrollInt = setInterval(() => scrollThumb(), 800);
-                    });
-
-                    // Clear past scroller & set back to default
-                    elmnt.addEventListener('mouseout', (e) => {
-                        clearInterval(scrollInt);
                         setThumbPosDefault();
-                    });
+
+                        // Scroll thumbnail preview
+                        let scrollInt;
+                        elmnt.addEventListener('mouseover', (e) => {
+                            let i = 0;
+
+                            function scrollThumb() {
+                                // Get current i & height
+                                let calc = figMaxHeight * i;
+                                // If calc is short of calculator--ok actually, if `calc` is more than the thumbnail preview image
+                                if (calc > thumbDiv.clientHeight) {
+                                    calc = 0;
+                                    i = 0;
+                                }
+
+                                // Set pos
+                                thumbDiv.style.top = `-${calc}px`;
+
+                                // End
+                                i++;
+                            }
+                            scrollThumb();
+                            scrollInt = setInterval(() => scrollThumb(), 800);
+                        });
+
+                        // Clear past scroller & set back to default
+                        elmnt.addEventListener('mouseout', (e) => {
+                            clearInterval(scrollInt);
+                            setThumbPosDefault();
+                        });
+                    }
                 });
             }
 
             // check tab type & go to the set data function
+            sidePageRoot.classList.remove("tw-hide");
             switch (sideargs.tab) {
                 case "videos":
-                    sidePageRoot.classList.remove("tw-hide");
-                    setTabData(videosData);
+                    setTabData(await gql.getChannelMedia(args.channel, "VIDEOS"));
                 break;
             
                 case "clips":
-                    sidePageRoot.classList.remove("tw-hide");
-
-                    if (!clipsData) clipsData = await gql.getChannelMedia(args.channel, "CLIPS");
-                    setTabData(clipsData);
+                    setTabData(await gql.getChannelMedia(args.channel, "CLIPS"));
                 break;
             }
         }

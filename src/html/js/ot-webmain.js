@@ -206,10 +206,10 @@ async function textToHtml(text, element) {
 // Make a notification on the top of the page
 function makeNotification(text, actions) {
     document.querySelector('body').insertAdjacentHTML('afterbegin', `
-        <div class="oldttv-notifi">
-            <div class="content">${text}</div>
-            <div class="actions"></div>
-        </div>
+<div class="oldttv-notifi">
+    <div class="content">${text}</div>
+    <div class="actions"></div>
+</div>
     `);
     let notification = document.querySelector('.oldttv-notifi');
     let actionsDiv = document.querySelector('.oldttv-notifi .actions');
@@ -217,11 +217,11 @@ function makeNotification(text, actions) {
     if (actions) {
         for (const action of actions) {
             actionsDiv.innerHTML += `
-            <div class="tw-mg-r-1">
-                <button class="tw-button" data-a-target="oldtwitch-notifi-${action.key}-button">
-                    <span class="tw-button__text" data-a-target="tw-button-text">${action.text}</span>
-                </button>
-            </div>
+<div class="tw-mg-r-1">
+    <button class="tw-button" data-a-target="oldtwitch-notifi-${action.key}-button">
+        <span class="tw-button__text" data-a-target="tw-button-text">${action.text}</span>
+    </button>
+</div>
             `;
 
             document.querySelector(`[data-a-target="oldtwitch-notifi-${action.key}-button"]`).addEventListener('click', () => {
@@ -231,11 +231,11 @@ function makeNotification(text, actions) {
         }
     }
     actionsDiv.innerHTML += `
-    <div class="tw-mg-r-1">
-        <button class="tw-button" data-a-target="oldtwitch-notifi-close-button">
-            <span class="tw-button__text" data-a-target="tw-button-text">Close</span>
-        </button>
-    </div>
+<div class="tw-mg-r-1">
+    <button class="tw-button" data-a-target="oldtwitch-notifi-close-button">
+        <span class="tw-button__text" data-a-target="tw-button-text">Close</span>
+    </button>
+</div>
     `;
     document.querySelector('[data-a-target="oldtwitch-notifi-close-button"]').addEventListener('click', () => {
         notification.remove();
@@ -388,49 +388,49 @@ async function addGlobals() {
                         targetCard.classList.add("user-info", "tw-relative");
                         targetCard.setAttribute('data-toggle-balloon-id', 'user-info');
                         targetCard.insertAdjacentHTML('beforeend', `
-                            <button>
-                                <div class="tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
-                                    <div class="channel-header__user-avatar channel-header__user-avatar--active tw-align-items-stretch tw-flex tw-flex-shrink-0 tw-mg-r-1">
-                                        <div class="tw-relative">
-                                            <figure class="tw-avatar tw-avatar--size-30">
-                                                <div class="tw-overflow-hidden">
-                                                    <img class="tw-image" src="${userData.profileImageURL}">
-                                                </div>
-                                            </figure>
-                                        </div>
-                                    </div>
-                                    <div class="tw-align-items-center">
-                                        <span>
-                                            <span>${userData.displayName}</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </button>
+<button>
+    <div class="tw-align-items-center tw-flex tw-flex-shrink-0 tw-flex-nowrap">
+        <div class="channel-header__user-avatar channel-header__user-avatar--active tw-align-items-stretch tw-flex tw-flex-shrink-0 tw-mg-r-1">
+            <div class="tw-relative">
+                <figure class="tw-avatar tw-avatar--size-30">
+                    <div class="tw-overflow-hidden">
+                        <img class="tw-image" src="${userData.profileImageURL}">
+                    </div>
+                </figure>
+            </div>
+        </div>
+        <div class="tw-align-items-center">
+            <span>
+                <span>${userData.displayName}</span>
+            </span>
+        </div>
+    </div>
+</button>
 
-                            <div class="tw-balloon tw-balloon--sm tw-balloon--down tw-balloon--right tw-block tw-absolute tw-hide" data-a-target="overflow-menu">
-                                <div class="tw-balloon__tail tw-overflow-hidden tw-absolute">
-                                    <div class="tw-balloon__tail-symbol tw-border-t tw-border-r tw-border-b tw-border-l tw-border-radius-small tw-c-background  tw-absolute"></div>
-                                </div>
-                                <div class="tw-border-t tw-border-r tw-border-b tw-border-l tw-elevation-1 tw-border-radius-small tw-c-background">
-                                    <div class="tw-pd-1">
-                                        <a href="https://www.twitch.tv/${userData.displayName}" class="tw-interactable" data-a-target="channel-link">
-                                            <div class="tw-pd-x-1 tw-pd-y-05">Channel</div>
-                                        </a>
-                                        <a href="https://dashboard.twitch.tv/u/${userData.displayName}/home" class="tw-interactable" data-a-target="dashboard-link">
-                                            <div class="tw-pd-x-1 tw-pd-y-05">Creator Dashboard</div>
-                                        </a>
-                                        <a href="https://www.twitch.tv/subscriptions" class="tw-interactable" data-a-target="subscriptions-link">
-                                            <div class="tw-pd-x-1 tw-pd-y-05">Subscriptions</div>
-                                        </a>
-                                        <a href="https://www.twitch.tv/inventory" class="tw-interactable" data-a-target="inventory-link">
-                                            <div class="tw-pd-x-1 tw-pd-y-05">Drops & Inventory</div>
-                                        </a>
-                                        <a href="https://www.twitch.tv/settings" class="tw-interactable" data-a-target="settings-link">
-                                            <div class="tw-pd-x-1 tw-pd-y-05">Settings</div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+<div class="tw-balloon tw-balloon--sm tw-balloon--down tw-balloon--right tw-block tw-absolute tw-hide" data-a-target="overflow-menu">
+    <div class="tw-balloon__tail tw-overflow-hidden tw-absolute">
+        <div class="tw-balloon__tail-symbol tw-border-t tw-border-r tw-border-b tw-border-l tw-border-radius-small tw-c-background  tw-absolute"></div>
+    </div>
+    <div class="tw-border-t tw-border-r tw-border-b tw-border-l tw-elevation-1 tw-border-radius-small tw-c-background">
+        <div class="tw-pd-1">
+            <a href="https://www.twitch.tv/${userData.displayName}" class="tw-interactable" data-a-target="channel-link">
+                <div class="tw-pd-x-1 tw-pd-y-05">Channel</div>
+            </a>
+            <a href="https://dashboard.twitch.tv/u/${userData.displayName}/home" class="tw-interactable" data-a-target="dashboard-link">
+                <div class="tw-pd-x-1 tw-pd-y-05">Creator Dashboard</div>
+            </a>
+            <a href="https://www.twitch.tv/subscriptions" class="tw-interactable" data-a-target="subscriptions-link">
+                <div class="tw-pd-x-1 tw-pd-y-05">Subscriptions</div>
+            </a>
+            <a href="https://www.twitch.tv/inventory" class="tw-interactable" data-a-target="inventory-link">
+                <div class="tw-pd-x-1 tw-pd-y-05">Drops & Inventory</div>
+            </a>
+            <a href="https://www.twitch.tv/settings" class="tw-interactable" data-a-target="settings-link">
+                <div class="tw-pd-x-1 tw-pd-y-05">Settings</div>
+            </a>
+        </div>
+    </div>
+</div>
                         `);
 
                         document.querySelector(`[data-a-target="user-card"]`).appendChild(targetCard);
@@ -537,20 +537,20 @@ async function addGlobals() {
                             channelDiv.href = `https://twitch.tv/${stream.broadcaster.login}`;
                             if (stream.broadcaster) channelDiv.title = stream.broadcaster.broadcastSettings.title;
                             channelDiv.innerHTML = `
-                            <figure class="tw-avatar tw-avatar--size-30">
-                                <div class="tw-overflow-hidden">
-                                    <img class="tw-image" src="${stream.broadcaster.profileImageURL}">
-                                </div>
-                            </figure>
-                            <div class="channel-info">
-                                <div class="left">
-                                    <span class="title">${stream.broadcaster.displayName}</span>
-                                    <span class="category">${categoryTxt ? categoryTxt : ""}</span>
-                                </div>
-                                <div class="right">
-                                    ${viewCountTxt ? viewCountTxt : "0"}
-                                </div>
-                            </div>
+<figure class="tw-avatar tw-avatar--size-30">
+    <div class="tw-overflow-hidden">
+        <img class="tw-image" src="${stream.broadcaster.profileImageURL}">
+    </div>
+</figure>
+<div class="channel-info">
+    <div class="left">
+        <span class="title">${stream.broadcaster.displayName}</span>
+        <span class="category">${categoryTxt ? categoryTxt : ""}</span>
+    </div>
+    <div class="right">
+        ${viewCountTxt ? viewCountTxt : "0"}
+    </div>
+</div>
                             `;
                             targetDiv.appendChild(channelDiv);
                         break;
@@ -563,17 +563,17 @@ async function addGlobals() {
                             channelDiv.href = `https://twitch.tv/${stream.login}`;
                             if (stream.content) channelDiv.title = stream.broadcastSettings.title;
                             channelDiv.innerHTML = `
-                            <figure class="tw-avatar tw-avatar--size-30">
-                                <div class="tw-overflow-hidden">
-                                    <img class="tw-image" src="${stream.profileImageURL}">
-                                </div>
-                            </figure>
-                            <div class="channel-info">
-                                <div class="left">
-                                    <span class="title">${stream.displayName}</span>
-                                </div>
-                                <div class="right tw-hide"}"></div>
-                            </div>
+<figure class="tw-avatar tw-avatar--size-30">
+    <div class="tw-overflow-hidden">
+        <img class="tw-image" src="${stream.profileImageURL}">
+    </div>
+</figure>
+<div class="channel-info">
+    <div class="left">
+        <span class="title">${stream.displayName}</span>
+    </div>
+    <div class="right tw-hide"}"></div>
+</div>
                             `;
                             targetDiv.appendChild(channelDiv);
                         break;
@@ -680,12 +680,12 @@ async function addGlobals() {
 
                     // Make tooltip
                     document.querySelector('.twilight-root .tw-full-height').insertAdjacentHTML('beforeend', `
-                        <div class="tooltip-layer" style="left: 0px; top: ${elementY - 14}px; width: 49px; height: 46px;" aria-describedby="${listener}">
-                            <div class="tw-tooltip-wrapper tw-tooltip-wrapper--show tw-inline-flex">
-                                <div style="width: 49px; height: 46px;"></div>
-                                <div class="tw-tooltip tw-tooltip--right tw-tooltip--align-center" data-a-target="tw-tooltip-label" role="tooltip" id="${listener}">${titleTxt}</div>
-                            </div>
-                        </div>
+<div class="tooltip-layer" style="left: 0px; top: ${elementY - 14}px; width: 49px; height: 46px;" aria-describedby="${listener}">
+    <div class="tw-tooltip-wrapper tw-tooltip-wrapper--show tw-inline-flex">
+        <div style="width: 49px; height: 46px;"></div>
+        <div class="tw-tooltip tw-tooltip--right tw-tooltip--align-center" data-a-target="tw-tooltip-label" role="tooltip" id="${listener}">${titleTxt}</div>
+    </div>
+</div>
                     `);
                 });
 
@@ -758,11 +758,11 @@ function popupAction(args) {
         popupWindow = document.createElement('div');
         popupWindow.classList.add('oldttv-popup');
         popupWindow.innerHTML = `
-            <div class="oldttv-popup__content">
-                <h4 class="tw-md-mg-b-1">Click anywhere or press the "Escape" key to close this window.</h4>
-                <h2 class="tw-md-mg-b-1" data-a-target="oldttv-popup-if-wait" style="max-width">Pleae wait for the iframe to load. If you feel like this goes on for too long, <a href="https://github.com/ktg5/OldTwitch/issues">please report it with the action you tried to do</a>.</h2>
-                <iframe class="tw-hide" data-a-target="oldttv-popup-if" src="" width="520" height="300" style="background: black"></iframe>
-            </div>
+<div class="oldttv-popup__content">
+    <h4 class="tw-md-mg-b-1">Click anywhere or press the "Escape" key to close this window.</h4>
+    <h2 class="tw-md-mg-b-1" data-a-target="oldttv-popup-if-wait" style="max-width">Pleae wait for the iframe to load. If you feel like this goes on for too long, <a href="https://github.com/ktg5/OldTwitch/issues">please report it with the action you tried to do</a>.</h2>
+    <iframe class="tw-hide" data-a-target="oldttv-popup-if" src="" width="520" height="300" style="background: black"></iframe>
+</div>
         `;
         document.body.appendChild(popupWindow);
     }
@@ -882,9 +882,10 @@ function initBalloons() {
         if (
             balloonToggler
             && balloonToggler.getAttribute("data-a-target") !== "nav-search-input"
+            && !balloonToggler.getAttribute('data-balloon-toggler')
             && balloon
         ) {
-            balloonToggler.setAttribute('data-balloon-toggler', null);
+            balloonToggler.setAttribute('data-balloon-toggler', "");
             balloonToggler.addEventListener('click', () => {
                 balloonParent.children[1].classList.toggle('tw-hide');
             });
@@ -901,6 +902,181 @@ function initBalloons() {
         
         }
     });
+}
+
+
+// Classes that make HTML
+class LoadingSpinner {
+    /**
+     * Make a loading spinner that gets inserted after the `target` div
+     * @param {HTMLElement} target The div for the spinner to be isnerted after
+     * @param {boolean} [hide] If the spinner should be hidden when it's created 
+     */
+    constructor(target, hide) {
+        if (
+            !target
+            || !target instanceof HTMLElement
+        ) return console.error("LoadingSpinner.constructor ERROR!: The \"target\" option is either not defined or is not a HTMLElement!");
+
+        // Make HTML
+        this.div = document.createElement('div');
+        this.div.classList.add("tw-align-items-center", "tw-flex", "tw-full-height", "tw-full-width", "tw-justify-content-center");
+        if (hide == true) this.div.classList.add('tw-hide');
+        this.div.innerHTML = `<div class="tw-loading-spinner"></div>`;
+        
+        // Insert after target
+        target.insertAdjacentElement('afterend', this.div);
+    }
+
+    /**
+     * Toggle this spinner visually
+     * @param {boolean} force Force the toggle
+     */
+    toggle(force) {
+        if (force !== null) {
+            if (typeof force !== "boolean") return console.error("LoadingSpinner.toggle ERROR!: The \"force\" option is not a boolean!");
+
+            console.log(force);
+            switch (force) {
+                case true:
+                    this.div.classList.remove('tw-hide');
+                break;
+
+                case false:
+                    this.div.classList.add('tw-hide');
+                break;
+            } 
+        } else this.div.classList.toggle('tw-hide');
+    }
+
+    /**
+     * Deletes this spinner
+     */
+    kill() {
+        this.div.remove();
+    }
+}
+
+
+class SortBar {
+    /**
+     * Make a div--aka the `sortBar` var--into a SortBar, with each option
+     * having a function that runs when an option is changed by the client
+     * @param {HTMLElement} sortBar The div to turn a SortBar
+     * @param {SortOption[]} [options] A list of SortOptions to set to the SortBar. Can be set later using `SortBar.setOptions`
+     */
+    constructor(sortBar, options) {
+        // Make sure div provided is valid
+        if (
+            !sortBar
+            || !sortBar instanceof HTMLElement
+        ) return console.error("SortBar.constructor ERROR!: The \"sortBar\" option is either not defined or is not a HTMLElement!");
+        if (options) if (
+            !Array.isArray(options)
+            || !options.length > 0
+        ) return console.error("SortBar.constructor ERROR!: The \"options\" option is either not defined, is not a array or contains no fuckin' data!")
+
+
+        this.div = sortBar;
+        this.options = options;
+
+
+        // Edit div to have defaults
+        this.div.classList.add("tw-border-t", "tw-border-r", "tw-border-b", "tw-border-l", "tw-c-background", "tw-flex", "tw-flex-row", "tw-mg-b-2", "tw-pd-2");
+        this.div.innerHTML = `<div data-sort-insert class="tw-flex tw-flex-grow-1"></div>`;
+        this.optionsInsert = this.div.querySelector('[data-sort-insert]');
+
+        // Set options data into HTML
+        if (options) this.setOptions(options);
+    }
+
+
+    /**
+     * Set options to the current SortBar
+     * @param {SortOption[]} options A list of SortOptions to set to the SortBar
+     * @returns {void}
+     */
+    setOptions(options) {
+        // Clear past options
+        this.optionsInsert.innerHTML = "";
+
+        for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            try {
+                this.optionsInsert.insertAdjacentHTML('beforeend', `
+<div class="tw-align-items-center tw-flex" data-sort-id="${option.id}">
+    <span>${option.textBeforeSelect}</span>
+    <div class="tw-mg-x-1">
+        <div class="tw-flex">
+            <div class="tw-inline-flex">
+                <div data-toggle-balloon-id="ef507f71-3c48-4385-8106-9fe4a4a7f1d5" class="tw-relative">
+                    <div data-test-selector="toggle-balloon-wrapper__mouse-enter-detector" style="display: inherit;">
+                        <button class="tw-button tw-button--dropmenu tw-button--hollow" data-test-selector="sort-dropdown-button">
+                            <span class="tw-button__text" data-a-target="tw-button-text"></span>
+                            <span class="tw-button__icon tw-button__icon--right">
+                                <figure class="tw-svg">
+                                    <svg class="tw-svg__asset tw-svg__asset--glypharrdown tw-svg__asset--inherit" width="16px" height="16px" version="1.1" viewBox="0 0 16 16" x="0px" y="0px">
+                                        <path d="M3 5h10l-5 6"></path>
+                                    </svg>
+                                </figure>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="tw-absolute tw-balloon tw-balloon--down tw-block tw-hide">
+                        <div class="tw-border-b tw-border-l tw-border-r tw-border-radius-medium tw-border-t tw-c-background tw-elevation-1">
+                            <div data-a-target="sortbar-selections-insert" class="tw-pd-y-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                `);
+
+                let selectionsInsert = this.div.querySelector(`[data-sort-id="${option.id}"] [data-a-target="sortbar-selections-insert"]`);
+                for (let i = 0; i < option.selections.length; i++) {
+                    const selection = option.selections[i];
+
+                    // Make HTML
+                    let selectionDiv = document.createElement('div');
+                    selectionDiv.classList.add("tw-block", "tw-full-width", "tw-interactable", "tw-interactable--inverted");
+                    // If this is the first option, then show it within the selection button
+                    if (i == 0) {
+                        this.div.querySelector('[data-test-selector="sort-dropdown-button"] [data-a-target="tw-button-text"]').innerText = selection.displayName;
+                        selectionDiv.classList.add('tw-interactable--selected');
+                    }
+                    selectionDiv.setAttribute('data-sort-selection-id', selection.id);
+                    selectionDiv.innerHTML = `<div class="tw-pd-x-1 tw-pd-y-05">${selection.displayName}</div>`;
+
+                    // Add click function
+                    selectionDiv.addEventListener('click', (d) => {
+                        // Check if clicked selection is already selected, then do nothing
+                        if (selectionDiv.classList.contains('tw-interactable--selected')) return;
+
+                        // Set HTML
+                        this.div.querySelector('.tw-balloon').classList.add('tw-hide');
+                        this.div.querySelector('[data-test-selector="sort-dropdown-button"] [data-a-target="tw-button-text"]').innerText = selection.displayName;
+                        selectionsInsert.querySelector('.tw-interactable--selected').classList.remove('tw-interactable--selected');
+                        selectionDiv.classList.add('tw-interactable--selected');
+
+                        // Run function
+                        selection.onSelect({ ...d });
+                    });
+
+                    // Insert
+                    selectionsInsert.appendChild(selectionDiv);
+                }
+            } catch (err) {
+                console.error(`SortBar.constructor ERROR!: The option at index ${i} caused an error! Duped below:`);
+                console.error(err);
+                console.error(`option data: `, option);
+            }
+        }
+
+        // End
+        initBalloons();
+    }
 }
 
 
@@ -922,12 +1098,12 @@ setTimeout(async () => {
     if (oauth) {
         let style = document.createElement("style");
         style.innerHTML = `
-            /* error css */
+/* error css */
 
-            [data-a-target="signup-note"] {
-                display: none !important;
-            }
-        `
+[data-a-target="signup-note"] {
+    display: none !important;
+}
+        `;
         document.head.appendChild(style);
     }
 
@@ -987,6 +1163,12 @@ setTimeout(async () => {
                 featuredStreams[i].freeformTags.forEach(streamTag => {
                     document.querySelector(`.streamer-tags`).innerHTML += `<a class="search-tag" href="https://twitch.tv/directory/all/tags/${streamTag.name}">${streamTag.name}</a>`;
                 });
+                
+                // gql data of selected stream
+                gql.getChannel(featuredStreams[i].broadcaster.login).then((d) => {
+                    // d.description
+                    document.querySelector(`.streamer-desc`).innerHTML = d.description;
+                });
             }
 
             // other channelssesese below main
@@ -1033,11 +1215,6 @@ setTimeout(async () => {
             topGamesGrid.children[i].querySelector(`figure`).innerHTML = `<a href="https://twitch.tv/directory/category/${game.categorySlug}"><img class="tw-image" src="${game.boxArtURL}"></a>`;
             // title
             topGamesGrid.children[i].querySelector(`.game-title`).innerHTML = `<a href="https://twitch.tv/directory/category/${game.categorySlug}">${game.displayName}</a>`;
-            // tags
-            // topGamesGrid.children[i].querySelector(`.game-tags`).innerHTML = "";
-            // game.gameTags.forEach(gameTag => {
-            //     topGamesGrid.children[i].querySelector(`.game-tags`).innerHTML += `<a class="game-tag" href="https://twitch.tv/directory/all/tags/${gameTag.tagName}">${gameTag.localizedName}</a>`;
-            // });
             // viewers
             topGamesGrid.children[i].querySelector(`.game-tags`).innerHTML = `${game.viewersCount} viewers`;
         }

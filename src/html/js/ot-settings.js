@@ -43,9 +43,7 @@ function doSettings() {
                     }
 
                     // Make options HTML
-                    console.log(langOptionsJson);
                     langOptions = makeListOptions(langOptionsJson, userConfig.lang);
-                    console.log(langOptions);
                 } else alert('Extension language index file couldn\'t be demanded. Reload & try again, else report this on the GitHub!');
 
 
@@ -53,17 +51,17 @@ function doSettings() {
                 let injectDiv = document.querySelector('.settings-options');
                 async function addButton(args) {
                     let returnedNull;
-                    switch (true) {
-                        case !args.key:
+                    switch (false) {
+                        case args.key:
                             returnedNull = 'key';
-                            break;
-                        case !args.type:
+                        break;
+                        case args.type:
                             returnedNull = 'type';
                         break;
-                        case !args.title:
+                        case args.title:
                             returnedNull = 'title';
                         break;
-                        case !args.desc:
+                        case args.desc:
                             returnedNull = 'desc';
                         break;
                     }

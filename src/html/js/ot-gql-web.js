@@ -888,21 +888,15 @@ class GqlClient {
     }
 
     /**
+     * @typedef {"ARCHIVE" | "HIGHLIGHT" | "VIDEOS" | "CLIPS"} MediaType
+     * @typedef {"LAST_DAY" | "LAST_WEEK" | "LAST_MONTH" | "ALL_TIME"} ClipsSort
+     */
+    /**
      * Get VODs, highlights or clips from a channel.
      * @param {string} name Name of channel.
-     * @param {string} type The type of media to look for. That being:
-     * * `"ARCHIVE"` - VODs
-     * * `"HIGHLIGHT"`,
-     * * `"VIDEOS"` - will show all videos
-     * * `"CLIPS"`
+     * @param {MediaType} type The type of media to look for.
      * @param {number} [limit] The amount of items to return back. (Defaults to 30)
-     * @param {string} [sort] This is mostly used for clips, but used to be for everything on a channels page.
-     * 
-     * Clips sorts (Will default to "LAST_WEEK"):
-     * * `"LAST_DAY"`
-     * * `"LAST_WEEK"`
-     * * `"LAST_MONTH"`
-     * * `"ALL_TIME"`
+     * @param {ClipsSort} [sort] This is mostly used for clips, but used to be for everything on a channels page.
      * @returns {object} Returns a list of objects that include data for each media fetched.
      */
     async getChannelMedia(name, type, limit, sort) {
@@ -968,10 +962,10 @@ class GqlClient {
                 method: "POST"
             }).then(async rawData => {
                 const data = await rawData.json();
-                if (data.errors) resolve({ errors: data.errors });
+                if (data.errors) res({ errors: data.errors });
 
                 let cleanData = [];
-                if (!data.data.user) resolve(null);
+                if (!data.data.user) res(null);
                 
                 // Get edges list from whatever type we're trying to fetch
                 let edgesList;

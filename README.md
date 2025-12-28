@@ -43,6 +43,9 @@ Screenshots taken from dev3:0.0.4
 - [x] make the extension replace the select pages with custom ones.
     - [ ] make the page replacer better, aka no need to fully replace or refresh the current page.
 
+- [ ] update noticer when user updates to a newer version of the extension
+    - [ ] show different update notices for dev builds?
+
 - [x] get an api key or something to get the user's stats, such as following, recommends, etc. and also use for streamer stats.
 - [x] ~~figure out how to get PubSub to worky~~
 - [x] figure out how to get Hermes WS to worky
@@ -55,13 +58,20 @@ Screenshots taken from dev3:0.0.4
     - [x] channel list show more & less buttons.
 
 - [x] stream page.
+    - [ ] **make custom stream player using hls.js or some shit.**
+    - [ ] **figure out why channel points can't be redeemed over time while watching a stream.**
     - [x] show list of streamer's vods & clips via a little category page added within the watch page.
     - [x] make the stupid svgs for the stuff on the stream info thingy idk what to call it lmao.
+    - [x] sort bar working for this page.
+        - [x] find clips by one day to all time & find videos, highlights, & archives
+        - [ ] save selected option for each sort bar.
+        - [ ] (possible addition) allow user to set amount of edges (vods/clips/etc.) to get back.
     - [ ] follow & unfollow. (might be impossible cuz of the `client-integrity` value)
 
 - [x] discovery page.
     - [x] game pages.
     - [x] the "all" discovery page found via home page or the "Browse" button.
+    - [ ] sort bar working for this page.
 
 - [x] vods & clips.
     - [x] make clips.twitch.tv/[clip] go to OldTwitch clips page 
