@@ -1,4 +1,4 @@
-<h1 align="center">OldTwitch <kbd>dev3:0.0.8</kbd></h1>
+<h1 align="center">OldTwitch <kbd>0.0.8</kbd></h1>
 <div font-size="24px" align="center">A browser extension to bring back the old Twitch look.</div>
 <div font-size="16px" align="center"><b>For the moment, please download OldTwitch from the <a href="https://github.com/ktg5/OldTwitch/actions/workflows/build.yml">Actions page for more recent builds</a>, or the <a href="https://github.com/ktg5/OldTwitch/releases">Releases page for older builds</a></b></div>
 <br>
@@ -89,3 +89,4 @@ Screenshots taken from dev3:0.0.4
 
 - [x] get 7tv to somehow inject into a embeds. (just use the ffz extension & install the 7tv plugin, works like a charm)
 - [x] make scripts & css for embedded video & chat. (video & live stream css is up, chat - not yet - have to make)
+
