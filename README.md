@@ -95,3 +95,4 @@ Screenshots taken from dev3:0.0.4
 
 - [x] get 7tv to somehow inject into a embeds. (just use the ffz extension & install the 7tv plugin, works like a charm)
 - [x] make scripts & css for embedded video & chat. (video & live stream css is up, chat - not yet - have to make)
+
