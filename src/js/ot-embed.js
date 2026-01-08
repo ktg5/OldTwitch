@@ -34,12 +34,13 @@ setTimeout(() => {
         break;
 
         case 'www.twitch.tv':
+            if (
+                !userConfig
+                || !userConfig.year
+            ) setTimeout(() => location.reload(), 50);
+
             // Add chat CSS to head
             document.head.insertAdjacentHTML('afterbegin', `<link id="oldtwitch-css" class="oldtwitch-chat" rel="stylesheet" type="text/css" href="${runtime.getURL(`html/${userConfig.year}/css/chat.css`)}">`);
-        break;
-    
-        default:
-
         break;
     }
 }, 100);

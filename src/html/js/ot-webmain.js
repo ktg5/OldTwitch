@@ -495,7 +495,6 @@ async function addGlobals() {
                     case "provider-side-nav-similar-streamer-currently-watching-1":
                         streamerFeaturesDiv.parentElement.classList.remove("tw-hide");
                         let streamerFeaturesDivTitle = document.querySelector(`.tw-mg-b-3 .side-nav-header .tw-c-text-alt`);
-                        streamerFeaturesDivTitle.innerHTML = streamerFeaturesDivTitle.innerHTML.replace("[__STREAMER__]", localStorage.getItem("oldttv-currentchannel"));
                     break;
                 }
             }
@@ -873,6 +872,7 @@ function closePopupAction() {
 
 function initBalloons() {
     document.querySelectorAll('[data-toggle-balloon-id]').forEach(balloonParent => {
+        if (!balloonParent.children.length >= 2) return;
         let balloonToggler = balloonParent.children[0];
         if (balloonParent.classList.contains('user-info')) console.log(balloonParent);
         if (balloonToggler.tagName !== "BUTTON") balloonToggler = balloonParent.children[0].querySelectorAll('button')[0];
@@ -882,7 +882,7 @@ function initBalloons() {
         if (
             balloonToggler
             && balloonToggler.getAttribute("data-a-target") !== "nav-search-input"
-            && !balloonToggler.getAttribute('data-balloon-toggler')
+            && balloonToggler.getAttribute('data-balloon-toggler') == null
             && balloon
         ) {
             balloonToggler.setAttribute('data-balloon-toggler', "");
@@ -891,10 +891,18 @@ function initBalloons() {
             });
 
             document.addEventListener('click', (e) => {
-                if (!
-                    (
-                        (e.target === balloon || balloon.contains(e.target))
-                        || (e.target === balloonToggler || balloonToggler.contains(e.target))
+                console.log((e.target === balloon || balloon.contains(e.target)))
+                console.log((e.target === balloonToggler || balloonToggler.contains(e.target)))
+                console.log(balloonToggler.getAttribute("data-a-target") != "nav-search-input");
+                if (!(
+                        (
+                            e.target === balloon
+                            || balloon.contains(e.target)
+                        )
+                        || (
+                            e.target === balloonToggler
+                            || balloonToggler.contains(e.target)
+                        )
                     )
                     && balloonToggler.getAttribute("data-a-target") != "nav-search-input"
                 ) balloon.classList.add('tw-hide');
@@ -936,7 +944,6 @@ class LoadingSpinner {
         if (force !== null) {
             if (typeof force !== "boolean") return console.error("LoadingSpinner.toggle ERROR!: The \"force\" option is not a boolean!");
 
-            console.log(force);
             switch (force) {
                 case true:
                     this.div.classList.remove('tw-hide');
@@ -1075,8 +1082,53 @@ class SortBar {
         }
 
         // End
-        initBalloons();
+        setTimeout(initBalloons(), 50);
     }
+}
+
+
+// Detection for HTML changes
+const HTMLChangeObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+        // Ignore changes that happen inside iframes
+        if (mutation.target.closest?.("iframe")) continue;
+        if (mutation.target.closest?.(".channel-info-bar")) continue;
+    
+        setLang();
+    }
+});
+
+const HTMLChangeConfig = {
+    childList: true,
+    characterData: true,
+    attributes: true,
+    subtree: true
+};
+HTMLChangeObserver.observe(document.body, HTMLChangeConfig);
+
+
+// Sets all detected HTML elements and sets their `innerText` to whatever the current language has for it
+function setLang() {
+    HTMLChangeObserver.disconnect();
+    for (const key in langStrings.page) {
+        if (Object.hasOwnProperty.call(langStrings.page, key)) {
+            // Find the element within the key
+            let targetDiv = document.querySelector(`[data-lang-target="${key}"]`);
+
+            // See if there's a thing with information we need to replace with
+            const output = langStrings.page[key].replace(/&OLDTTV\{([^}]+)\}&/g,
+                (match, tag) => {
+                    switch (tag) {
+                        case "STREAMER":
+                        return localStorage.getItem("oldttv-currentchannel");
+                    }
+                }
+            );
+
+            if (targetDiv) targetDiv.innerText = output;
+        }
+    }
+    HTMLChangeObserver.observe(document.body, HTMLChangeConfig);
 }
 
 
@@ -1207,7 +1259,7 @@ setTimeout(async () => {
 
         // Shelves
         // Top Games
-        let topGamesGrid = document.querySelector(`.tw-pd-x-1 .tw-grid`);
+        let topGamesGrid = document.querySelector(`.anon-featured-games .tw-grid`);
         for (let i = 0; i < homePageData.shelves.TopGamesForYou.length; i++) {
             const game = homePageData.shelves.TopGamesForYou[i];
 
@@ -1216,7 +1268,7 @@ setTimeout(async () => {
             // title
             topGamesGrid.children[i].querySelector(`.game-title`).innerHTML = `<a href="https://twitch.tv/directory/category/${game.categorySlug}">${game.displayName}</a>`;
             // viewers
-            topGamesGrid.children[i].querySelector(`.game-tags`).innerHTML = `${game.viewersCount} viewers`;
+            topGamesGrid.children[i].querySelector(`.game-tags`).innerHTML = langStrings.page['game-viewers'].replace('&OLDTTV{GAME_VIEWERS}&', game.viewersCount);
         }
 
         // Top Channels

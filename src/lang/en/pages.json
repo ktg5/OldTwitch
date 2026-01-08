@@ -1,3 +1,41 @@
 {
-    
+    "__comment": "Top Nav:",
+    "browse-btn": "Browse",
+    "search-bar": "Search",
+    "search-topresults-title": "Top Results",
+    "newtwitch-btn": "View on New Twitch",
+    "oldttv-btn": "OldTwitch",
+    "login-btn": "Log In",
+    "signup-topnav-btn": "Sign Up",
+
+    "__comment": "Side Nav:",
+    "signup-sidenav-btn": "Sign Up",
+    "followed-channels": "Followed Channels",
+    "sidenav-less-btn": "Show Less",
+    "sidenav-more-btn": "Show More",
+    "featured-channels": "Featured Channels",
+    "streamer-channels": "&OLDTTV{STREAMER}& Viewers Also Watch",
+
+    "__comment": "Index Page:",
+    "featured-games-title": "Featured Games",
+    "featured-games-sub": "Games people are watching now",
+    "game-viewers": "&OLDTTV{GAME_VIEWERS}& viewers",
+    "all-live-games-btn": "See all live games",
+    "top-streamers-title": "Top Live Channels",
+    "top-streamers-sub": "Broadcasters people are watching now",
+    "all-live-channels-btn": "See al live Channels",
+
+    "__comment": "Sort Bar Inputs & Desc.s:",
+    "show-me": "Show me",
+    "show-from": "Show from",
+    "sorted-by": "Sorted by",
+    "last-day": "the Last Day",
+    "last-week": "the Last Week",
+    "last-month": "the Last Month",
+    "all-time": "All Time",
+    "recommended": "Recommended",
+    "viewers": "Viewers (High to Low)",
+
+    "__comment": "Category Pages:",
+    "all-categories-page-title": "All Categories - Twitch"
 }

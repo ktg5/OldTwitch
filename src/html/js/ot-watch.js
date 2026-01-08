@@ -83,11 +83,11 @@ async function setIframeVideo (args) {
                     sidePageSortBar.setOptions([
                         {
                             id: "clips",
-                            textBeforeSelect: "Show from",
+                            textBeforeSelect: langStrings.page['show-from'],
                             selections: [
                                 {
                                     id: "last_day",
-                                    displayName: "the Last Day",
+                                    displayName: langStrings.page['last-day'],
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "LAST_DAY"));
@@ -95,7 +95,7 @@ async function setIframeVideo (args) {
                                 },
                                 {
                                     id: "last_week",
-                                    displayName: "the Last Week",
+                                    displayName: langStrings.page['last-week'],
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "LAST_WEEK"));
@@ -103,7 +103,7 @@ async function setIframeVideo (args) {
                                 },
                                 {
                                     id: "last_month",
-                                    displayName: "the Last Month",
+                                    displayName: langStrings.page['last-month'],
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "LAST_MONTH"));
@@ -111,7 +111,7 @@ async function setIframeVideo (args) {
                                 },
                                 {
                                     id: "all_time",
-                                    displayName: "All Time",
+                                    displayName: langStrings.page['all-time'],
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "ALL_TIME"));

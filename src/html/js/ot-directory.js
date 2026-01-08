@@ -150,15 +150,47 @@ let gqlAction = async () => {
     } else {
 
         // Set page title
-        document.title = "All Categories - " + document.title;
+        setTimeout(() => document.title = langStrings.page['all-categories-page-title'], 100);
 
         // Get directory index data
-        let directoryData = await gql.getDirectoryIndex(oauth);
+        let directoryData = await gql.getDirectoryIndex(oauth, 30);
         console.log("directoryData: ", directoryData);
+
+        // Make sort bar
+        const directorySorter = new SortBar(document.querySelector('[data-a-target="sort-bar"]'), [
+            {
+                id: "categories",
+                textBeforeSelect: langStrings.page['sorted-by'],
+                selections: [
+                    {
+                        id: "recommended",
+                        displayName: langStrings.page['recommended'],
+                        onSelect: async (d) => {
+                            clearPageData();
+                            setDirectoryPage(await gql.getDirectoryIndex(oauth, 30));
+                        }
+                    },
+                    {
+                        id: "viewers",
+                        displayName: langStrings.page['viewers'],
+                        onSelect: async (d) => {
+                            clearPageData();
+                            setDirectoryPage(await gql.getDirectoryIndex(oauth, 30, true));
+                        }
+                    }
+                ]
+            }
+        ]);
+        const sidePageLoading = new LoadingSpinner(directorySorter.div, true);
+
+        let injectDiv = document.querySelector(`[data-a-target="directory-inject"]`);
+        function clearPageData(forceSpinner) {
+            injectDiv.innerHTML = "";
+            sidePageLoading.toggle(forceSpinner !== null && typeof forceSpinner == "boolean" ? forceSpinner : true);
+        }
 
         // Inject HTML
         // Make sure grid is there
-        let injectDiv = document.querySelector(`[data-a-target="directory-inject"]`);
         function addDirectoryGrid() {
             injectDiv.innerHTML = `<div class="tw-grid"></div>`;
             injectDiv = injectDiv.children[0];
@@ -176,21 +208,26 @@ let gqlAction = async () => {
         }
 
         // Add data into grid
-        directoryData.forEach(item => {
-            let gameItem = document.createElement("div");
-            gameItem.classList.add("tw-col-2");
-            gameItem.innerHTML = `
-                <div class="tw-mg-b-4">
-                    <div class="tw-mg-b-05">
-                        <figure class="tw-aspect tw-aspect--3x4 tw-aspect--align-top"><a href="/directory/category/${item.slug}"><img class="tw-image" src="${item.avatarURL}"></a></figure>
+        function setDirectoryPage(directoryData) {
+            directoryData.forEach(item => {
+                let gameItem = document.createElement("div");
+                gameItem.classList.add("tw-col-2");
+                gameItem.innerHTML = `
+                    <div class="tw-mg-b-4">
+                        <div class="tw-mg-b-05">
+                            <figure class="tw-aspect tw-aspect--3x4 tw-aspect--align-top"><a href="/directory/category/${item.slug}"><img class="tw-image" src="${item.avatarURL}"></a></figure>
+                        </div>
+                        <p class="game-title"><a href="/directory/category/${item.slug}">${item.displayName}</a></p>
+                        <p class="game-tags tw-font-size-7"></p>
                     </div>
-                    <p class="game-title"><a href="/directory/category/${item.slug}">${item.displayName}</a></p>
-                    <p class="game-tags tw-font-size-7">${item.viewersCount} viewers</p>
-                </div>
-            `;
-
-            injectDiv.appendChild(gameItem);
-        });
+                `;
+                gameItem.querySelector('.game-tags').innerText = langStrings.page['game-viewers'].replace('&OLDTTV{GAME_VIEWERS}&', item.viewersCount);
+    
+                injectDiv.appendChild(gameItem);
+                sidePageLoading.toggle(false);
+            });
+        }
+        setDirectoryPage(directoryData);
 
     }
 

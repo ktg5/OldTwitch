@@ -1,4 +1,4 @@
-<h1 align="center">OldTwitch <kbd>dev3:0.0.8</kbd></h1>
+<h1 align="center">OldTwitch</h1>
 <div font-size="24px" align="center">A browser extension to bring back the old Twitch look.</div>
 <div font-size="16px" align="center"><b>For the moment, please download OldTwitch from the <a href="https://github.com/ktg5/OldTwitch/actions/workflows/build.yml">Actions page for more recent builds</a>, or the <a href="https://github.com/ktg5/OldTwitch/releases">Releases page for older builds</a></b></div>
 <br>
@@ -46,6 +46,11 @@ Screenshots taken from dev3:0.0.4
 - [ ] update noticer when user updates to a newer version of the extension
     - [ ] show different update notices for dev builds?
 
+- [x] multi-language support
+    - [x] get the basis down
+    - [ ] make documentation
+    - [ ] make a pirate talk language as a "sample" language lmao
+
 - [x] get an api key or something to get the user's stats, such as following, recommends, etc. and also use for streamer stats.
 - [x] ~~figure out how to get PubSub to worky~~
 - [x] figure out how to get Hermes WS to worky
@@ -58,8 +63,8 @@ Screenshots taken from dev3:0.0.4
     - [x] channel list show more & less buttons.
 
 - [x] stream page.
-    - [ ] **make custom stream player using hls.js or some shit.**
-    - [ ] **figure out why channel points can't be redeemed over time while watching a stream.**
+    - [ ] optional: make custom stream player using hls.js or some shit.
+    - [ ] figure out why channel points can't be redeemed over time while watching a stream. (i think this was actually solved by Twitch themselves)
     - [x] show list of streamer's vods & clips via a little category page added within the watch page.
     - [x] make the stupid svgs for the stuff on the stream info thingy idk what to call it lmao.
     - [x] sort bar working for this page.
@@ -73,8 +78,9 @@ Screenshots taken from dev3:0.0.4
     - [x] the "all" discovery page found via home page or the "Browse" button.
     - [ ] sort bar working for this page.
 
-- [x] vods & clips.
+- [x] vods & clips. (base page, not like viewing a list of em on a channel)
     - [x] make clips.twitch.tv/[clip] go to OldTwitch clips page 
+    - [ ] download page? (maybe for clips, not sure about vods)
 
 - [x] subscribe button for those with sub page.
 - [x] share button.

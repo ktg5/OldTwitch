@@ -10,6 +10,7 @@ async function getDefaults() {
 }
 
 // Get the user config
+var userConfig;
 async function getUserConfig(atend) {
     return new Promise(async (resolve, reject) => {
         async function reset() {
@@ -19,6 +20,7 @@ async function getUserConfig(atend) {
         }
 
         storage.get(['OTConfig'], async (res) => {
+            if (res) return reset();
             userConfig = res.OTConfig;
             if (userConfig) {
                 // Check if the userConfig doesn't have any unknown values
