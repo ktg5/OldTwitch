@@ -398,9 +398,10 @@ class GqlClient {
      * @param {string} oauth - Optional. The OAuth token for authentication to use for personal recommendations.
      * Can be left blank if the current GQL instance has a OAuth defined.
      * @param {number} [limit] - The limit of items to get. Defaults to 30.
+     * @param {boolean} [byViewers] - If the returned data should be sorted by the amount of viewers; should be set to `true` if wanted to be.
      * @returns {Promise.<Array.<Object>>} A promise that resolves to an array of directory objects.
      */
-    async getDirectoryIndex(oauth, limit) {
+    async getDirectoryIndex(oauth, limit, byViewers) {
         let Headers = {
             "client-id": this.clientid,
             "x-device-id": "0"
@@ -427,7 +428,7 @@ class GqlClient {
                             "recommendationsContext": {
                                 "platform": "web"
                             },
-                            "sort": "RELEVANCE",
+                            "sort": byViewers === true ? "VIEWER_COUNT" : "RELEVANCE",
                             "tags": []
                         }
                     },
@@ -1433,7 +1434,7 @@ class GqlClient {
                         "extensions": {
                             "persistedQuery": {
                                 "version": 1,
-                                "sha256Hash": "ebcf54afb9aa5d6cec8aad2c35b84e2737a109dac5b184308aae73a27d176707"
+                                "sha256Hash": "cc14976959c8f31c617e956a7c4c32216c3e04f6b586088b7bf49561c35e841b"
                             }
                         }
                     }
@@ -1444,6 +1445,7 @@ class GqlClient {
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
+                    console.log(data[3]);
                     let streamsData = [], videosData = [], clipsData = [];
                     data[1].data.game.streams.edges.forEach(stream => {
                         streamsData.push(stream.node);
