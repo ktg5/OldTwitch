@@ -224,7 +224,6 @@ let gqlAction = async () => {
                 gameItem.querySelector('.game-tags').innerText = langStrings.page['game-viewers'].replace('&OLDTTV{GAME_VIEWERS}&', item.viewersCount);
     
                 injectDiv.appendChild(gameItem);
-                sidePageLoading.toggle(false);
             });
         }
         setDirectoryPage(directoryData);

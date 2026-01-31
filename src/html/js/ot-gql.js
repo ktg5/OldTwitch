@@ -1434,7 +1434,7 @@ class GqlClient {
                         "extensions": {
                             "persistedQuery": {
                                 "version": 1,
-                                "sha256Hash": "ebcf54afb9aa5d6cec8aad2c35b84e2737a109dac5b184308aae73a27d176707"
+                                "sha256Hash": "cc14976959c8f31c617e956a7c4c32216c3e04f6b586088b7bf49561c35e841b"
                             }
                         }
                     }
@@ -1445,6 +1445,7 @@ class GqlClient {
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
+                    console.log(data[3]);
                     let streamsData = [], videosData = [], clipsData = [];
                     data[1].data.game.streams.edges.forEach(stream => {
                         streamsData.push(stream.node);
