@@ -77,16 +77,23 @@ blockingObserver.observe(document.documentElement, { childList: true, subtree: t
 
 
 // Remove the html element so that we can inject our own
-let html = document.querySelector('html');
-if (html) {
+var html = document.querySelector('html');
+var oldRoot = document.querySelector('#root');
+
+function clearCurrentPage() {
     html.innerHTML = '';
+    oldRoot.innerHTML = '';
+}
+
+if (oldRoot) clearCurrentPage();
 // Keep running until we can remove the html
-} else {
+else {
     let removeInt = setInterval(() => {
         html = document.querySelector('html');
-        if (html) {
+        let oldRoot = document.querySelector('#root');
+        if (oldRoot) {
             clearInterval(removeInt);
-            html.innerHTML = '';
+            clearCurrentPage();
         };
     }, 10);
 };
