@@ -1276,7 +1276,10 @@ setTimeout(async () => {
         for (let i = 0; i < homePageData.shelves.TopLiveChannelsYouMayLikeLoggedOut.length; i++) {
             const channel = homePageData.shelves.TopLiveChannelsYouMayLikeLoggedOut[i];
 
-            if (topStreamersGrid.children[i]) {
+            if (
+                topStreamersGrid.children[i]
+                && channel.broadcaster !== null
+            ) {
                 // covert art
                 topStreamersGrid.children[i].querySelector(`figure`).innerHTML = `<a href="https://twitch.tv/${channel.broadcaster.login}"><img class="tw-image" src="${channel.previewImageURL}"></a>`;
                 // title
