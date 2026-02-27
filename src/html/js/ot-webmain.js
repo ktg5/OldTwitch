@@ -891,9 +891,9 @@ function initBalloons() {
             });
 
             document.addEventListener('click', (e) => {
-                console.log((e.target === balloon || balloon.contains(e.target)))
-                console.log((e.target === balloonToggler || balloonToggler.contains(e.target)))
-                console.log(balloonToggler.getAttribute("data-a-target") != "nav-search-input");
+                // console.log((e.target === balloon || balloon.contains(e.target)))
+                // console.log((e.target === balloonToggler || balloonToggler.contains(e.target)))
+                // console.log(balloonToggler.getAttribute("data-a-target") != "nav-search-input");
                 if (!(
                         (
                             e.target === balloon
@@ -1136,6 +1136,75 @@ function setLang() {
 var currentVersion;
 setTimeout(async () => {
 
+    // Update notify
+    if (userConfig.alertUpdates) {
+        // Check if we have the current version
+        // Get current version
+        currentVersion = document.body.getAttribute(`oldttv-ver`);
+        let currentDevBuild;
+        let isDev = false;
+        if (document.body.getAttribute(`oldttv-ver`).includes("dev")) {
+            isDev = true;
+            currentDevBuild = currentVersion.split("dev")[1].split(":")[0];
+            currentVersion = currentVersion.split(":").pop();
+        }
+        // Pull latest version from GitHub files
+        let latestVersion = await fetch(`https://raw.githubusercontent.com/ktg5/OldTwitch/refs/heads/main/src/ver.txt`).then(res => res.text());
+        // console.log("latestVersion: ", latestVersion);
+        let latestDevBuild;
+        let latestIsDev = false;
+        if (latestVersion.includes("dev")) {
+            latestIsDev = true;
+            latestDevBuild = latestVersion.split("dev")[1].split(":")[0];
+            latestVersion = latestVersion.split(":").pop();
+        }
+        // Basic checking
+        let latestParts = latestVersion.split(".").map(Number);
+        let currentParts = currentVersion.split(".").map(Number);
+        if (
+            latestVersion
+            && currentVersion) {
+            // Check dev versions if they exist
+            if (isDev) {
+                // First check if latestVersion is a dev build & has a newer dev version
+                if (
+                    latestIsDev
+                    && latestDevBuild > currentDevBuild
+                ) updateNotification(`older dev build: latest: ${latestDevBuild}, current: ${currentDevBuild}\nlatestVersion: dev${latestDevBuild}:${latestVersion}`);
+            }
+            // Check all version parts one by one
+            for (let i = 0; i < latestParts.length; i++) {
+                // console.log(latestParts[i] > currentParts[i], currentParts[i] == undefined);
+
+                // If the current part is greater than the latest part, break
+                if (latestParts[i] < currentParts[i]) break;
+
+                // Check each version part for any differences or missing parts
+                if (
+                    latestParts[i] > currentParts[i]
+                    || currentParts[i] == undefined
+                ) {
+                    updateNotification(`older version: latest: ${latestVersion}, current: ${currentVersion}`);
+                    break;
+                }
+            }
+        }
+
+
+        // Show update notification
+        function updateNotification(debug) {
+            if (debug) console.info(`REASON FOR UPDATE NOTICE: `, debug);
+            makeNotification(`The current version of OldTwitch you're on is out-of-date. Click the "Update" button to go to the latest update.`, [
+                {
+                    key: "update",
+                    text: "Update",
+                    action: () => location.href = "https://github.com/ktg5/oldttv/releases/latest"
+                }
+            ]);
+        }
+    }
+
+
     // Delete 3rd-party CSS
     setInterval(() => {
         document.querySelectorAll('link[rel="stylesheet"]').forEach(e => {
@@ -1185,11 +1254,18 @@ setTimeout(async () => {
     if (location.pathname == "/") {
 
         // Do home apge stuff
-        let homePageData = await gql.getHomePage("en"); // todo: allow user to change lang to whatever they want
+        const homePageData = await gql.getHomePage("en"); // todo: allow user to change lang to whatever they want
+        const zeroStreamersData = await gql.getZeroStreamers();
+        if (
+            !homePageData
+            || !zeroStreamersData
+        ) location.reload();
+
         console.log('homePageData: ', homePageData);
     
         // Set first featured stream
         let featuredStreams = homePageData.featuredStreams;
+        if (!featuredStreams) location.reload();
         let featuredStreamFigure = document.querySelector(`.anon-front__featured-section figure`);
         featuredStreamFigure.id = "iframe-insert";
         featuredStreamFigure.innerHTML = '';
@@ -1259,7 +1335,7 @@ setTimeout(async () => {
 
         // Shelves
         // Top Games
-        let topGamesGrid = document.querySelector(`.anon-featured-games .tw-grid`);
+        let topGamesGrid = document.querySelector(`[data-a-target="featured-insert"]`);
         for (let i = 0; i < homePageData.shelves.TopGamesForYou.length; i++) {
             const game = homePageData.shelves.TopGamesForYou[i];
 
@@ -1271,8 +1347,23 @@ setTimeout(async () => {
             topGamesGrid.children[i].querySelector(`.game-tags`).innerHTML = langStrings.page['game-viewers'].replace('&OLDTTV{GAME_VIEWERS}&', game.viewersCount);
         }
 
+        // Streams from nobody.live
+        let zeroStreamersGrid = document.querySelector(`[data-a-target="zero-streamers-insert"]`);
+        console.log(zeroStreamersData);
+        for (let i = 0; i < zeroStreamersData.length; i++) {
+            const channel = zeroStreamersData[i];
+            console.log(channel);
+
+            // covert art
+            zeroStreamersGrid.children[i].querySelector(`figure`).innerHTML = `<a href="https://twitch.tv/${channel.user_login}"><img class="tw-image" src="${channel.thumbnail_url}"></a>`;
+            // title
+            zeroStreamersGrid.children[i].querySelector(`.item-name`).innerHTML = `<a href="https://twitch.tv/${channel.user_login}">${channel.user_name}</a>`;
+            // viewers
+            zeroStreamersGrid.children[i].querySelector(`.item-subtext`).innerHTML = `${channel.viewer_count} viewers on ${channel.user_name}`;
+        }
+
         // Top Channels
-        let topStreamersGrid = document.querySelector(`.tw-pd-x-2 .tw-tower`);
+        let topStreamersGrid = document.querySelector(`[data-a-target="top-streamers-insert"]`);
         for (let i = 0; i < homePageData.shelves.TopLiveChannelsYouMayLikeLoggedOut.length; i++) {
             const channel = homePageData.shelves.TopLiveChannelsYouMayLikeLoggedOut[i];
 

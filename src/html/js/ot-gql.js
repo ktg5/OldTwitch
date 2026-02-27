@@ -394,6 +394,20 @@ class GqlClient {
     }
 
     /**
+     * Fetches a list of streamers with zero viewers. This should be a feature on Twitch's main site, but fuck 'em--top streamers are more important to them.
+     * This makes a call to my (ktg5's) own API hosted on my domain, working similarly to nobody.live, but in TypeScript
+     * @param {number} [limit] - The limit of items to get. Defaults to 6.
+     * @returns {Promise.<Array.<Object>>} A promise that resolves to an array of streamer objects.
+     */
+    async getZeroStreamers(limit = 6) {
+        return new Promise((res, rej) => {
+            demand('https://api.ktg5.online/zeroviewers', {
+                method: 'GET'
+            }).then(async rawData => res(await rawData.json()));
+        });
+    }
+
+    /**
      * Gets the directory index for the front page.
      * @param {string} oauth - Optional. The OAuth token for authentication to use for personal recommendations.
      * Can be left blank if the current GQL instance has a OAuth defined.

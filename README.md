@@ -64,7 +64,7 @@ Screenshots taken from dev3:0.0.4
 
 - [x] stream page.
     - [ ] optional: make custom stream player using hls.js or some shit.
-    - [ ] figure out why channel points can't be redeemed over time while watching a stream. (i think this was actually solved by Twitch themselves)
+    - [ ] figure out why channel points can't be redeemed over time while watching a stream.
     - [x] show list of streamer's vods & clips via a little category page added within the watch page.
     - [x] make the stupid svgs for the stuff on the stream info thingy idk what to call it lmao.
     - [x] sort bar working for this page.
@@ -75,8 +75,9 @@ Screenshots taken from dev3:0.0.4
 
 - [x] discovery page.
     - [x] game pages.
+        - [x] sort bar working for this page.
     - [x] the "all" discovery page found via home page or the "Browse" button.
-    - [ ] sort bar working for this page.
+    - [x] sort bar working for this page.
 
 - [x] vods & clips. (base page, not like viewing a list of em on a channel)
     - [x] make clips.twitch.tv/[clip] go to OldTwitch clips page 

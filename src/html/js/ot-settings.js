@@ -125,19 +125,31 @@ function doSettings() {
                 // Make html
                 // ${await addButton({ key: 'year', type: 'select', title: 'Select Year', desc: 'Select the year you\'d like to display.', values: yearOptions })}
                 injectDiv.innerHTML = `
-                    ${await addButton({ key: 'showReleaseNotes', type: 'toggle', title: 'Show Update Notes', desc: 'This option will show update notes when updated to a new version of OldTwitch.' })}
-                    ${await addButton({ key: 'alertUpdates', type: 'toggle', title: 'Alert Me When Out-of-date', desc: 'Shows a banner at the top of the page to update OldTwitch. Not recommended unless not using a webstore version.' })}
+                    ${await addButton({ key: 'showReleaseNotes', type: 'toggle', title: langStrings.settings.showReleaseNotes.title, desc: langStrings.settings.showReleaseNotes.desc })}
+                    ${await addButton({ key: 'alertUpdates', type: 'toggle', title: langStrings.settings.alertUpdates.title, desc: langStrings.settings.alertUpdates.desc })}
                     ${await addButton({ key: 'lang', type: 'select', title: langStrings.settings.lang.title, desc: langStrings.settings.lang.desc, values: langOptions })}
                     ${await addButton({ key: 'year', type: 'select', title: langStrings.settings.year.title, desc: langStrings.settings.year.desc, values: yearOptions })}
-                    ${await addButton({ key: 'forceColorMode', type: 'toggle', title: 'Force Light Mode', desc: 'OldTwitch will force the light mode that is set in the "Force Which Light Mode" option.' })}
-                    ${await addButton({ key: 'forceWhichColorMode', type: 'select', title: 'Force Which Light Mode', desc: 'Will force either light or dark mode on all pages.', values: lightOptions })}
+                    ${await addButton({ key: 'forceColorMode', type: 'toggle', title: langStrings.settings.forceColorMode.title, desc: langStrings.settings.forceColorMode.desc })}
+                    ${await addButton({ key: 'forceWhichColorMode', type: 'select', title: langStrings.settings.forceWhichColorMode.title, desc: langStrings.settings.forceWhichColorMode.desc, values: lightOptions })}
                 `;
 
 
                 // Make inputs work
                 function setConfig(option, value) {
                     option.setAttribute('data-value', value);
-                    console.log('Setting changes in config.', { option: option.getAttribute('name'), value: value })
+                    console.log('Sending changes in config.', { option: option.getAttribute('name'), value: value })
+
+                    // Send log back when config is changed
+                    function onMessage(event) {
+                        handleExtensionResponse('ot-update-userconfig', event, async (data) => {
+                            window.removeEventListener('message', onMessage);
+                            userConfig = data.config;
+                            console.log(`New config set:`, userConfig);
+                        });
+                    }
+                    // Listen for responses back from the background
+                    window.addEventListener('message', onMessage);
+
                     // Send message to set userconfig
                     window.postMessage({
                         type: "ot-set-config",

@@ -3,6 +3,6 @@
     "showReleaseNotes": true,
     "lang": "en",
     "forceColorMode": false,
-    "alertUpdates": false,
+    "alertUpdates": true,
     "forceWhichColorMode": "0"
 }

@@ -4,6 +4,14 @@ var extension = browser.extension;
 var runtime = browser.runtime;
 
 
+// Open OldTwitch settings page on extension button click
+browser.action.onClicked.addListener(() => {
+	browser.tabs.create({
+		url: "https://twitch.tv/oldtwitch"
+	});
+});
+
+
 // Extension socket listener
 runtime.onMessage.addListener((msg, sender, sendResponse) => {
 	switch (msg.type) {

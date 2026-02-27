@@ -20,7 +20,8 @@ async function getUserConfig(atend) {
         }
 
         storage.get(['OTConfig'], async (res) => {
-            if (res) return reset();
+            console.log(res.OTConfig);
+            if (!res.OTConfig) return reset();
             userConfig = res.OTConfig;
             if (userConfig) {
                 // Check if the userConfig doesn't have any unknown values

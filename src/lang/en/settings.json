@@ -5,7 +5,7 @@
     },
     "alertUpdates": {
         "title": "Alert Me When Out-of-date",
-        "desc": "Shows a banner at the top of the page to update OldTwitch. Recommended for those using builds from GitHub."
+        "desc": "Shows a banner at the top of the page to update OldTwitch. Enabled by default for dev builds."
     },
     "lang": {
         "title": "Set Language",

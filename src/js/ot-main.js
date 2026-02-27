@@ -82,7 +82,7 @@ var oldRoot = document.querySelector('#root');
 
 function clearCurrentPage() {
     html.innerHTML = '';
-    oldRoot.innerHTML = '';
+    if (oldRoot) oldRoot.innerHTML = '';
 }
 
 if (oldRoot) clearCurrentPage();
@@ -106,9 +106,7 @@ window.addEventListener('message', async (e) => {
     if (e.data) switch (e.data.type) {
         // User config stuff
         case "ot-get-config":
-			storage.get(['OTConfig'], (res) => {
-				window.postMessage({ type: "ot-get-config-res", res: res.OTConfig });
-			});
+			storage.get(['OTConfig'], (res) => window.postMessage({ type: "ot-get-config-res", res: res.OTConfig }));
 		return true;
 
 		case `ot-set-config`:
@@ -116,18 +114,20 @@ window.addEventListener('message', async (e) => {
             let foundWeird = false;
             const def_ot_config = await getDefaults();
             for (const key in e.data.config) {
-                if (def_ot_config[key] == undefined) foundWeird = true;
+                if (def_ot_config[key] == undefined) {
+                    console.warn(`OT: Unknown config key: ${key}`);
+                    foundWeird = true;
+                }
             }
 
             // Send back to all pages
             if (!foundWeird) {
                 userConfig = e.data.config;
-                storage.set({ OTConfig: userConfig });
-
-                window.postMessage({
+                await storage.set({ OTConfig: userConfig });
+                storage.get(['OTConfig'], (res) => window.postMessage({
                     type: "ot-update-userconfig",
-                    config: userConfig
-                })
+                    config: res.OTConfig
+                }));
             }
 		return true;
 

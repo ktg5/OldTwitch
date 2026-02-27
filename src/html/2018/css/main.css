@@ -15,6 +15,10 @@ body {
     font-family: "Helvetica Neue";
 }
 
+* {
+    scrollbar-width: none;
+}
+
 
 /* Custom Notifications */
 .oldttv-notifi {

@@ -6,6 +6,11 @@ const readline = require('readline');
 const { execSync } = require('child_process');
 
 
+function insertSpacer() {
+    console.log(`-------------`);
+}
+
+
 // Before starting, make sure that the other folders don't exist.
 var chromeDir = 'dist/OldTTV-Chrome';
 var firefoxDir = 'dist/OldTTV-Firefox';
@@ -115,11 +120,33 @@ async function makeWebScript(dir) {
 
 
 
-console.log(`-------------`);
+insertSpacer();
 // Here's we build.
+
 // Make a "-web" version of the ot-gql script
 // Delete old web script
 makeWebScript('./src/html/js/ot-gql.js');
+
+
+// Change settings depending on if we're building a dev build or not.
+function setSettings(extRoot) {
+    let devBuild = false;
+    fs.readFileSync(`${extRoot}/ver.txt`, { encoding: 'utf8' }).split('\n').forEach(line => {
+        if (line.startsWith('dev')) devBuild = true;
+    });
+    if (!devBuild) {
+        console.log("Changing & saving default settings for production build...");
+
+        // Open the default settings file
+        const defaultSettings = JSON.parse(fs.readFileSync('./src/default_config.json', { encoding: 'utf8' }));
+
+        // Change the default settings
+        defaultSettings['alertUpdates'] = false;
+
+        // Save the default settings
+        fs.writeFileSync(`${extRoot}/default_config.json`, JSON.stringify(defaultSettings));
+    }
+}
 
 
 // Make sure to have the dist folder ready.
@@ -136,6 +163,8 @@ copyDir('./src', chromeDir).then(async () => {
             console.log("Deleted old Chrome zip");
         }
 
+        setSettings(chromeDir);
+
         console.log("Zipping Chrome version...");
         // Try to zip up the extension
         try {
@@ -149,7 +178,7 @@ copyDir('./src', chromeDir).then(async () => {
         }
         console.log(`Zipped Chrome version into ${chromeDir}.zip`);
     }
-    console.log(`-------------`);
+    insertSpacer()
 });
 
 // Then we copy the same folder for Firefox.
@@ -223,6 +252,8 @@ copyDir('./src', firefoxDir).then(async () => {
         console.log("Deleted old Firefox zip");
     }
 
+    setSettings(chromeDir);
+
     console.log("Zipping Firefox version...");
     if (!delZips) {
         // Try to zip up the extension
@@ -238,5 +269,5 @@ copyDir('./src', firefoxDir).then(async () => {
         console.log(`Zipped Firefox version into ${firefoxDir}.zip`);
     }
     // End
-    console.log(`-------------`);
+    insertSpacer()
 });

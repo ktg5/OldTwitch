@@ -9,11 +9,16 @@
     },
 
     "permissions": [
+        "tabs",
         "storage",
         "cookies",
         "scripting",
         "webRequest"
     ],
+
+    "action": {
+        "default_title": "Open OldTwitch Settings"
+    },
 
     "content_scripts": [
         {
@@ -25,7 +30,7 @@
                 "*://www.twitch.tv/settings/*", "*://www.twitch.tv/privacy", "*://www.twitch.tv/subscriptions",
                 "*://www.twitch.tv/signup", "*://www.twitch.tv/login", "*://www.twitch.tv/user/*",
                 "*://clips.twitch.tv/embed*", "*://clips.twitch.tv/create*", "*://www.twitch.tv/settings",
-                "*://www.twitch.tv/drops"
+                "*://www.twitch.tv/drops", "*://www.twitch.tv/moderator/*", "*://www.twitch.tv/passport-callback"
             ],
             "js": ["js/ot-config.js", "js/ot-main.js"],
             "all_frames": true,
