@@ -85,6 +85,10 @@ function demand(url, options = {}) {
                 // ignore it.
                 if (data.id !== id) return;
                 window.removeEventListener('message', onMessage);
+
+                // debug ofc
+                // console.log(data);
+
                 // Have to rebuild response data
                 resolve({
                     ok: data.res.ok,
@@ -351,8 +355,79 @@ async function initCmdsForConfig() {
 
 // Add global html elements, like the top & side navs
 async function addGlobals() {
+
     // Run stuff for userConfig
     await initCmdsForConfig();
+
+
+    // Update notify
+    if (userConfig.alertUpdates) {
+        // Check if we have the current version
+        // Get current version
+        currentVersion = document.body.getAttribute(`oldttv-ver`);
+        let currentDevBuild;
+        let isDev = false;
+        if (document.body.getAttribute(`oldttv-ver`).includes("dev")) {
+            isDev = true;
+            currentDevBuild = currentVersion.split("dev")[1].split(":")[0];
+            currentVersion = currentVersion.split(":").pop();
+        }
+        // Pull latest version from GitHub files
+        let latestVersion = await fetch(`https://raw.githubusercontent.com/ktg5/OldTwitch/refs/heads/main/src/ver.txt`).then(res => res.text());
+        // console.log("latestVersion: ", latestVersion);
+        let latestDevBuild;
+        let latestIsDev = false;
+        if (latestVersion.includes("dev")) {
+            latestIsDev = true;
+            latestDevBuild = latestVersion.split("dev")[1].split(":")[0];
+            latestVersion = latestVersion.split(":").pop();
+        }
+        // Basic checking
+        let latestParts = latestVersion.split(".").map(Number);
+        let currentParts = currentVersion.split(".").map(Number);
+        if (
+            latestVersion
+            && currentVersion) {
+            // Check dev versions if they exist
+            if (isDev) {
+                // First check if latestVersion is a dev build & has a newer dev version
+                if (
+                    latestIsDev
+                    && latestDevBuild > currentDevBuild
+                ) updateNotification(`older dev build: latest: ${latestDevBuild}, current: ${currentDevBuild}\nlatestVersion: dev${latestDevBuild}:${latestVersion}`);
+            }
+            // Check all version parts one by one
+            for (let i = 0; i < latestParts.length; i++) {
+                // console.log(latestParts[i] > currentParts[i], currentParts[i] == undefined);
+
+                // If the current part is greater than the latest part, break
+                if (latestParts[i] < currentParts[i]) break;
+
+                // Check each version part for any differences or missing parts
+                if (
+                    latestParts[i] > currentParts[i]
+                    || currentParts[i] == undefined
+                ) {
+                    updateNotification(`older version: latest: ${latestVersion}, current: ${currentVersion}`);
+                    break;
+                }
+            }
+        }
+
+
+        // Show update notification
+        function updateNotification(debug) {
+            if (debug) console.info(`REASON FOR UPDATE NOTICE: `, debug);
+            makeNotification(`The current version of OldTwitch you're on is out-of-date. Click the "Update" button to go to the latest update.`, [
+                {
+                    key: "update",
+                    text: "Update",
+                    action: () => location.href = "https://github.com/ktg5/oldttv/releases/latest"
+                }
+            ]);
+        }
+    }
+
 
     // Add navbar if found
     let navbar = document.querySelector(".top-nav");
@@ -702,6 +777,7 @@ async function addGlobals() {
             });
         });
     }
+    
 }
 
 
@@ -1135,75 +1211,6 @@ function setLang() {
 // On load
 var currentVersion;
 setTimeout(async () => {
-
-    // Update notify
-    if (userConfig.alertUpdates) {
-        // Check if we have the current version
-        // Get current version
-        currentVersion = document.body.getAttribute(`oldttv-ver`);
-        let currentDevBuild;
-        let isDev = false;
-        if (document.body.getAttribute(`oldttv-ver`).includes("dev")) {
-            isDev = true;
-            currentDevBuild = currentVersion.split("dev")[1].split(":")[0];
-            currentVersion = currentVersion.split(":").pop();
-        }
-        // Pull latest version from GitHub files
-        let latestVersion = await fetch(`https://raw.githubusercontent.com/ktg5/OldTwitch/refs/heads/main/src/ver.txt`).then(res => res.text());
-        // console.log("latestVersion: ", latestVersion);
-        let latestDevBuild;
-        let latestIsDev = false;
-        if (latestVersion.includes("dev")) {
-            latestIsDev = true;
-            latestDevBuild = latestVersion.split("dev")[1].split(":")[0];
-            latestVersion = latestVersion.split(":").pop();
-        }
-        // Basic checking
-        let latestParts = latestVersion.split(".").map(Number);
-        let currentParts = currentVersion.split(".").map(Number);
-        if (
-            latestVersion
-            && currentVersion) {
-            // Check dev versions if they exist
-            if (isDev) {
-                // First check if latestVersion is a dev build & has a newer dev version
-                if (
-                    latestIsDev
-                    && latestDevBuild > currentDevBuild
-                ) updateNotification(`older dev build: latest: ${latestDevBuild}, current: ${currentDevBuild}\nlatestVersion: dev${latestDevBuild}:${latestVersion}`);
-            }
-            // Check all version parts one by one
-            for (let i = 0; i < latestParts.length; i++) {
-                // console.log(latestParts[i] > currentParts[i], currentParts[i] == undefined);
-
-                // If the current part is greater than the latest part, break
-                if (latestParts[i] < currentParts[i]) break;
-
-                // Check each version part for any differences or missing parts
-                if (
-                    latestParts[i] > currentParts[i]
-                    || currentParts[i] == undefined
-                ) {
-                    updateNotification(`older version: latest: ${latestVersion}, current: ${currentVersion}`);
-                    break;
-                }
-            }
-        }
-
-
-        // Show update notification
-        function updateNotification(debug) {
-            if (debug) console.info(`REASON FOR UPDATE NOTICE: `, debug);
-            makeNotification(`The current version of OldTwitch you're on is out-of-date. Click the "Update" button to go to the latest update.`, [
-                {
-                    key: "update",
-                    text: "Update",
-                    action: () => location.href = "https://github.com/ktg5/oldttv/releases/latest"
-                }
-            ]);
-        }
-    }
-
 
     // Delete 3rd-party CSS
     setInterval(() => {
