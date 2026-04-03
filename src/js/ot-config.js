@@ -20,7 +20,6 @@ async function getUserConfig(atend) {
         }
 
         storage.get(['OTConfig'], async (res) => {
-            console.log(res.OTConfig);
             if (!res.OTConfig) return reset();
             userConfig = res.OTConfig;
             if (userConfig) {

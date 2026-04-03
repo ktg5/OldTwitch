@@ -803,9 +803,23 @@ function showError(args) {
         switch (args.id) {
             case 404:
                 mainDiv.innerHTML = `
-                    <div class="tw-pd-3">
-                        <h2>Not found.<h2>
-                    </div>
+<div id="ember715" class="ember-view"><div class="content">
+    <div id="channel">
+        <div class="no-channel-message-container clearfix">
+            <div class="dead-glitch"></div>
+            <div class="info">
+                <p class="message">
+                The channel could not be found, or has been deleted by its owner.
+                </p>
+                <a class="button tw-button browse-other" href="/directory/all">
+                <span class="tw-button__text">
+                    Browse Other Channels
+                </span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
                 `;
             break;
         }
@@ -1180,7 +1194,9 @@ const HTMLChangeConfig = {
     attributes: true,
     subtree: true
 };
-HTMLChangeObserver.observe(document.body, HTMLChangeConfig);
+function startHTMLChangeObs() {
+    return HTMLChangeObserver.observe(document.body, HTMLChangeConfig);
+}
 
 
 // Sets all detected HTML elements and sets their `innerText` to whatever the current language has for it
@@ -1204,7 +1220,7 @@ function setLang() {
             if (targetDiv) targetDiv.innerText = output;
         }
     }
-    HTMLChangeObserver.observe(document.body, HTMLChangeConfig);
+    startHTMLChangeObs();
 }
 
 

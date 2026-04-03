@@ -1,0 +1,59 @@
+/* Custom */
+/* Base */
+:root {
+    --main-colour: #4b367c;
+    --secondary-colour: #7d5bbe;
+}
+
+@font-face {
+    src: url("chrome-extension://__MSG_@@extension_id__/html/2018/css/font/neue-r.otf");
+    font-family: "Helvetica Neue";
+}
+
+body {
+    display: block !important;
+    font-family: "Helvetica Neue";
+}
+
+
+/* Custom Notifications */
+.oldttv-notifi {
+    align-items: center;
+    background: #641b1b;
+    color: white;
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 5rem;
+    z-index: 2000;
+}
+
+.oldttv-notifi .content {
+    font-size: 16px;
+    font-weight: bold;
+    font-weight: 100;
+    margin-left: 1rem;
+}
+
+.oldttv-notifi .actions {
+    position: absolute;
+    display: flex;
+    right: 0;
+}
+
+.oldttv-notifi .actions .tw-button {
+    background: #af3535;
+}
+
+.oldttv-notifi .actions .tw-button:hover {
+    background: #dc3434;
+    border-color: #dc3434;
+}
+
+.oldttv-notifi ~ .twilight-root {
+    top: 10rem;
+}
+
+.oldttv-notifi ~ .twilight-root .top-nav {
+    top: 5rem !important;
+}

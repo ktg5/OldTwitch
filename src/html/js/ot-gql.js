@@ -778,6 +778,7 @@ class GqlClient {
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
+                    if (!data[0] || !data[0].data) return this.getChannel(name);
                     if (!data[0].data.user) return resolve(null);
 
                     let isLive = data[0].data.user.stream != null;
