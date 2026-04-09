@@ -2,16 +2,15 @@
   "name": "oldttv",
   "version": "1.0.0",
   "description": "Bring back the old Twitch UI with this browser extension",
-  "type": "commonjs",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node build.js"
+    "start": "bun build.ts"
   },
   "author": "ktg5",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^25.5.2",
     "adm-zip": "^0.5.16",
-    "fs-extra": "^11.3.0",
     "readline": "^1.3.0"
   }
 }

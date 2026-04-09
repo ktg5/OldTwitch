@@ -1,9 +1,9 @@
-const fs = require('fs-extra');
-const path = require('path');
-const Zip = require('adm-zip');
-const process = require('process');
-const readline = require('readline');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import Zip from 'adm-zip';
+import process from 'process';
+import readline from 'readline';
+import { execSync } from 'child_process';
 
 
 function insertSpacer() {
@@ -22,7 +22,7 @@ if (fs.existsSync('./dist')) {
 
 
 // Function to copy all the dirs but not REALLY all of them.
-async function copyDir(sourceDir, newDir) {
+async function copyDir(sourceDir: string, newDir: string) {
     // Get dirs in the project folder.
     var dirs = fs.readdirSync(sourceDir, { withFileTypes: true });
     fs.mkdirSync(newDir);
@@ -50,18 +50,6 @@ async function copyDir(sourceDir, newDir) {
             break;
         }
 
-        // If the file is a TS file, we'll need to find the JS file within the "ts-dist" folder.
-        if (entry.name.endsWith('.ts')) {
-            const jsName = entry.name.substring(0, entry.name.length - 3) + '.js';
-            const jsPath = path.join(tsDistDir, jsName);
-            if (!fs.existsSync(jsPath)) {
-                console.error(`No JS file for ${entry.name}`);
-                continue;
-            }
-            sourcePath = jsPath;
-            newPath = newPath.replace('.ts', '.js');
-        }
-
         // If the files passed the vibe check, we go.
         if (entry.isDirectory()) {
             await copyDir(sourcePath, newPath);
@@ -85,10 +73,10 @@ process.argv.forEach(function (val, index, array) {
 
 
 // For making a web version of a script
-async function makeWebScript(dir) {
+async function makeWebScript(dir: string) {
     if (!dir.endsWith('.js')) return console.error('makeWebScript: the requested dir, "' + dir + '" should be a JS script dumbass!!!');
 
-    const copyScriptDir = dir.replace('.js', '-web.js');
+    const copyScriptDir = `./src/dist/${path.parse(dir).base}`;
     if (fs.existsSync(copyScriptDir)) {
         console.log("Deleting old " + copyScriptDir);
         fs.unlinkSync(copyScriptDir);
@@ -126,6 +114,7 @@ insertSpacer();
 // Make a "-web" version of the ot-gql script
 // Delete old web script
 makeWebScript('./src/html/js/ot-gql.js');
+makeWebScript('./src/html/js/ot-hermes.js');
 
 
 // Change settings depending on if we're building a dev build or not.

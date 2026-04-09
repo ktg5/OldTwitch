@@ -4,7 +4,10 @@ extensionLocation = document.querySelector('body').getAttribute('oldttv-url');
 function doSettings() {
     return new Promise((resolve, reject) => {
         let firstInit = setInterval(async () => {
-            if (userConfig) {
+            if (
+                userConfig
+                && langStrings.settings.alertUpdates
+            ) {
                 clearInterval(firstInit);
 
 

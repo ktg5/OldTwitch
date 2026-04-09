@@ -1,4 +1,4 @@
-const gql = new GqlClient(anonId);
+const gql = new TwitchGql();
 var userConfig, channels;
 const styles3 = [
     'background: linear-gradient(#06d316, #075702)'
@@ -46,10 +46,13 @@ userConfigInit();
 // Listen for any updates to userconfig
 window.addEventListener('message', async (e) => {
     if (e.data && e.data.type == 'ot-update-userconfig') {
-        if (userConfig.year !== e.data.config.year) location.reload();
-        userConfig = e.data.config;
-        console.log('Got userConfig update. Set userConfig to the latest we got.');
-        initCmdsForConfig();
+        if (userConfig.year !== e.data.config.year) {
+            userConfig = e.data.config;
+            console.log('Got userConfig update. Set userConfig to the latest we got.');
+            initCmdsForConfig();
+
+            location.reload();
+        }
     }
 });
 
@@ -187,13 +190,37 @@ if (tabsClosed == null) {
 }
 
 // Get more global vars
-extensionLocation = document.querySelector('body').getAttribute('oldttv-url');
+var bodyDiv;
+function getBodyDiv() {
+    return new Promise((resolve, reject) => {
+        let bodyDivInt = setInterval(() => {
+            if (bodyDiv) {
+                clearInterval(bodyDivInt);
+
+                extensionLocation = bodyDiv.getAttribute('oldttv-url');
+
+                resolve();
+            }
+            else bodyDiv = document.querySelector('body');
+        }, 100);
+    });
+}
 var darkTheme = false;
 const html =  document.querySelector('html');
 
 
 // Inject requested text to element's innerhtml
 async function textToHtml(text, element) {
+    if (
+        !text
+        || typeof text !== 'string'
+    ) throw new Error('webmain.js:textToHtml - "text" is either not defined or not a string');
+    if (
+        !element
+        || !element instanceof HTMLElement
+    ) throw new Error('webmain.js:textToHtml - "element" is either not defined or not a HTMLElement');
+
+
     text = text.replace(/__([a-zA-Z0-9_]+)__/g, (match, key) => {
         switch (key) {
             case "EXTENSION_URL":
@@ -315,6 +342,9 @@ var langStrings = {
     settings: {}
 };
 async function initCmdsForConfig() {
+    await getBodyDiv();
+
+
     // Check for dark theme
     if (
         (
@@ -432,9 +462,9 @@ async function addGlobals() {
     // Add navbar if found
     let navbar = document.querySelector(".top-nav");
     if (navbar) {
-        demand(`${extensionLocation}/html/${userConfig.year}/global/topnav.html`).then(async data => {
+        demand(`${extensionLocation}/html/global/topnav.html`).then(async data => {
             // Inject HTML
-            let htmlText = await data.body;
+            let htmlText = data.body;
             textToHtml(htmlText, navbar);
 
             // On click handlers
@@ -542,7 +572,7 @@ async function addGlobals() {
     let sidebar = document.querySelector(".side-nav");
     var channels;
     if (sidebar) {
-        demand(`${extensionLocation}/html/${userConfig.year}/global/sidenav.html`).then(async data => {
+        demand(`${extensionLocation}/html/global/sidenav.html`).then(async data => {
             // Inject HTML
             let htmlText = await data.body;
             textToHtml(htmlText, sidebar);
@@ -1279,10 +1309,7 @@ setTimeout(async () => {
         // Do home apge stuff
         const homePageData = await gql.getHomePage("en"); // todo: allow user to change lang to whatever they want
         const zeroStreamersData = await gql.getZeroStreamers();
-        if (
-            !homePageData
-            || !zeroStreamersData
-        ) location.reload();
+        if (!homePageData) location.reload();
 
         console.log('homePageData: ', homePageData);
     
@@ -1372,8 +1399,7 @@ setTimeout(async () => {
 
         // Streams from nobody.live
         let zeroStreamersGrid = document.querySelector(`[data-a-target="zero-streamers-insert"]`);
-        console.log(zeroStreamersData);
-        for (let i = 0; i < zeroStreamersData.length; i++) {
+        if (zeroStreamersData) for (let i = 0; i < zeroStreamersData.length; i++) {
             const channel = zeroStreamersData[i];
             console.log(channel);
 

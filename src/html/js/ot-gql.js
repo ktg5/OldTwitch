@@ -1,5 +1,4 @@
-const anonId = "kimne78kx3ncx6brgo4mv6wki5h1ko";
-class GqlClient {
+class TwitchGql {
     clientid = "";
     oauth = "";
     integToken = {
@@ -7,7 +6,7 @@ class GqlClient {
         expiration: 0
     };
 
-    constructor(clientid, oauth) {
+    constructor(clientid = "kimne78kx3ncx6brgo4mv6wki5h1ko", oauth) {
         this.clientid = clientid;
         this.oauth = oauth;
 
@@ -1792,3 +1791,12 @@ class GqlClient {
         });
     }
 }
+
+
+(function (root, factory) {
+    if (typeof module === "object" && typeof module.exports === "object") module.exports = factory();
+    else if (typeof define === "function" && define.amd) define([], factory);
+    else root.TwitchGql = factory();
+})(typeof self !== "undefined" ? self : this, () => {
+    return TwitchGql;
+});

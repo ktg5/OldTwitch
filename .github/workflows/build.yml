@@ -28,17 +28,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Setup Node.js environment.
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4.0.2
+      # Setup Bun environment.
+      - name: Setup Bun environment
+        uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version: "latest"
 
-      # Install the NPM modules that are included with this repo.
-      - name: Install NPM packages
-        run: npm install
+      # Install the node modules that are included with this repo.
+      - name: Install Node packages
+        run: bun i
 
       # Run the "build.js" script through our newly acquired Node.js environment.
       - name: Run the build node script
-        run: npm start del-zip
+        run: bun start folders
 
       # Upload the ZIP files to the "Artifacts" tab on this action's page.
       ## Firefox

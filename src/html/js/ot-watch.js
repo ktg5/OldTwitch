@@ -492,8 +492,8 @@ async function setIframeVideo (args) {
                 addStremerInfo();
 
 
-                // Make a Hermes listener to listen for stream data changes
-                const hermes = new Hermes(Number(channelData.id), 'all');
+                // Make a TwitchHermes listener to listen for stream data changes
+                const hermes = new TwitchHermes(Number(channelData.id), 'all');
 
                 // Stream end
                 hermes.on('data', async (d) => {

@@ -1,5 +1,5 @@
 // Topics
-const HermesTopics = {
+const TwitchHermesTopics = {
     streamUpdate: "broadcast-settings-update",
     rewardRedeem: "community-points-channel-v1",
     streamChat: "stream-chat-room-v1",
@@ -30,7 +30,7 @@ const HermesTopics = {
 
 
 // Main
-class Hermes extends EventTarget {
+class TwitchHermes extends EventTarget {
     /**
      * @type {WebSocket}
      */
@@ -91,8 +91,8 @@ class Hermes extends EventTarget {
                 if (wsData.type == "keepalive") return;
                 // return console.log('ot-hermes: Got "keepalive" response back from Twitch.');
                 // On any errors
-                if (wsData.error && wsData.error != '') return console.error(`ot-hermes: Hermes returned error on response:`, wsData.error);
-                // Hermes wants us to use a new link.
+                if (wsData.error && wsData.error != '') return console.error(`TwitchHermes: returned error on response:`, wsData.error);
+                // TwitchHermes wants us to use a new link.
                 if (wsData.reconnect) {
                     console.log('ot-hermes: Got "reconnect" data. Making new connection...');
                     return this.#reInit();
@@ -125,7 +125,7 @@ class Hermes extends EventTarget {
 
 
     /**
-     * Creates a Twitch Hermes listener
+     * Creates a Twitch TwitchHermes listener
      * @param {number} userid
      * @param {"all" | [string]} [topics]
      * @returns 
@@ -138,11 +138,11 @@ class Hermes extends EventTarget {
         if (!userid || typeof userid !== 'number') return console.error('"userid" is either not defined or not a number/int.');
         this.#userid = userid;
 
-        // Get all HermesTopics to put em into userTopics
+        // Get all TwitchHermesTopics to put em into userTopics
         const tempTopics = [];
-        for (const key in HermesTopics) {
-            if (Object.hasOwnProperty.call(HermesTopics, key)) {
-                const element = HermesTopics[key];
+        for (const key in TwitchHermesTopics) {
+            if (Object.hasOwnProperty.call(TwitchHermesTopics, key)) {
+                const element = TwitchHermesTopics[key];
                 
                 switch (typeof element) {
                     case "function":
@@ -162,7 +162,7 @@ class Hermes extends EventTarget {
             else if (
                 typeof topics !== "object"
                 || topics.constructor !== [].constructor
-            ) return console.error('"topics" is either undefined or is not a JSON list. You can find all the topics via the "Hermes.topics" object.')
+            ) return console.error('"topics" is either undefined or is not a JSON list. You can find all the topics via the "TwitchHermes.topics" object.')
         }
         this.#topics = topics;
 
@@ -232,3 +232,12 @@ class Hermes extends EventTarget {
         this.#socket.close();
     }
 }
+
+
+(function (root, factory) {
+    if (typeof module === "object" && typeof module.exports === "object") module.exports = factory();
+    else if (typeof define === "function" && define.amd) define([], factory);
+    else root.TwitchHermes = factory();
+})(typeof self !== "undefined" ? self : this, () => {
+    return TwitchHermes;
+});

@@ -154,11 +154,11 @@ window.addEventListener('message', async (e) => {
 
 let firstInit = false;
 async function handlePageChange() {
-    const yearDir = `html/${userConfig.year}`;
+    const htmlDir = `html/static`;
 
     // First, let's see what page we're working with.
     var injectTarget = '';
-    var injectJSTargets = [
+    var jsSrcs = [
         runtime.getURL(`html/js/ot-gql.js`),
         runtime.getURL(`html/js/ot-hermes.js`),
         runtime.getURL(`lib/twitch-v1.js`),
@@ -167,28 +167,28 @@ async function handlePageChange() {
     ];
     switch (true) {
         case location.pathname == "/":
-            injectTarget = runtime.getURL(`${yearDir}/index.html`);
+            injectTarget = runtime.getURL(`${htmlDir}/index.html`);
         break;
 
         case location.pathname.startsWith("/search"):
-            injectTarget = runtime.getURL(`${yearDir}/search.html`);
+            injectTarget = runtime.getURL(`${htmlDir}/search.html`);
         break;
 
         case location.pathname.startsWith("/directory"):
-            if (location.pathname.startsWith('/directory/category')) injectTarget = runtime.getURL(`${yearDir}/directory/category.html`);
-            else injectTarget = runtime.getURL(`${yearDir}/directory/index.html`);
-            injectJSTargets.push(runtime.getURL(`html/js/ot-directory.js`));
+            if (location.pathname.startsWith('/directory/category')) injectTarget = runtime.getURL(`${htmlDir}/directory/category.html`);
+            else injectTarget = runtime.getURL(`${htmlDir}/directory/index.html`);
+            jsSrcs.push(runtime.getURL(`html/js/ot-directory.js`));
         break;
 
         case location.pathname.startsWith("/oldtwitch"):
-            injectTarget = runtime.getURL(`${yearDir}/oldtwitch.html`);
-            injectJSTargets.push(runtime.getURL('lib/coloris.min.js'));
-            injectJSTargets.push(runtime.getURL(`html/js/ot-settings.js`));
+            injectTarget = runtime.getURL(`${htmlDir}/oldtwitch.html`);
+            jsSrcs.push(runtime.getURL('lib/coloris.min.js'));
+            jsSrcs.push(runtime.getURL(`html/js/ot-settings.js`));
         break;
 
         default:
-            injectTarget = runtime.getURL(`${yearDir}/watch.html`);
-            injectJSTargets.push(runtime.getURL('html/js/ot-watch.js'));
+            injectTarget = runtime.getURL(`${htmlDir}/watch.html`);
+            jsSrcs.push(runtime.getURL('html/js/ot-watch.js'));
         break;
     }
 
@@ -221,6 +221,15 @@ async function handlePageChange() {
         }
 
 
+        // Add year css
+        if (userConfig.year !== '2018') {
+            let yearStyleDir = document.createElement('link');
+            yearStyleDir.rel = 'stylesheet';
+            yearStyleDir.href = runtime.getURL(`html/css/${userConfig.year}.css`);
+            document.head.append(yearStyleDir);
+        }
+
+
         // Check for any script elements with the "oldttv-js" id; if found, remove them
         let oldttvJS = document.querySelectorAll('script[id="oldttv-js"]');
         if (oldttvJS.length > 0) {
@@ -228,11 +237,16 @@ async function handlePageChange() {
         };
 
         // Inject JS
-        if (injectJSTargets.length > 0) injectJSTargets.forEach(jsTargets => {
+        if (jsSrcs.length > 0) jsSrcs.forEach(jsSrc => {
             let srcDoc = document.createElement('script');
             srcDoc.id = 'oldttv-js';
             srcDoc.async = "";
-            srcDoc.src = jsTargets;
+            srcDoc.src = jsSrc;
+            if (
+                jsSrc.endsWith('ot-gql.js')
+                || jsSrc.endsWith('ot-hermes.js')
+                || jsSrc.endsWith('twitch-v1.js')
+            ) srcDoc.type = 'module';
             document.head.append(srcDoc);
         });
 

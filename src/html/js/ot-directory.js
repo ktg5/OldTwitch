@@ -231,13 +231,14 @@ let gqlAction = async () => {
     }
 
 }
-if (gql) {
-    gqlAction();
-} else {
-    let tempInit = setInterval(() => {
-        if (gql) {
-            gqlAction();
-            clearInterval(tempInit);
-        }
-    }, 50);
-}
+
+
+let tempInit = setInterval(() => {
+    if (
+        gql
+        && langStrings.page['game-viewers']
+    ) {
+        gqlAction();
+        clearInterval(tempInit);
+    }
+}, 50);

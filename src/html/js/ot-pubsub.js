@@ -68,7 +68,7 @@ class PubSub extends EventTarget {
         // Checks
         if (topics) {
             if (topics == 'all') topics = tempTopics;
-            else if (typeof topics !== "object" || topics.constructor !== [].constructor) return console.error('"topics" is either not defined or is not a JSON list. You can find all the topics via the "Hermes.topics" object.')
+            else if (typeof topics !== "object" || topics.constructor !== [].constructor) return console.error('"topics" is either not defined or is not a JSON list. You can find all the topics via the "TwitchHermes.topics" object.')
         }
 
 
