@@ -76,7 +76,10 @@ process.argv.forEach(function (val, index, array) {
 async function makeWebScript(dir: string) {
     if (!dir.endsWith('.js')) return console.error('makeWebScript: the requested dir, "' + dir + '" should be a JS script dumbass!!!');
 
-    const copyScriptDir = `./src/dist/${path.parse(dir).base}`;
+    const srcDistDir = './src/dist';
+    if (!fs.existsSync(srcDistDir)) fs.mkdirSync(srcDistDir);
+
+    const copyScriptDir = `${srcDistDir}/${path.parse(dir).base}`;
     if (fs.existsSync(copyScriptDir)) {
         console.log("Deleting old " + copyScriptDir);
         fs.unlinkSync(copyScriptDir);
