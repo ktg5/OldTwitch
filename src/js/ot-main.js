@@ -198,7 +198,7 @@ async function handlePageChange() {
 
         // Inject HTML
         let htmlText = await data.text();
-        htmlText = htmlText.replace('<body', `<body oldttv-url="${extensionLocation}" oldttv-ver="${currentVersion}"`);
+        htmlText = htmlText.replace('<body', `<body oldttv-url="${extensionLocation}" oldttv-ver="${currentVersion}" oldttv-theme="${userConfig.year}"`);
         htmlText = htmlText.replace(/__([a-zA-Z0-9_]+)__/g, (match, key) => {
             switch (key) {
                 case "EXTENSION_URL":

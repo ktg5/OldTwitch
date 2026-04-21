@@ -13,6 +13,15 @@
 }
 
 
+.top-nav__nav-alt-items-container {
+    margin-left: 10px !important;
+}
+
+[data-target="watch-side-page"] [data-a-target="sort-bar"] {
+    margin-right: 36px;
+}
+
+
 /* Categories & Home Page */
 .horizontal-carousel-player__details--overlay .item-name,
 .horizontal-carousel-player__details--overlay .streamer-category

@@ -6,7 +6,7 @@
 }
 
 @font-face {
-    src: url("chrome-extension://__MSG_@@extension_id__/html/2018/css/font/neue-r.otf");
+    src: url("chrome-extension://__MSG_@@extension_id__/html/css/font/neue-r.otf");
     font-family: "Helvetica Neue";
 }
 

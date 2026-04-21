@@ -1,18 +1,26 @@
 window.addEventListener('load', () => {
-    console.log(`Hello from OldTwitch!!!`);
-
-
     // Add return to OldTwitch button
     let oldTwitchButton = document.createElement('button');
     oldTwitchButton.classList.add('Layout-sc-1xcs6mc-0', 'eaYOCu');
     oldTwitchButton.innerHTML = `
-    <div class="Layout-sc-1xcs6mc-0">
-        <button class="ScCoreButton-sc-ocjdkq-0 kEIAKL">
-            <div class="ScCoreButtonLabel-sc-s7h2b7-0 fLCDTs">
-                <div data-a-target="tw-core-button-label-text" class="Layout-sc-1xcs6mc-0 JckMc">Return to OldTwitch</div>
-            </div>
-        </button>
+<button class="ScCoreButton-sc-ocjdkq-0 kEIAKL" data-target="oldttv-return">
+    <div class="ScCoreButtonLabel-sc-s7h2b7-0 fLCDTs">
+        <div data-a-target="tw-core-button-label-text" class="Layout-sc-1xcs6mc-0 JckMc">Return to OldTwitch</div>
     </div>
+</button>
+
+<style>
+    [data-target="oldttv-return"] {
+        background: #531d8e;
+        padding: 4px 6px;
+    }
+
+    [data-target="oldttv-return"]:hover {
+        background: #7b2121;
+        padding: 4px;
+        font-weight: 900;
+    }
+</style>
     `;
 
     // Insert to page

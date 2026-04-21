@@ -13,7 +13,7 @@
     },
     "year": {
         "title": "Year Theme",
-        "desc": "DO NOT USE THIS OPTION!!! Any other themes in here are a work in progress! This option is here for development reasons. If you make a issue about this, I will close it without comment."
+        "desc": "This option is here for development reasons. If you make a issue about this, I will close it without comment."
     },
     "forceColorMode": {
         "title": "Force Color Mode",

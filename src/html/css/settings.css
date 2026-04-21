@@ -1,3 +1,9 @@
+:root {
+    --option-true: #96e08d;
+    --option-false: #e08d8d;
+}
+
+
 h2 {
     margin-bottom: 4rem;
 }
@@ -20,12 +26,20 @@ h2 {
     margin: 10px 0;
 }
 
+.settings-options .settings-option .settings-option-text {
+    width: 100%;
+}
+
 .settings-options .settings-option:first-child {
     margin-top: 0;
 }
 
 .settings-option .settings-option-title {
     font-size: 16px;
+}
+
+.settings-option .settings-option-desc {
+    width: 60%;
 }
 
 
@@ -75,11 +89,24 @@ h2 {
     transition: all .25s;
     animation: alertButtonBorder 3s linear infinite;
 }
+
+.settings-option[data-value="true"] .settings-option-action {
+    border-color: var(--option-true);
+}
+
 .settings-option[data-value="true"] .settings-option-toggle .light {
-    left: 49%;
+    background: var(--option-true);
+    left: 45%;
     width: 50%;
 }
+
+.settings-option[data-value="false"] .settings-option-action {
+    border-color: var(--option-false);
+}
+
 .settings-option[data-value="false"] .settings-option-toggle .light {
+    background: var(--option-false);
+    left: 4%;
     width: 50%;
 }
 
