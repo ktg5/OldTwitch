@@ -1,5 +1,10 @@
+/// <reference path="ot-gql.d.ts" />
+
+
 const gql = new TwitchGql();
-var userConfig, channels;
+/** @type { import('../../default_config.json') } */
+var userConfig,
+    channels;
 const styles3 = [
     'background: linear-gradient(#06d316, #075702)'
     , 'border: 5px solid rgb(255 255 255 / 10%)'
@@ -50,8 +55,6 @@ window.addEventListener('message', async (e) => {
             userConfig = e.data.config;
             console.log('Got userConfig update. Set userConfig to the latest we got.');
             initCmdsForConfig();
-
-            location.reload();
         }
     }
 });
@@ -205,8 +208,8 @@ function getBodyDiv() {
         }, 100);
     });
 }
-var darkTheme = false;
-const html =  document.querySelector('html');
+var currentTheme = 0;
+const html = document.querySelector('html');
 
 
 // Inject requested text to element's innerhtml
@@ -322,7 +325,12 @@ function twitchMarkdown(string) {
 // account, and if I did you won't be able to install this extension in the
 // first place. (That is if you downloaded the extension from a browser
 // extension store)
-var userData, oauth, deviceId;
+/** @type { Object } */
+var userData,
+/** @type { string } */
+    oauth,
+/** @type { string } */
+    deviceId;
 if (document.cookie.split('auth-token=')[1]) {
     oauth = document.cookie.split('auth-token=')[1].split(";")[0];
 } else {
@@ -336,9 +344,11 @@ if (document.cookie.split('unique_id')[1]) {
 
 
 // Init everything that needs the userConfig to be init'd first
-var langStrings = {
+var lang = {
     current: '',
+    /** @type { import('../../lang/en/pages.json') } */
     page: {},
+    /** @type { import('../../lang/en/settings.json') } */
     settings: {}
 };
 async function initCmdsForConfig() {
@@ -358,25 +368,25 @@ async function initCmdsForConfig() {
         )
     ) {
         html.classList.add(`tw-theme--dark`);
-        darkTheme = true;
-    } else if ( userConfig.forceColorMode == true ) {
-        html.classList.remove(`tw-theme--dark`);
-        darkTheme = false;
-    }
+        currentTheme = 1;
+    } else if ( userConfig.forceColorMode == true ) html.classList.remove(`tw-theme--dark`);
 
 
     // Get current language
     if (!userConfig.lang) userConfig.lang = "en";
-    langStrings.current = userConfig.lang;
+    lang.current = userConfig.lang;
     // Fetch for lang jsons
-    var pagesLangJson = await demand(`${extensionLocation}/lang/${langStrings.current}/pages.json`);
-    var settingsLangJson = await demand(`${extensionLocation}/lang/${langStrings.current}/settings.json`);
+    var pagesLangJson = await demand(`${extensionLocation}/lang/${lang.current}/pages.json`);
+    var settingsLangJson = await demand(`${extensionLocation}/lang/${lang.current}/settings.json`);
     if (
         pagesLangJson.ok
         && settingsLangJson.ok
     ) {
-        langStrings.page = await pagesLangJson.json();
-        langStrings.settings = await settingsLangJson.json();
+        lang.page = await pagesLangJson.json();
+        delete(lang.page.__comment);
+        lang.settings = await settingsLangJson.json();
+
+        console.log('current lang: ', lang);
     } else {
         // Reset config--something isn't right here
     }
@@ -467,12 +477,6 @@ async function addGlobals() {
             let htmlText = data.body;
             textToHtml(htmlText, navbar);
 
-            // On click handlers
-            document.querySelector('button[data-a-target="newtwitch-button"]').addEventListener('click', (e) => {
-                if (location.search.includes('?')) location.search += "&nooldttv";
-                else location.search = "?nooldttv";
-            });
-
 
             let loginButton = document.querySelector('[data-a-target="login-button"]');
             let signupButton = document.querySelector('[data-a-target="signup-button"]');
@@ -518,20 +522,20 @@ async function addGlobals() {
     </div>
     <div class="tw-border-t tw-border-r tw-border-b tw-border-l tw-elevation-1 tw-border-radius-small tw-c-background">
         <div class="tw-pd-1">
-            <a href="https://www.twitch.tv/${userData.displayName}" class="tw-interactable" data-a-target="channel-link">
-                <div class="tw-pd-x-1 tw-pd-y-05">Channel</div>
+            <a href="https://www.twitch.tv/${userData.displayName}" class="tw-interactable" data-lang-target="page-channel" data-a-target="channel-link">
+                <div class="tw-pd-x-1 tw-pd-y-05"></div>
             </a>
-            <a href="https://dashboard.twitch.tv/u/${userData.displayName}/home" class="tw-interactable" data-a-target="dashboard-link">
-                <div class="tw-pd-x-1 tw-pd-y-05">Creator Dashboard</div>
+            <a href="https://dashboard.twitch.tv/u/${userData.displayName}/home" class="tw-interactable" data-lang-target="page-creator" data-a-target="dashboard-link">
+                <div class="tw-pd-x-1 tw-pd-y-05"></div>
             </a>
-            <a href="https://www.twitch.tv/subscriptions" class="tw-interactable" data-a-target="subscriptions-link">
-                <div class="tw-pd-x-1 tw-pd-y-05">Subscriptions</div>
+            <a href="https://www.twitch.tv/subscriptions" class="tw-interactable" data-lang-target="page-subs" data-a-target="subscriptions-link">
+                <div class="tw-pd-x-1 tw-pd-y-05"></div>
             </a>
-            <a href="https://www.twitch.tv/inventory" class="tw-interactable" data-a-target="inventory-link">
-                <div class="tw-pd-x-1 tw-pd-y-05">Drops & Inventory</div>
+            <a href="https://www.twitch.tv/inventory" class="tw-interactable" data-lang-target="page-drops" data-a-target="inventory-link">
+                <div class="tw-pd-x-1 tw-pd-y-05"></div>
             </a>
-            <a href="https://www.twitch.tv/settings" class="tw-interactable" data-a-target="settings-link">
-                <div class="tw-pd-x-1 tw-pd-y-05">Settings</div>
+            <a href="https://www.twitch.tv/settings" class="tw-interactable" data-lang-target="page-settings" data-a-target="settings-link">
+                <div class="tw-pd-x-1 tw-pd-y-05"></div>
             </a>
         </div>
     </div>
@@ -579,7 +583,7 @@ async function addGlobals() {
 
 
             // Get channels
-            channels = await gql.getSideNavData(oauth, [localStorage.getItem("oldttv-currentchannel"), localStorage.getItem("oldttv-lastchannel")]);
+            channels = await gql.getSideNav(oauth, [localStorage.getItem("oldttv-currentchannel"), localStorage.getItem("oldttv-lastchannel")]);
             let followsDiv = document.querySelector(".tw-mg-b-1 .channel-list");
             let featuresDiv = document.querySelector(".tw-mg-b-2 .channel-list");
             let streamerFeaturesDiv = document.querySelector(".tw-mg-b-3 .channel-list");
@@ -676,7 +680,7 @@ async function addGlobals() {
     <div class="left">
         <span class="title">${stream.displayName}</span>
     </div>
-    <div class="right tw-hide"}"></div>
+    <div class="right tw-hide"></div>
 </div>
                             `;
                             targetDiv.appendChild(channelDiv);
@@ -775,12 +779,13 @@ async function addGlobals() {
                     if (!document.querySelector('.side-nav--collapsed')) return;
 
                     // Get target information, which will be used for the tooltip
+                    /** @type { HTMLElement } */
                     const element = e.target;
                     const elementRect = element.getBoundingClientRect();
                     const elementY = elementRect.y;
                     const parent = element.parentElement;
                     const listener = parent.getAttribute('data-a-target');
-                    const titleTxt = parent.querySelector('.tw-c-text-alt').innerText;
+                    const titleTxt = parent.querySelector('.tw-c-text-alt').textContent;
 
                     // Make tooltip
                     document.querySelector('.twilight-root .tw-full-height').insertAdjacentHTML('beforeend', `
@@ -838,13 +843,9 @@ function showError(args) {
         <div class="no-channel-message-container clearfix">
             <div class="dead-glitch"></div>
             <div class="info">
-                <p class="message">
-                The channel could not be found, or has been deleted by its owner.
-                </p>
+                <p class="message" data-lang-target="404"></p>
                 <a class="button tw-button browse-other" href="/directory/all">
-                <span class="tw-button__text">
-                    Browse Other Channels
-                </span>
+                    <span class="tw-button__text" data-lang-target="browse-channels"></span>
                 </a>
             </div>
         </div>
@@ -878,11 +879,12 @@ function popupAction(args) {
         popupWindow.classList.add('oldttv-popup');
         popupWindow.innerHTML = `
 <div class="oldttv-popup__content">
-    <h4 class="tw-md-mg-b-1">Click anywhere or press the "Escape" key to close this window.</h4>
-    <h2 class="tw-md-mg-b-1" data-a-target="oldttv-popup-if-wait" style="max-width">Pleae wait for the iframe to load. If you feel like this goes on for too long, <a href="https://github.com/ktg5/OldTwitch/issues">please report it with the action you tried to do</a>.</h2>
+    <h4 class="tw-md-mg-b-1" data-lang-target="popup-escape"></h4>
+    <h2 class="tw-md-mg-b-1" data-lang-target="popup-wait" data-a-target="oldttv-popup-if-wait" style="max-width"></h2>
     <iframe class="tw-hide" data-a-target="oldttv-popup-if" src="" width="520" height="300" style="background: black"></iframe>
 </div>
         `;
+
         document.body.appendChild(popupWindow);
     }
     let popupWindowIF = popupWindow.querySelector('iframe');
@@ -924,6 +926,8 @@ function popupAction(args) {
                 // Find the form div first to figure out what form we're in
                 let formDiv;
                 let tempInt = setInterval(() => {
+                    if (!ifDoc) clearInterval(tempInt);
+                    
                     formDiv = ifDoc.querySelector('form');
                     if (formDiv) {
                         continueFunc();
@@ -1170,7 +1174,7 @@ class SortBar {
                     selectionDiv.classList.add("tw-block", "tw-full-width", "tw-interactable", "tw-interactable--inverted");
                     // If this is the first option, then show it within the selection button
                     if (i == 0) {
-                        this.div.querySelector('[data-test-selector="sort-dropdown-button"] [data-a-target="tw-button-text"]').innerText = selection.displayName;
+                        this.div.querySelector('[data-test-selector="sort-dropdown-button"] [data-a-target="tw-button-text"]').textContent = selection.displayName;
                         selectionDiv.classList.add('tw-interactable--selected');
                     }
                     selectionDiv.setAttribute('data-sort-selection-id', selection.id);
@@ -1183,7 +1187,7 @@ class SortBar {
 
                         // Set HTML
                         this.div.querySelector('.tw-balloon').classList.add('tw-hide');
-                        this.div.querySelector('[data-test-selector="sort-dropdown-button"] [data-a-target="tw-button-text"]').innerText = selection.displayName;
+                        this.div.querySelector('[data-test-selector="sort-dropdown-button"] [data-a-target="tw-button-text"]').textContent = selection.displayName;
                         selectionsInsert.querySelector('.tw-interactable--selected').classList.remove('tw-interactable--selected');
                         selectionDiv.classList.add('tw-interactable--selected');
 
@@ -1214,6 +1218,7 @@ const HTMLChangeObserver = new MutationObserver((mutations) => {
         if (mutation.target.closest?.("iframe")) continue;
         if (mutation.target.closest?.(".channel-info-bar")) continue;
     
+        // console.log('html change! setting lang again');
         setLang();
     }
 });
@@ -1229,17 +1234,21 @@ function startHTMLChangeObs() {
 }
 
 
-// Sets all detected HTML elements and sets their `innerText` to whatever the current language has for it
+/**
+ * Sets all detected HTML elements and sets their `textContent` to whatever the current language has for it
+ */
 function setLang() {
     HTMLChangeObserver.disconnect();
-    for (const key in langStrings.page) {
-        if (Object.hasOwnProperty.call(langStrings.page, key)) {
+    for (const key in lang.page) {
+        if (Object.hasOwnProperty.call(lang.page, key)) {
             // Find the element within the key
             let targetDiv = document.querySelector(`[data-lang-target="${key}"]`);
+            // console.log('got lang key: ', key);
 
             // See if there's a thing with information we need to replace with
-            const output = langStrings.page[key].replace(/&OLDTTV\{([^}]+)\}&/g,
+            const output = lang.page[key].replace(/&OLDTTV\{([^}]+)\}&/g,
                 (match, tag) => {
+                    // console.log('got lang info match: ', match, tag);
                     switch (tag) {
                         case "STREAMER":
                         return localStorage.getItem("oldttv-currentchannel");
@@ -1247,7 +1256,7 @@ function setLang() {
                 }
             );
 
-            if (targetDiv) targetDiv.innerText = output;
+            if (targetDiv) targetDiv.textContent = output;
         }
     }
     startHTMLChangeObs();
@@ -1307,15 +1316,13 @@ setTimeout(async () => {
     if (location.pathname == "/") {
 
         // Do home apge stuff
-        const homePageData = await gql.getHomePage("en"); // todo: allow user to change lang to whatever they want
+        const homePageData = await gql.getHomePage(userConfig.lang);
         const zeroStreamersData = await gql.getZeroStreamers();
-        if (!homePageData) location.reload();
 
         console.log('homePageData: ', homePageData);
     
         // Set first featured stream
         let featuredStreams = homePageData.featuredStreams;
-        if (!featuredStreams) location.reload();
         let featuredStreamFigure = document.querySelector(`.anon-front__featured-section figure`);
         featuredStreamFigure.id = "iframe-insert";
         featuredStreamFigure.innerHTML = '';
@@ -1394,14 +1401,14 @@ setTimeout(async () => {
             // title
             topGamesGrid.children[i].querySelector(`.game-title`).innerHTML = `<a href="https://twitch.tv/directory/category/${game.categorySlug}">${game.displayName}</a>`;
             // viewers
-            topGamesGrid.children[i].querySelector(`.game-tags`).innerHTML = langStrings.page['game-viewers'].replace('&OLDTTV{GAME_VIEWERS}&', game.viewersCount);
+            topGamesGrid.children[i].querySelector(`.game-tags`).textContent = lang.page['game-viewers'].replace('&OLDTTV{GAME_VIEWERS}&', game.viewersCount);
         }
 
         // Streams from nobody.live
         let zeroStreamersGrid = document.querySelector(`[data-a-target="zero-streamers-insert"]`);
         if (zeroStreamersData) for (let i = 0; i < zeroStreamersData.length; i++) {
             const channel = zeroStreamersData[i];
-            console.log(channel);
+            // console.log(channel);
 
             // covert art
             zeroStreamersGrid.children[i].querySelector(`figure`).innerHTML = `<a href="https://twitch.tv/${channel.user_login}"><img class="tw-image" src="${channel.thumbnail_url}"></a>`;
@@ -1430,5 +1437,8 @@ setTimeout(async () => {
         }
 
     };
+
+
+    setLang();
     
 }, 150);

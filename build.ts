@@ -3,7 +3,6 @@ import path from 'path';
 import Zip from 'adm-zip';
 import process from 'process';
 import readline from 'readline';
-import { execSync } from 'child_process';
 
 
 function insertSpacer() {
@@ -39,6 +38,11 @@ async function copyDir(sourceDir: string, newDir: string) {
             entry.name === 'build.js' ||
             entry.name === 'package-lock.json' ||
             entry.name === 'package.json'
+        ) continue;
+
+        // File types
+        if (
+            entry.name.endsWith('.d.ts')
         ) continue;
 
         // Paths
@@ -121,7 +125,7 @@ makeWebScript('./src/html/js/ot-hermes.js');
 
 
 // Change settings depending on if we're building a dev build or not.
-function setSettings(extRoot) {
+function setSettings(extRoot: string) {
     let devBuild = false;
     fs.readFileSync(`${extRoot}/ver.txt`, { encoding: 'utf8' }).split('\n').forEach(line => {
         if (line.startsWith('dev')) devBuild = true;
@@ -206,10 +210,10 @@ copyDir('./src', firefoxDir).then(async () => {
     // WHY CAN'T IT JUST BE "extension://" OR SOMETHING??????
     console.log('Replacing all css files that include "chrome-extension://" with "moz-extension://"');
     // For each CSS file, do the replacing moment for both vanilla css and v3 css
-    async function replaceChromewithMoz(cssFiles) {
+    async function replaceChromewithMoz(cssFiles: fs.PathLike) {
         let fsCssFiles = fs.readdirSync(cssFiles);
         fsCssFiles.forEach(cssFileName => {
-            let cssPath = `${cssFiles}${cssFileName}`;
+            let cssPath = `${cssFiles}/${cssFileName}`;
             // Make sure cssPath has an extension
             if (cssPath.endsWith('.css')) {
                 process.stdout.write(`> ${cssPath}`);
@@ -220,20 +224,12 @@ copyDir('./src', firefoxDir).then(async () => {
                 // Then write the CSS file with "cssFile"
                 fs.writeFileSync(cssPath, cssFile);
                 readline.clearLine(process.stdout, 0);
-                readline.cursorTo(process.stdout, 0, null);
+                readline.cursorTo(process.stdout, 0);
                 process.stdout.write(`✓ ${cssPath}\n`);
             }
         });
     };
-    const htmlDir = `${firefoxDir}/html`;
-    const htmlDirList = fs.readdirSync(htmlDir);
-    htmlDirList.forEach(async folder => {
-        const yearCSSFolder = `${htmlDir}/${folder}/css/`;
-        if (folder.startsWith('20') && fs.existsSync(yearCSSFolder)) {
-            console.log(`${folder}:`);
-            await replaceChromewithMoz(yearCSSFolder);
-        }
-    });
+    replaceChromewithMoz(`${firefoxDir}/html/css`);
 
     console.log(`Replace complete.`);
 

@@ -77,24 +77,26 @@ blockingObserver.observe(document.documentElement, { childList: true, subtree: t
 
 
 // Remove the html element so that we can inject our own
-var html = document.querySelector('html');
-var oldRoot = document.querySelector('#root');
+const html = document.querySelector('html');
+var bodies = document.querySelectorAll('body');
+/** @type { HTMLBodyElement } */
+var newTTVbody;
+if (bodies.length >= 2) newTTVbody = bodies[1];
 
-function clearCurrentPage() {
-    html.innerHTML = '';
-    if (oldRoot) oldRoot.innerHTML = '';
+function clearNewTTV() {
+    newTTVbody.remove();
 }
 
-if (oldRoot) clearCurrentPage();
+if (newTTVbody) clearNewTTV();
 // Keep running until we can remove the html
 else {
     let removeInt = setInterval(() => {
-        html = document.querySelector('html');
-        let oldRoot = document.querySelector('#root');
-        if (oldRoot) {
+        bodies = document.querySelectorAll('body');
+        if (bodies.length >= 2) newTTVbody = bodies[1];
+        if (newTTVbody) {
+            clearNewTTV();
             clearInterval(removeInt);
-            clearCurrentPage();
-        };
+        }
     }, 10);
 };
 

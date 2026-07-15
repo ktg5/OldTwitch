@@ -291,8 +291,8 @@ class TwitchGql {
      * Fetches the home page data from the Twitch GraphQL API.
      *
      * @param {string} [lang="en"] - The language in which to fetch the data. Defaults to `"en"`
-     * @param {number} streamsAmount - Optional. The number of streams to fetch. Maximum is 10 within GQL. Defaults to 6 if not provided.
-     * @param {number} shelvesItemAmount - Optional. The number of streams to fetch. Defaults to 12 if not provided.
+     * @param {number} [streamsAmount] - Optional. The number of streams to fetch. Maximum is 10 within GQL. Defaults to 6 if not provided.
+     * @param {number} [shelvesItemAmount] - Optional. The number of streams to fetch. Defaults to 12 if not provided.
      * @returns {Promise<Object>} A promise that resolves to an object containing featured streams and shelf data.
      *                            Logs any errors if encountered during the fetch.
      */
@@ -326,7 +326,7 @@ class TwitchGql {
                         "extensions": {
                             "persistedQuery": {
                                 "version": 1,
-                                "sha256Hash": "663a12a5bcf38aa3f6f566e328e9e7de44986746101c0ad10b50186f768b41b7"
+                                "sha256Hash": "4c96356ae0f580a65a4b16fc131e95434e3a2f631b4a325b7e1c4059487f6f15"
                             }
                         }
                     },
@@ -340,6 +340,7 @@ class TwitchGql {
                             "limit": 3,
                             "requestID": "",
                             "includeIsDJ": true,
+                            "includeCostreaming": true,
                             "context": {
                                 "clientApp": "twilight",
                                 "location": "home",
@@ -352,7 +353,7 @@ class TwitchGql {
                         "extensions": {
                             "persistedQuery": {
                                 "version": 1,
-                                "sha256Hash": "96e73675b8cf36556ca3b06c51fe8804667bfaf594d05e503c7c7ff5176723fe"
+                                "sha256Hash": "efb3a97a3e88e4de4fe58c5606d2f49f7e7e750774dc3cbb1405ba60161acc3d"
                             }
                         }
                     }
@@ -478,7 +479,7 @@ class TwitchGql {
      * @param {Array} [CurrentPastStreamer] - Optional. An array containing the current and past channel names.
      * @returns {Promise<Object>} A promise that resolves to the personal recommendations data.
      */
-    async getSideNavData(oauth, CurrentPastStreamer) {
+    async getSideNav(oauth, CurrentPastStreamer) {
         if (!CurrentPastStreamer) return console.error(`"CurrentPastStreamer" is required but returned null.`);
 
         let currentChannel = null, pastChannel = null;
@@ -501,12 +502,12 @@ class TwitchGql {
             "operationName": "SideNav",
             "variables": {
                 "input": {
-                    "sectionInputs": [
-                        "RECS_FOLLOWED_SECTION",
-                        "RECOMMENDED_COLLABS_SECTION",
-                        "RECOMMENDED_SECTION",
-                        "SIMILAR_SECTION"
-                    ],
+                    // "sectionInputs": [
+                    //     "RECS_FOLLOWED_SECTION",
+                    //     "RECOMMENDED_COLLABS_SECTION",
+                    //     "RECOMMENDED_SECTION",
+                    //     "SIMILAR_SECTION"
+                    // ],
                     "recommendationContext": {
                         "platform": "web",
                         "clientApp": "twilight",
@@ -532,7 +533,7 @@ class TwitchGql {
             "extensions": {
                 "persistedQuery": {
                     "version": 1,
-                    "sha256Hash": "b235e7c084bc768d827343cda0b95310535a0956d449e574885b00e176fe5f27"
+                    "sha256Hash": "40418288329fcecbbf422c5a7cbcc5a937f5670550a9d3b246b8327ff1903ba1"
                 }
             }
         }
@@ -1409,12 +1410,13 @@ class TwitchGql {
                             },
                             "sortTypeIsRecency": false,
                             "limit": argLimit ? argLimit : 100,
-                            "includeIsDJ": true
+                            "includeIsDJ": true,
+                            "includeCostreaming": true
                         },
                         "extensions": {
                             "persistedQuery": {
                                 "version": 1,
-                                "sha256Hash": "c7c9d5aad09155c4161d2382092dc44610367f3536aac39019ec2582ae5065f9"
+                                "sha256Hash": "86bcceb4e8b1a51256ff8eed8bd8aae4acacf80d737efe904f84f3aeadf8cafd"
                             }
                         }
                     },
@@ -1430,7 +1432,7 @@ class TwitchGql {
                         "extensions": {
                             "persistedQuery": {
                                 "version": 1,
-                                "sha256Hash": "f19b861ed9c767a1c231be8f757958005cd537a6e9730bc01c6b4735c2eaf211"
+                                "sha256Hash": "60db85f45a5a4c62986bd9e1981491d2b9c43f003cc6700c1c91268988180246"
                             }
                         }
                     },
@@ -1459,25 +1461,30 @@ class TwitchGql {
 
                 if (data.errors) resolve({ errors: data.errors });
                 else {
-                    console.log(data[3]);
-                    let streamsData = [], videosData = [], clipsData = [];
-                    data[1].data.game.streams.edges.forEach(stream => {
-                        streamsData.push(stream.node);
-                    });
-                    data[2].data.game.videos.edges.forEach(video => {
-                        videosData.push(video.node);
-                    });
-                    data[3].data.game.clips.edges.forEach(clip => {
-                        clipsData.push(clip.node);
-                    });
+                    try {
+                        let streamsData = [], videosData = [], clipsData = [];
+                        data[1].data.game.streams.edges.forEach(stream => {
+                            streamsData.push(stream.node);
+                        });
+                        data[2].data.game.videos.edges.forEach(video => {
+                            videosData.push(video.node);
+                        });
+                        data[3].data.game.clips.edges.forEach(clip => {
+                            clipsData.push(clip.node);
+                        });
 
-                    let cleanData = {
-                        ...data[0].data.game,
-                        streams: streamsData,
-                        videos: videosData,
-                        clips: clipsData
-                    };
-                    resolve(cleanData);
+                        let cleanData = {
+                            ...data[0].data.game,
+                            streams: streamsData,
+                            videos: videosData,
+                            clips: clipsData
+                        };
+                        resolve(cleanData);
+                    } catch (error) {
+                        console.error("TwitchGql.getAllCategoryData(): ", error);
+                        console.error("returned data from gql: ", data);
+                        resolve({ errors: data });
+                    }
                 }
             })
         });

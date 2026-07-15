@@ -1,3 +1,7 @@
+/// <reference path="ot-hermes.d.ts" />
+/// <reference path="ot-webmain.js" />
+
+
 var stream, channelData, videosData, clipsData;
 
 const channelTabs = ["videos", "clips"];
@@ -8,6 +12,7 @@ async function setIframeVideo (args) {
     if (typeof(args) != "object") return "Invalid args";
     if (!args.type) return "Invalid args";
 
+    /** @type { HTMLIFrameElement } */
     let chatIframe = document.querySelector(".chat-iframe");
     let playerRoot = document.querySelector(`[data-target="main-root"]`);
 
@@ -83,11 +88,11 @@ async function setIframeVideo (args) {
                     sidePageSortBar.setOptions([
                         {
                             id: "clips",
-                            textBeforeSelect: langStrings.page['show-from'],
+                            textBeforeSelect: lang.page['show-from'],
                             selections: [
                                 {
                                     id: "last_day",
-                                    displayName: langStrings.page['last-day'],
+                                    displayName: lang.page['last-day'],
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "LAST_DAY"));
@@ -95,7 +100,7 @@ async function setIframeVideo (args) {
                                 },
                                 {
                                     id: "last_week",
-                                    displayName: langStrings.page['last-week'],
+                                    displayName: lang.page['last-week'],
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "LAST_WEEK"));
@@ -103,7 +108,7 @@ async function setIframeVideo (args) {
                                 },
                                 {
                                     id: "last_month",
-                                    displayName: langStrings.page['last-month'],
+                                    displayName: lang.page['last-month'],
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "LAST_MONTH"));
@@ -111,7 +116,7 @@ async function setIframeVideo (args) {
                                 },
                                 {
                                     id: "all_time",
-                                    displayName: langStrings.page['all-time'],
+                                    displayName: lang.page['all-time'],
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "ALL_TIME"));
@@ -181,7 +186,9 @@ async function setIframeVideo (args) {
                     // subtext 2
                     let itemSubtext2 = "";
                     let vodDateTxt;
-                    if (itemType == "clip") itemSubtext2 = `<p class="item-subtext tw-font-size-7">Clipped by <a href="https://www.twitch.tv/${item.curator.login}">${item.curator.displayName}</a></p>`;
+                    if (itemType == "clip") itemSubtext2 = `<p class="item-subtext tw-font-size-7">
+    ${lang.page["clipped-by"].replace('&OLDTTV{CREATOR}&', `<a href="https://www.twitch.tv/${item.curator.login}">${item.curator.displayName}</a>`)}
+</p>`;
                     else if (itemType == "video") {
                         const vodDate = new Date(item.publishedAt);
                         vodDateTxt = formatDate(vodDate).usFormat;
@@ -556,72 +563,95 @@ async function setIframeVideo (args) {
 
             // set chat
             chatIframe.src = `https://www.twitch.tv/embed/${args.channel}/chat?parent=twitch.tv`;
-            let chatIframeDoc, chatIframeWindow;
+            /** @type { Document } */
+            let chatIframeDoc,
+            /** @type { Window } */
+                chatIframeWindow;
             chatOnLoad = (e) => {
                 chatIframeDoc = chatIframe.contentDocument;
                 chatIframeWindow = chatIframe.contentWindow;
+                const html = document.querySelector('html');
+                const Ifhtml = chatIframeDoc.querySelector('html');
 
-                // Check for dark mode
-                const HTMLDiv = document.querySelector('html');
-                const IfHTMLDiv = chatIframeDoc.querySelector('html');
-                if (HTMLDiv.classList.contains('tw-theme--dark')) {
-                    // Make sure the stupid browser sets the damn theme
-                    setInterval(() => {
-                        if (
-                            darkTheme
-                            && IfHTMLDiv.classList.contains('tw-root--theme-light')
-                        ) {
-                            IfHTMLDiv.classList.remove('tw-root--theme-light');
-                            IfHTMLDiv.classList.add('tw-root--theme-dark');
-                        }
-                    }, 1000);
 
-                    let customRoot = chatIframeDoc.createElement('style');
-                    customRoot.innerHTML = `
-                    :root {
-                        --color-background-body: #0e0c13 !important;
-                        --color-background-base: #0e0c13 !important;
-                        --color-background-float: #0e0c13 !important;
-                        --color-background-alt:  #2c2541 !important;
-                        --color-background-alt-2: #2c2541 !important;
-                        --color-text-base: #ebe9ee !important;
-                        --color-text-label: #ebe9ee !important;
-                        --color-text-alt: #b8b5c0 !important;
-                        --color-text-alt-2: #b8b5c0 !important;
-                        --color-fill-current: rgb(216 216 222) !important;
-                        --color-text-link: #a070ea !important;
-                        --color-border-input: #392e5c !important;
-                        --color-border-input-hover: #635199 !important;
-                        --color-background-input-checkbox-checked-background: black !important;
-                        --color-border-input-checkbox: rgb(216 216 227 / 95%) !important;
-                        --color-border-input-checkbox-hover: var(--color-border-input-checkbox-checked) !important;
-                    }
-                    `;
-                    chatIframeDoc.head.appendChild(customRoot);
-                } else {
-                    let customRoot = chatIframeDoc.createElement('style');
-                    customRoot.innerHTML = `
-                    :root {
-                        --color-background-body: #efeef1 !important;
-                        --color-background-base: #efeef1 !important;
-                        --color-background-float: #efeef1 !important;
-                        --color-background-alt: #efeef1 !important;
-                        --color-background-alt-2: #efeef1 !important;
-                        --color-text-base: black !important;
-                        --color-text-label: black !important;
-                        --color-text-alt: #616064 !important;
-                        --color-text-alt-2: #616064 !important;
-                        --color-fill-current: white !important;
-                        --color-text-link: #6616e0 !important;
-                        --color-border-input: #635199 !important;
-                        --color-border-input-hover: #392e5c !important;
-                        --color-background-input-checkbox-checked-background: black !important;
-                        --color-border-input-checkbox: rgb(216 216 227 / 95%) !important;
-                        --color-border-input-checkbox-hover: var(--color-border-input-checkbox-checked) !important;
-                    }
-                    `;
-                    chatIframeDoc.head.appendChild(customRoot);
+                // Set chatroot element
+                const chatRootIds = {
+                    id: 'oldtwitch-css',
+                    class: 'oldtwitch-chatroot'
                 }
+                var chatRoot = document.querySelector(`#${chatRootIds.id}.${chatRootIds.class}`);
+                if (chatRoot === null) {
+                    chatRoot = chatIframeDoc.createElement('style');
+                    chatRoot.id = 'oldtwitch-css';
+                    chatRoot.classList.add('oldtwitch-chatroot');
+                    chatIframeDoc.head.appendChild(chatRoot);
+                }
+                
+
+
+                // Check for whether if the theme has been changed
+                let prevTheme = currentTheme;
+                const themeChangeInt = setInterval(() => {
+                    if (prevTheme !== currentTheme) {
+                        switch (currentTheme) {
+                            // dark
+                            case 1:
+                                chatRoot.innerHTML = `
+:root {
+    --color-background-body: #0e0c13 !important;
+    --color-background-base: #0e0c13 !important;
+    --color-background-float: #0e0c13 !important;
+    --color-background-alt:  #2c2541 !important;
+    --color-background-alt-2: #2c2541 !important;
+    --color-text-base: #ebe9ee !important;
+    --color-text-label: #ebe9ee !important;
+    --color-text-alt: #b8b5c0 !important;
+    --color-text-alt-2: #b8b5c0 !important;
+    --color-fill-current: rgb(216 216 222) !important;
+    --color-text-link: #a070ea !important;
+    --color-border-input: #392e5c !important;
+    --color-border-input-hover: #635199 !important;
+    --color-background-input-checkbox-checked-background: black !important;
+    --color-border-input-checkbox: rgb(216 216 227 / 95%) !important;
+    --color-border-input-checkbox-hover: var(--color-border-input-checkbox-checked) !important;
+}
+                                `;
+
+                                chatIframeDoc.head.classList.remove('tw-root--theme-light');
+                                chatIframeDoc.head.classList.add('tw-root--theme-dark');
+                            break;
+                        
+                            // light
+                            case 0:
+                                chatRoot.innerHTML = `
+:root {
+    --color-background-body: #efeef1 !important;
+    --color-background-base: #efeef1 !important;
+    --color-background-float: #efeef1 !important;
+    --color-background-alt: #efeef1 !important;
+    --color-background-alt-2: #efeef1 !important;
+    --color-text-base: black !important;
+    --color-text-label: black !important;
+    --color-text-alt: #616064 !important;
+    --color-text-alt-2: #616064 !important;
+    --color-fill-current: white !important;
+    --color-text-link: #6616e0 !important;
+    --color-border-input: #635199 !important;
+    --color-border-input-hover: #392e5c !important;
+    --color-background-input-checkbox-checked-background: black !important;
+    --color-border-input-checkbox: rgb(216 216 227 / 95%) !important;
+    --color-border-input-checkbox-hover: var(--color-border-input-checkbox-checked) !important;
+}
+                                `;
+
+                                chatIframeDoc.head.classList.remove('tw-root--theme-dark');
+                                chatIframeDoc.head.classList.add('tw-root--theme-light');
+                            break;
+                        }
+                    }
+
+                    prevTheme = currentTheme;
+                }, 1000);
             };
             chatIframe.addEventListener('load', chatOnLoad);
         break;

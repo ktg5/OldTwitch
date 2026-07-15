@@ -1,3 +1,7 @@
 {
-    "displayName": "English"
+    "displayName": "English",
+    "authors": [
+        "ktg5"
+    ],
+    "version": "1.0.0"
 }

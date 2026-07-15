@@ -6,7 +6,7 @@ function doSettings() {
         let firstInit = setInterval(async () => {
             if (
                 userConfig
-                && langStrings.settings.alertUpdates
+                && lang.settings.alertUpdates
             ) {
                 clearInterval(firstInit);
 
@@ -32,9 +32,9 @@ function doSettings() {
                     let langIndex = await langIndexFetch.json();
                     // For each language defined in the lang index file, get folder files
                     for (let i = 0; i < langIndex.index.length; i++) {
-                        const lang = langIndex.index[i];
+                        const langName = langIndex.index[i];
                         // Get lang folder
-                        let langFolder = `${extensionLocation}/lang/${lang}`
+                        let langFolder = `${extensionLocation}/lang/${langName}`
                         let langFetch = await demand(`${langFolder}/index.json`)
 
                         // Make sure all the files required for each language are here
@@ -128,12 +128,12 @@ function doSettings() {
                 // Make html
                 // ${await addButton({ key: 'year', type: 'select', title: 'Select Year', desc: 'Select the year you\'d like to display.', values: yearOptions })}
                 injectDiv.innerHTML = `
-                    ${await addButton({ key: 'showReleaseNotes', type: 'toggle', title: langStrings.settings.showReleaseNotes.title, desc: langStrings.settings.showReleaseNotes.desc })}
-                    ${await addButton({ key: 'alertUpdates', type: 'toggle', title: langStrings.settings.alertUpdates.title, desc: langStrings.settings.alertUpdates.desc })}
-                    ${await addButton({ key: 'lang', type: 'select', title: langStrings.settings.lang.title, desc: langStrings.settings.lang.desc, values: langOptions })}
-                    ${await addButton({ key: 'year', type: 'select', title: langStrings.settings.year.title, desc: langStrings.settings.year.desc, values: yearOptions })}
-                    ${await addButton({ key: 'forceColorMode', type: 'toggle', title: langStrings.settings.forceColorMode.title, desc: langStrings.settings.forceColorMode.desc })}
-                    ${await addButton({ key: 'forceWhichColorMode', type: 'select', title: langStrings.settings.forceWhichColorMode.title, desc: langStrings.settings.forceWhichColorMode.desc, values: lightOptions })}
+                    ${await addButton({ key: 'showReleaseNotes', type: 'toggle', title: lang.settings.showReleaseNotes.title, desc: lang.settings.showReleaseNotes.desc })}
+                    ${await addButton({ key: 'alertUpdates', type: 'toggle', title: lang.settings.alertUpdates.title, desc: lang.settings.alertUpdates.desc })}
+                    ${await addButton({ key: 'lang', type: 'select', title: lang.settings.lang.title, desc: lang.settings.lang.desc, values: langOptions })}
+                    ${await addButton({ key: 'year', type: 'select', title: lang.settings.year.title, desc: lang.settings.year.desc, values: yearOptions })}
+                    ${await addButton({ key: 'forceColorMode', type: 'toggle', title: lang.settings.forceColorMode.title, desc: lang.settings.forceColorMode.desc })}
+                    ${await addButton({ key: 'forceWhichColorMode', type: 'select', title: lang.settings.forceWhichColorMode.title, desc: lang.settings.forceWhichColorMode.desc, values: lightOptions })}
                 `;
 
 

@@ -1,3 +1,6 @@
+/// <reference path="ot-webmain.js" />
+
+
 // On load
 let gqlAction = async () => {
 
@@ -51,7 +54,7 @@ let gqlAction = async () => {
             // set data
             function setTabData(data) {
                 if (!data) return alert("Invalid data");
-                if (data.length < 1) return divInject.innerHTML = `<h4 style="max-width: 100%; width: 100%;">There doesn't seem to be anything here...</h4>`;
+                if (data.length < 1) return divInject.innerHTML = `<h4 style="max-width: 100%; width: 100%;" data-lang-target="no-results"></h4>`;
 
                 data.forEach(item => {
                     // href
@@ -77,15 +80,17 @@ let gqlAction = async () => {
                     let itemSubtext = "";
                     switch (itemType) {
                         case "stream":
-                            itemSubtext = `${item.viewersCount} viewers on ${item.broadcaster.displayName}`;
+                            itemSubtext = String(lang.page["viewers-watching"])
+                                .replace('&OLDTTV{VIEWERS}&', item.viewersCount)
+                                .replace('&OLDTTV{CHANNEL}&', item.broadcaster.displayName);
                         break;
 
                         case "video":
-                            itemSubtext = `${item.viewCount} views`;
+                            itemSubtext = String(lang.page["video-views"]).replace('&OLDTTV{VIEWS}&', item.viewCount);
                         break;
 
                         case "clip":
-                            itemSubtext = `Clipped by <a href="https://www.twitch.tv/${item.curator.login}">${item.curator.displayName}</a>`;
+                            itemSubtext = String(lang.page["clipped-by"]).replace('&OLDTTV{CREATOR}&', `<a href="https://www.twitch.tv/${item.curator.login}">${item.curator.displayName}</a>`);
                         break;
                     }
 
@@ -150,7 +155,7 @@ let gqlAction = async () => {
     } else {
 
         // Set page title
-        setTimeout(() => document.title = langStrings.page['all-categories-page-title'], 100);
+        setTimeout(() => document.title = `${String(lang.page['all-categories-page-title']) - Twitch}`, 100);
 
         // Get directory index data
         let directoryData = await gql.getDirectoryIndex(oauth, 30);
@@ -160,11 +165,11 @@ let gqlAction = async () => {
         const directorySorter = new SortBar(document.querySelector('[data-a-target="sort-bar"]'), [
             {
                 id: "categories",
-                textBeforeSelect: langStrings.page['sorted-by'],
+                textBeforeSelect: String(lang.page['sorted-by']),
                 selections: [
                     {
                         id: "recommended",
-                        displayName: langStrings.page['recommended'],
+                        displayName: String(lang.page['recommended']),
                         onSelect: async (d) => {
                             clearPageData();
                             setDirectoryPage(await gql.getDirectoryIndex(oauth, 30));
@@ -172,7 +177,7 @@ let gqlAction = async () => {
                     },
                     {
                         id: "viewers",
-                        displayName: langStrings.page['viewers'],
+                        displayName: String(lang.page['viewers']),
                         onSelect: async (d) => {
                             clearPageData();
                             setDirectoryPage(await gql.getDirectoryIndex(oauth, 30, true));
@@ -221,7 +226,7 @@ let gqlAction = async () => {
                         <p class="game-tags tw-font-size-7"></p>
                     </div>
                 `;
-                gameItem.querySelector('.game-tags').innerText = langStrings.page['game-viewers'].replace('&OLDTTV{GAME_VIEWERS}&', item.viewersCount);
+                gameItem.querySelector('.game-tags').textContent = lang.page['game-viewers'].replace('&OLDTTV{GAME_VIEWERS}&', item.viewersCount);
     
                 injectDiv.appendChild(gameItem);
             });
@@ -236,7 +241,7 @@ let gqlAction = async () => {
 let tempInit = setInterval(() => {
     if (
         gql
-        && langStrings.page['game-viewers']
+        && lang.page['game-viewers']
     ) {
         gqlAction();
         clearInterval(tempInit);

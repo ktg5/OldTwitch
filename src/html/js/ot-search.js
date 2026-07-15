@@ -1,3 +1,6 @@
+/// <reference path="ot-webmain.js" />
+
+
 setTimeout(async () => {
 
     let searchBar = document.querySelector('[data-a-target="nav-search-input"]');

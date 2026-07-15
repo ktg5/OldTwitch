@@ -1,5 +1,4 @@
 ## from my understanding,
-
 * all requests require a client id, which is either the user's id, or this: `kimne78kx3ncx6brgo4mv6wki5h1ko`
     * must be put in the headers as `client-id`
 * some requests such as following (and possibly more but i haven't checked) require a `client-integrity` header. these integrity tokens expire every 13 hours or when a token is used.

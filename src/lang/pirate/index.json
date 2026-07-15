@@ -1,3 +1,7 @@
 {
-    "displayName": "Pirate Talk"
+    "displayName": "Pirate Talk",
+    "authors": [
+        "ktg5"
+    ],
+    "version": "1.0.0"
 }
