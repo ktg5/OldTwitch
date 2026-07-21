@@ -6,7 +6,7 @@
     "newtwitch-btn": "View on New Twitch",
     "oldttv-btn": "OldTwitch",
     "login-btn": "Log In",
-    "signup-topnav-btn": "Sign Up",
+    "signup-btn": "Sign Up",
 
     "__comment": "Side Nav:",
     "followed-channels": "Followed Channels",
@@ -36,6 +36,8 @@
     "watchvod-btn": "Watch Full Video",
     "share-btn": "Share",
     "clipboard-btn": "Copy to Clipboard",
+    "clipboard-btn-press": "Copied to Clipboard",
+    "close-btn": "Close",
 
     "__comment": "Watch Page:",
     "current-views": "Current Viewers",
@@ -68,6 +70,8 @@
     "page-subs": "Subscriptions",
     "page-drops": "Drops & Inventory",
     "page-settings": "Settings",
+
+    "__comment": "Alerts:",
 
     "__comment": "Counts:",
     "game-viewers": "&OLDTTV{GAME_VIEWERS}& viewers",

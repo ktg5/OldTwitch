@@ -6,7 +6,7 @@
     "newtwitch-btn": "Look on ye New Twitch",
     "oldttv-btn": "OldTwitch",
     "login-btn": "Aboard",
-    "signup-topnav-btn": "Sign Ye Waver",
+    "signup-btn": "Sign Ye Waver",
 
     "__comment": "Side Nav:",
     "followed-channels": "Followed Crew",
@@ -36,6 +36,8 @@
     "watchvod-btn": "Watch Full Video",
     "share-btn": "Share",
     "clipboard-btn": "Copy to Clipboard",
+    "clipboard-btn-press": "Copied to Clipboard",
+    "close-btn": "Close",
 
     "__comment": "Watch Page:",
     "current-views": "Current Maties",

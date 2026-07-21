@@ -165,7 +165,8 @@ async function handlePageChange() {
         runtime.getURL(`html/js/ot-hermes.js`),
         runtime.getURL(`lib/twitch-v1.js`),
         runtime.getURL(`html/js/ot-webmain.js`),
-        runtime.getURL(`html/js/ot-search.js`)
+        runtime.getURL(`html/js/ot-search.js`),
+        runtime.getURL(`html/js/ot-alert.js`)
     ];
     switch (true) {
         case location.pathname == "/":
@@ -227,7 +228,7 @@ async function handlePageChange() {
         if (userConfig.year !== '2018') {
             let yearStyleDir = document.createElement('link');
             yearStyleDir.rel = 'stylesheet';
-            yearStyleDir.href = runtime.getURL(`html/css/${userConfig.year}.css`);
+            yearStyleDir.href = runtime.getURL(`html/css/themes/${userConfig.year}.css`);
             document.head.append(yearStyleDir);
         }
 

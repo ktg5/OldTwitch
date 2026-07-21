@@ -354,10 +354,10 @@ async function setIframeVideo (args) {
         let clipBoardButton = document.querySelector(`[data-share-button="clipboard"]`);
         clipBoardButton.addEventListener("click", () => {
             navigator.clipboard.writeText(location.href);
-            clipBoardButton.querySelector(`.tw-tooltip`).innerHTML = "Copied to clipboard";
+            clipBoardButton.querySelector(`.tw-tooltip`).innerHTML = lang.page["clipboard-btn-press"];
         });
         clipBoardButton.addEventListener("mouseout", () => {
-            clipBoardButton.querySelector(`.tw-tooltip`).innerHTML = "Copy to clipboard";
+            clipBoardButton.querySelector(`.tw-tooltip`).innerHTML = lang.page["clipboard-btn"];
         });
         // text boxes
         document.querySelector(`[data-share-text="embed-channel"] .tw-input`).value = `<iframe src="https://player.twitch.tv/?channel=${channelData.login}&parent=localhost" frameborder="0" allowfullscreen="true" scrolling="no" height="315" width="100%"></iframe>`;
@@ -593,6 +593,9 @@ async function setIframeVideo (args) {
                 let prevTheme = currentTheme;
                 const themeChangeInt = setInterval(() => {
                     if (prevTheme !== currentTheme) {
+                        themeClassCheck = '';
+                        themeClassReplace = '';
+
                         switch (currentTheme) {
                             // dark
                             case 1:
@@ -617,8 +620,8 @@ async function setIframeVideo (args) {
 }
                                 `;
 
-                                chatIframeDoc.head.classList.remove('tw-root--theme-light');
-                                chatIframeDoc.head.classList.add('tw-root--theme-dark');
+                                themeClassCheck = 'tw-root--theme-light';
+                                themeClassReplace = 'tw-root--theme-dark';
                             break;
                         
                             // light
@@ -644,10 +647,24 @@ async function setIframeVideo (args) {
 }
                                 `;
 
-                                chatIframeDoc.head.classList.remove('tw-root--theme-dark');
-                                chatIframeDoc.head.classList.add('tw-root--theme-light');
+                                themeClassCheck = 'tw-root--theme-dark';
+                                themeClassReplace = 'tw-root--theme-light';
                             break;
                         }
+
+
+                        const themeClassInt = setInterval(() => {
+                            const chatIfHtml = chatIframeDoc.querySelector('html');
+                            if (chatIfHtml.classList.contains(themeClassCheck)) {
+                                chatIfHtml.classList.remove(themeClassCheck);
+                                chatIfHtml.classList.add(themeClassReplace);
+                            }
+
+                            if (chatIfHtml.classList.contains(themeClassReplace)) {
+                                console.log('chat iframe classname replace complete');
+                                clearInterval(themeClassInt);
+                            }
+                        }, 500);
                     }
 
                     prevTheme = currentTheme;

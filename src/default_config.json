@@ -1,4 +1,6 @@
 {
+    "welcomeMsg": false,
+
     "year": "2018",
     "showReleaseNotes": true,
     "lang": "en",

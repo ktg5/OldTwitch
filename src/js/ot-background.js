@@ -19,6 +19,7 @@ else if (browser.browserAction) browser.browserAction.onClicked.addListener(() =
 
 // Extension socket listener
 runtime.onMessage.addListener((msg, sender, sendResponse) => {
+	console.log(msg.type);
 	switch (msg.type) {
 		case `fetch`:
 			fetch(msg.url, msg.options || {})

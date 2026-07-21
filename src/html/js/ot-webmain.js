@@ -1,3 +1,5 @@
+/// <reference path="ot-settings.js" />
+/// <reference path="ot-alert.js" />
 /// <reference path="ot-gql.d.ts" />
 
 
@@ -50,12 +52,13 @@ userConfigInit();
 
 // Listen for any updates to userconfig
 window.addEventListener('message', async (e) => {
-    if (e.data && e.data.type == 'ot-update-userconfig') {
-        if (userConfig.year !== e.data.config.year) {
-            userConfig = e.data.config;
-            console.log('Got userConfig update. Set userConfig to the latest we got.');
-            initCmdsForConfig();
-        }
+    if (
+        e.data !== null
+        && e.data.type == 'ot-update-userconfig'
+    ) {
+        userConfig = e.data.config;
+        console.log('Got userConfig update. Set userConfig to the latest we got.');
+        initCmdsForConfig();
     }
 });
 
@@ -237,46 +240,6 @@ async function textToHtml(text, element) {
 }
 
 
-// Make a notification on the top of the page
-function makeNotification(text, actions) {
-    document.querySelector('body').insertAdjacentHTML('afterbegin', `
-<div class="oldttv-notifi">
-    <div class="content">${text}</div>
-    <div class="actions"></div>
-</div>
-    `);
-    let notification = document.querySelector('.oldttv-notifi');
-    let actionsDiv = document.querySelector('.oldttv-notifi .actions');
-
-    if (actions) {
-        for (const action of actions) {
-            actionsDiv.innerHTML += `
-<div class="tw-mg-r-1">
-    <button class="tw-button" data-a-target="oldtwitch-notifi-${action.key}-button">
-        <span class="tw-button__text" data-a-target="tw-button-text">${action.text}</span>
-    </button>
-</div>
-            `;
-
-            document.querySelector(`[data-a-target="oldtwitch-notifi-${action.key}-button"]`).addEventListener('click', () => {
-                action.callback();
-                notification.remove();
-            });
-        }
-    }
-    actionsDiv.innerHTML += `
-<div class="tw-mg-r-1">
-    <button class="tw-button" data-a-target="oldtwitch-notifi-close-button">
-        <span class="tw-button__text" data-a-target="tw-button-text">Close</span>
-    </button>
-</div>
-    `;
-    document.querySelector('[data-a-target="oldtwitch-notifi-close-button"]').addEventListener('click', () => {
-        notification.remove();
-    });
-}
-
-
 // Formats a given number with a leading zero if it's less than 10
 function padZero(num) {
     return num < 10 ? '0' + num : num;
@@ -355,6 +318,58 @@ async function initCmdsForConfig() {
     await getBodyDiv();
 
 
+    // Make welcome msg
+    if (userConfig.welcomeMsg !== true) {
+        setWelcome = () => {
+            userConfig.welcomeMsg = true;
+            window.postMessage({
+                type: "ot-set-config",
+                config: userConfig
+            }, '*');
+        }
+
+
+        new Alert({
+            title: "Welcome to OldTwitch!",
+            desc: `
+            Thanks for installing my extension!\n\n
+            This is my second browser extension published, and much has been
+            learned since the first one. If you need to use the modern Twitch site at any point, you can click
+            on the "View on New Twitch" button. If you'd like to mess with the settings, use the "OldTwitch"
+            button, which will redirect you to the settings page.\n\n
+            If you step into a issue, please report it to the GitHub page! Which can be found in the settings
+            page.\n\n
+            Thanks once again.
+            `,
+            actions: [
+                {
+                    key: "github",
+                    text: "GitHub",
+                    callback: () => {
+                        setWelcome();
+                        location.href = "https://github.com/ktg5/OldTwitch";
+                    }
+                },
+                {
+                    key: "follow",
+                    text: "Follow Me!",
+                    callback: () => {
+                        setWelcome();
+                        location.pathname = '/ktg5_';
+                    }
+                },
+                {
+                    key: "close",
+                    text: "Close",
+                    callback: () => {
+                        setWelcome();
+                    }
+                }
+            ]
+        });
+    }
+
+
     // Check for dark theme
     if (
         (
@@ -387,6 +402,7 @@ async function initCmdsForConfig() {
         lang.settings = await settingsLangJson.json();
 
         console.log('current lang: ', lang);
+        setLang();
     } else {
         // Reset config--something isn't right here
     }
@@ -412,6 +428,7 @@ async function addGlobals() {
             currentDevBuild = currentVersion.split("dev")[1].split(":")[0];
             currentVersion = currentVersion.split(":").pop();
         }
+
         // Pull latest version from GitHub files
         let latestVersion = await fetch(`https://raw.githubusercontent.com/ktg5/OldTwitch/refs/heads/main/src/ver.txt`).then(res => res.text());
         // console.log("latestVersion: ", latestVersion);
@@ -422,12 +439,15 @@ async function addGlobals() {
             latestDevBuild = latestVersion.split("dev")[1].split(":")[0];
             latestVersion = latestVersion.split(":").pop();
         }
+
+
         // Basic checking
         let latestParts = latestVersion.split(".").map(Number);
         let currentParts = currentVersion.split(".").map(Number);
         if (
             latestVersion
-            && currentVersion) {
+            && currentVersion
+        ) {
             // Check dev versions if they exist
             if (isDev) {
                 // First check if latestVersion is a dev build & has a newer dev version
@@ -436,29 +456,47 @@ async function addGlobals() {
                     && latestDevBuild > currentDevBuild
                 ) updateNotification(`older dev build: latest: ${latestDevBuild}, current: ${currentDevBuild}\nlatestVersion: dev${latestDevBuild}:${latestVersion}`);
             }
+
             // Check all version parts one by one
+            let versionsMatch = true;
+            console.log(latestParts);
             for (let i = 0; i < latestParts.length; i++) {
                 // console.log(latestParts[i] > currentParts[i], currentParts[i] == undefined);
 
                 // If the current part is greater than the latest part, break
-                if (latestParts[i] < currentParts[i]) break;
+                console.log(latestParts[i] , currentParts[i]);
+                if (
+                    latestParts[i] < currentParts[i]
+                    && latestParts[i] !== currentParts[i]
+                ) {
+                    versionsMatch = false;
+                    break;
+                }
 
                 // Check each version part for any differences or missing parts
                 if (
                     latestParts[i] > currentParts[i]
                     || currentParts[i] == undefined
                 ) {
+                    versionsMatch = false;
                     updateNotification(`older version: latest: ${latestVersion}, current: ${currentVersion}`);
                     break;
                 }
             }
+
+            // Do another dev check since version is either above or same
+            if (
+                isDev
+                && !latestIsDev
+                && versionsMatch
+            ) updateNotification(`newer version is not a dev build: latest: ${latestVersion}, current: ${currentVersion}`);
         }
 
 
         // Show update notification
         function updateNotification(debug) {
             if (debug) console.info(`REASON FOR UPDATE NOTICE: `, debug);
-            makeNotification(`The current version of OldTwitch you're on is out-of-date. Click the "Update" button to go to the latest update.`, [
+            new BannerAlert(`The current version of OldTwitch you're on is out-of-date. Click the "Update" button to go to the latest update.`, [
                 {
                     key: "update",
                     text: "Update",
@@ -919,6 +957,15 @@ function popupAction(args) {
             // Vars
             ifDoc = popupWindowIF.contentDocument;
             ifWindow = popupWindowIF.contentWindow;
+            let ifCheck = setInterval(() => {
+                if (ifDoc === null) ifDoc = popupWindowIF.contentDocument;
+                if (ifWindow === null) ifWindow = popupWindowIF.contentWindow;
+
+                if (
+                    ifDoc !== null
+                    && ifWindow !== null
+                ) clearInterval(ifCheck);
+            }, 100);
 
             ifLoaded = true;
             // Swap form button stuff
@@ -933,11 +980,11 @@ function popupAction(args) {
                         continueFunc();
                         clearInterval(tempInt);
                     }
-                }, 10);
+                }, 100);
 
                 // Do logic depending on what form
                 function continueFunc() {
-                    ifDoc.querySelector('.ifDSiz').addEventListener('click', () => { initSwapButtons() });
+                    ifDoc.querySelector('.fQWTss').addEventListener('click', () => { initSwapButtons() });
                 }
             }
 
@@ -1213,12 +1260,14 @@ class SortBar {
 
 // Detection for HTML changes
 const HTMLChangeObserver = new MutationObserver((mutations) => {
+    // DEBUG:
+    // console.log(mutations);
     for (const mutation of mutations) {
         // Ignore changes that happen inside iframes
         if (mutation.target.closest?.("iframe")) continue;
         if (mutation.target.closest?.(".channel-info-bar")) continue;
+        if (mutation.target.closest?.(".clr-picker")) continue;
     
-        // console.log('html change! setting lang again');
         setLang();
     }
 });
@@ -1242,7 +1291,8 @@ function setLang() {
     for (const key in lang.page) {
         if (Object.hasOwnProperty.call(lang.page, key)) {
             // Find the element within the key
-            let targetDiv = document.querySelector(`[data-lang-target="${key}"]`);
+            let targetDivs = document.querySelectorAll(`[data-lang-target="${key}"]`);
+            // DEBUG:
             // console.log('got lang key: ', key);
 
             // See if there's a thing with information we need to replace with
@@ -1256,7 +1306,10 @@ function setLang() {
                 }
             );
 
-            if (targetDiv) targetDiv.textContent = output;
+            if (
+                targetDivs
+                && targetDivs.length > 0
+            ) targetDivs.forEach((div) => div.textContent = output);
         }
     }
     startHTMLChangeObs();

@@ -13,7 +13,7 @@
     },
     "year": {
         "title": "Year Theme",
-        "desc": "This option is here for development reasons. If you make a issue about this, I will close it without comment."
+        "desc": "Sets a year theme onto all OldTwitch pages. Must reload page to see changes."
     },
     "forceColorMode": {
         "title": "Force Color Mode",

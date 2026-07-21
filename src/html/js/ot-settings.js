@@ -1,5 +1,5 @@
 var def_ot_config;
-extensionLocation = document.querySelector('body').getAttribute('oldttv-url');
+var extensionLocation = document.querySelector('body').getAttribute('oldttv-url');
   
 function doSettings() {
     return new Promise((resolve, reject) => {
@@ -29,17 +29,19 @@ function doSettings() {
                 let langOptions = '';
                 let langIndexFetch = await demand(`${extensionLocation}/lang/index.json`);
                 if (langIndexFetch.ok) {
-                    let langIndex = await langIndexFetch.json();
+                    let langIndex = (await langIndexFetch.json()).index;
+
                     // For each language defined in the lang index file, get folder files
-                    for (let i = 0; i < langIndex.index.length; i++) {
-                        const langName = langIndex.index[i];
+                    for (let i = 0; i < langIndex.length; i++) {
+                        const langName = langIndex[i];
                         // Get lang folder
-                        let langFolder = `${extensionLocation}/lang/${langName}`
-                        let langFetch = await demand(`${langFolder}/index.json`)
+                        let langFolder = `${extensionLocation}/lang/${langName}`;
+                        let langFetch = await demand(`${langFolder}/index.json`);
 
                         // Make sure all the files required for each language are here
-                        if (langFetch.ok) langOptionsJson[lang] = (await langFetch.json()).displayName;
-                        else {
+                        if (langFetch.ok) {
+                            langOptionsJson[langName] = (await langFetch.json()).displayName;
+                        } else {
                             console.error(`OldTwitch Language Fetch Error: The language file(s) for \"${lang}\" couldn't be found. Fetch data: `, langFetch);
                             alert(`Error when getting the list of languages, please check the developer console. If you're not developing a language for OldTwitch, report this issue onto the GitHub please with the console log!`)
                         }
