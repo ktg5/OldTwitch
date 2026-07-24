@@ -31,6 +31,7 @@ body {
         width: 800px;
         height: 600px;
         background: #222;
+        color: #ddd;
 
         .img {
             position: relative;

@@ -16,6 +16,7 @@ async function setIframeVideo (args) {
     let chatIframe = document.querySelector(".chat-iframe");
     let playerRoot = document.querySelector(`[data-target="main-root"]`);
 
+
     // Add data to page that's for every path
     async function notFirstInit() {
         // name & pfp
@@ -289,15 +290,38 @@ async function setIframeVideo (args) {
             document.querySelector(`[data-a-target="user-channel-header-item"]`).classList.add("channel-header__user--selected");
             playerRoot.classList.remove("player-popout");
             sidePageRoot.classList.add("tw-hide");
-            location.hash = "";
+
+            // reset location path
+            const url = new URL(window.location.toString());
+            let pathSplit = url.pathname.split('/');
+            if (pathSplit.length >= 3) {
+                // make a new path split that goes to two instead of whatever we currently have
+                const pastPathSplit = [...pathSplit];
+                pathSplit = [];
+                const maxPath = 2;
+                let i = 0;
+                pastPathSplit.forEach((path) => {
+                    if (i < maxPath) {
+                        pathSplit.push(path);
+                        i++;
+                    }
+                });
+                // set pathname back to url
+                url.pathname = pathSplit.toString().replace(',', '/');
+            }
+            history.pushState({}, '', url);
+            history.replaceState({}, '', url);
         }
 
         
         // Channel tabs
         if (args.type == "stream") {
-            // Open tab if location.hash contains a `channel-header-item`
-            if (location.hash.length > 0) {
-                let tab = location.hash.split("#")[1];
+            // Open tab if location.pathname contains a `channel-header-item`
+            const url = new URL(window.location.toString());
+            const pathSplit = url.pathname.split('/');
+
+            if (pathSplit.length >= 3) {
+                let tab = pathSplit[2];
                 let elmnt = document.querySelector(`[data-a-target="${tab}-channel-header-item"]`);
 
                 if (elmnt) loadStreamerSidePage({elmnt: elmnt, tab: tab});
@@ -308,25 +332,19 @@ async function setIframeVideo (args) {
                 let closestTarget = e.target.closest(`[data-target="channel-header-item"]`);
     
                 if (closestTarget) {
+                    e.preventDefault();
+
                     // if the clicked tab is the user tab
                     if (closestTarget.getAttribute("data-a-target") == "user-channel-header-item") goToMain();
                     // else if a normal tab
                     else if (closestTarget.href) {
                         loadStreamerSidePage({elmnt: closestTarget, tab: closestTarget.getAttribute('data-a-target').split('-channel-header-item')[0]});
+                        // Add URL
+                        const url = new URL(window.location.toString());
+                        url.href = closestTarget.href;
+                        history.pushState({}, '', url);
+                        history.replaceState({}, '', url);
                     }
-                }
-            });
-        } else {
-            // If not on the channel's page (aka a clip or vod of their own)
-            document.addEventListener("click", async (e) => {
-                let closestTarget = e.target.closest(`[data-target="channel-header-item"]`);
-
-                if (closestTarget) {
-                    setTimeout(() => {
-                        // Go to their channel w/ the location.hash that'll be used to open the channel tab automatically
-                        // See the stuff above
-                        location.href = `https://twitch.tv/${channelData.login}${location.hash ? `${location.hash}` : ""}`;
-                    }, 10);
                 }
             });
         }
@@ -363,6 +381,7 @@ async function setIframeVideo (args) {
         document.querySelector(`[data-share-text="embed-channel"] .tw-input`).value = `<iframe src="https://player.twitch.tv/?channel=${channelData.login}&parent=localhost" frameborder="0" allowfullscreen="true" scrolling="no" height="315" width="100%"></iframe>`;
         document.querySelector(`[data-share-text="embed-chat"] .tw-input`).value = `<iframe src="https://www.twitch.tv/embed/${channelData.login}/chat?parent=localhost" frameborder="0" scrolling="no" height="315" width="100%"></iframe>`;
     }
+
 
     const totalViewsDiv = document.querySelector('[data-a-target="total-views-count"]');
     const timeDiv = document.querySelector(`[data-a-target="time-count"]`);
@@ -406,8 +425,8 @@ async function setIframeVideo (args) {
                 console.log("videosData: ", videosData);
 
                 // set streamer info
-                function addStremerInfo(funcargs) {
-                    if (funcargs == null || !funcargs.includes("not-first-init")) {
+                function addStremerInfo(funargs) {
+                    if (funargs == null || !funargs.includes("not-first-init")) {
                         // defaults
                         notFirstInit();
 
@@ -473,7 +492,7 @@ async function setIframeVideo (args) {
 
                         
                         // clock
-                        if (funcargs == null || !funcargs.includes("not-first-init")) {
+                        if (funargs == null || !funargs.includes("not-first-init")) {
                             const clockStat = timeDiv.querySelector('.tw-stat__value');
                             const startedAt = new Date(channelData.stream.startedAt);
                             let currentTime = new Date();
@@ -494,7 +513,6 @@ async function setIframeVideo (args) {
                         timeDiv.parentElement.classList.add("tw-hide");
                     }
                     if (videosData.length > 0) document.querySelector(`[data-a-target="videos-channel-header-item"] .channel-header__item-count span`).innerHTML = videosData.length;
-
                 }
                 addStremerInfo();
 
@@ -590,7 +608,7 @@ async function setIframeVideo (args) {
 
 
                 // Check for whether if the theme has been changed
-                let prevTheme = currentTheme;
+                let prevTheme;
                 const themeChangeInt = setInterval(() => {
                     if (prevTheme !== currentTheme) {
                         themeClassCheck = '';
@@ -836,6 +854,14 @@ async function setIframeVideo (args) {
             }
         break;
     }
+
+
+    // Set channel headers
+    const channelHeaders = document.querySelectorAll('[data-target="channel-header-item"]');
+    channelHeaders.forEach((channelHeader) => {
+        const channelName = location.pathname.split('/')[1];
+        if (channelHeader.href) channelHeader.href = channelHeader.href.replace('__CHANNEL__', channelName);
+    });
 }
 
 // Check pathname

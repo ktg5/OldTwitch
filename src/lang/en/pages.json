@@ -72,6 +72,10 @@
     "page-settings": "Settings",
 
     "__comment": "Alerts:",
+    "update-alert": "The current version of OldTwitch you're on is out-of-date. Click the \"Update\" button to go to the latest update.",
+    "update-alert-btn": "Update",
+    "newver-alert-title": "OldTwitch has Updated!",
+    "newver-alert-desc": "Release notes (only in English):",
 
     "__comment": "Counts:",
     "game-viewers": "&OLDTTV{GAME_VIEWERS}& viewers",

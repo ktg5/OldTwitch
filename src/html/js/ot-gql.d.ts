@@ -1,3 +1,4 @@
+declare const _exports: typeof TwitchGql;
 declare class TwitchGql {
     constructor(clientid: string, oauth: any);
     clientid: string;
@@ -61,8 +62,8 @@ declare class TwitchGql {
      * Fetches the home page data from the Twitch GraphQL API.
      *
      * @param {string} [lang="en"] - The language in which to fetch the data. Defaults to `"en"`
-     * @param {number} streamsAmount - Optional. The number of streams to fetch. Maximum is 10 within GQL. Defaults to 6 if not provided.
-     * @param {number} shelvesItemAmount - Optional. The number of streams to fetch. Defaults to 12 if not provided.
+     * @param {number} [streamsAmount] - Optional. The number of streams to fetch. Maximum is 10 within GQL. Defaults to 6 if not provided.
+     * @param {number} [shelvesItemAmount] - Optional. The number of streams to fetch. Defaults to 12 if not provided.
      * @returns {Promise<Object>} A promise that resolves to an object containing featured streams and shelf data.
      *                            Logs any errors if encountered during the fetch.
      */
@@ -110,21 +111,6 @@ declare class TwitchGql {
      * Fetches a channel's data from twitch.
      * @param {string} name - The name of the channel to fetch.
      * @returns {Promise<Object>} A promise that resolves with the channel's data.
-     * The data object contains the following properties:
-     * - live: A boolean indicating if the channel is live.
-     * - ...all user data from Twitch.
-     * - watchParty: The channel's watch party data.
-     * - chatRules: The channel's chat rules.
-     * - description: The channel's description.
-     * - primaryColor: The channel's primary color.
-     * - followerCount: The channel's follower count.
-     * - roles: The channel's roles.
-     * - schedule: The channel's schedule.
-     * - primaryTeam: The channel's primary team.
-     * - panels: The channel's panels.
-     *
-     * If the channel is live, the data object also contains the following properties:
-     * - broadcastSettings.game: The game that the channel is streaming.
      */
     getChannel(name: string): Promise<any>;
     getChannelSimple(name: any): Promise<any>;

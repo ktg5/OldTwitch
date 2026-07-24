@@ -191,6 +191,7 @@ async function handlePageChange() {
 
         default:
             injectTarget = runtime.getURL(`${htmlDir}/watch.html`);
+            jsSrcs.push(runtime.getURL('lib/marked.min.js'));
             jsSrcs.push(runtime.getURL('html/js/ot-watch.js'));
         break;
     }

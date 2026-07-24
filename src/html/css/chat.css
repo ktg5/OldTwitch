@@ -87,15 +87,9 @@
 
 
 .ScCoreButton-sc-ocjdkq-0 {
-    display: -webkit-inline-box;
-    display: -ms-inline-flexbox;
     display: inline-flex;
     position: relative;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
     align-items: center;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
     justify-content: center;
     outline: none;
     font-size: 1.2rem;
@@ -104,8 +98,6 @@
     white-space: nowrap;
     vertical-align: middle;
     -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
     border-radius: 0 !important;
 }
@@ -129,10 +121,19 @@
     border-radius: 2px !important;
 }
 
+.tw-root--theme-light [data-test-selector="chat-viewer-list"] svg {
+    fill: #323133;
+}
+
 [data-test-selector="community-points-summary"] .Layout-sc-1xcs6mc-0 span,
-.Layout-sc-1xcs6mc-0.iHgHKM button span
+.Layout-sc-1xcs6mc-0.iHgHKM button span,
+.dgVYJo
 {
-    color: var(--color-fill-current) !important;
+    color: #fff !important;
+}
+
+[data-test-selector="community-points-summary"] .bdoMMZ svg {
+    fill: #fff;
 }
 
 button[data-test-selector="chat-viewer-list"], button[data-test-selector="chat-viewer-list"] svg,

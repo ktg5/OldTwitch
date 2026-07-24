@@ -7,7 +7,7 @@ First things first, make a fork of OldTwitch from the main page of the repo & do
 ```bash
 git clone https://github.com/[GITHUB-USER]/OldTwitch.git
 ```
-Once done downloading, open the `OldTwitch` folder & navigate to the `lang` folder. If your language does not exist, go to "**Creating a new language folder**". Else, go to "**Editing a language folder**".
+Once done downloading, open the `OldTwitch` folder & navigate to the `src/lang` folder. If your language does not exist, go to "**Creating a new language folder**". Else, go to "**Editing a language folder**".
 
 To load the extension from your forked version, you can use a blank profile on something like Chromium to load the extension for testing your changes.
 

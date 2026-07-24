@@ -268,14 +268,15 @@ function getDateDiff(d1, d2) {
 
 // Turn text into Twitch markdown
 function twitchMarkdown(string) {
-    // Check for HTML code, if detected--returned nothing
+    // Check for HTML code, if detected--return nothing
     if (/<[a-zA-Z/][\s\S]*?>/.test(string)) return "";
 
-
-    // To be added...
-
-
-    return string;
+    let markedString = String(string);
+    // Fix headings
+    markedString = markedString.replace(/^(#{1,6})([^#\s])/gm, '$1 $2');
+    // Run marked.parse()
+    markedString = marked.parse(markedString);
+    return markedString;
 }
 
 
@@ -343,11 +344,11 @@ async function initCmdsForConfig() {
             `,
             actions: [
                 {
-                    key: "github",
-                    text: "GitHub",
+                    key: "help",
+                    text: "Help with Translation!",
                     callback: () => {
                         setWelcome();
-                        location.href = "https://github.com/ktg5/OldTwitch";
+                        location.href = "https://github.com/ktg5/OldTwitch/tree/main/src/lang#readme";
                     }
                 },
                 {
@@ -367,6 +368,19 @@ async function initCmdsForConfig() {
                 }
             ]
         });
+    } 
+    // Update msgs
+    if (
+        userConfig.alertUpdates === true
+        && userConfig.welcomeMsg !== true
+    ) {
+        const storageKey = 'oldttv-prevver'
+        const prevVer = localStorage.getItem(storageKey);
+
+        new Alert({
+            title: lang.page['newver-alert-title'],
+            desc: lang.page['newver-alert-desc']
+        })
     }
 
 
@@ -459,12 +473,10 @@ async function addGlobals() {
 
             // Check all version parts one by one
             let versionsMatch = true;
-            console.log(latestParts);
+            // console.log(latestParts);
             for (let i = 0; i < latestParts.length; i++) {
-                // console.log(latestParts[i] > currentParts[i], currentParts[i] == undefined);
-
                 // If the current part is greater than the latest part, break
-                console.log(latestParts[i] , currentParts[i]);
+                // console.log(latestParts[i] , currentParts[i]);
                 if (
                     latestParts[i] < currentParts[i]
                     && latestParts[i] !== currentParts[i]
@@ -496,10 +508,10 @@ async function addGlobals() {
         // Show update notification
         function updateNotification(debug) {
             if (debug) console.info(`REASON FOR UPDATE NOTICE: `, debug);
-            new BannerAlert(`The current version of OldTwitch you're on is out-of-date. Click the "Update" button to go to the latest update.`, [
+            new BannerAlert(lang.page['update-alert'], [
                 {
                     key: "update",
-                    text: "Update",
+                    text: lang.page['update-alert-btn'],
                     action: () => location.href = "https://github.com/ktg5/oldttv/releases/latest"
                 }
             ]);
@@ -1045,9 +1057,9 @@ function initBalloons() {
     document.querySelectorAll('[data-toggle-balloon-id]').forEach(balloonParent => {
         if (!balloonParent.children.length >= 2) return;
         let balloonToggler = balloonParent.children[0];
-        if (balloonParent.classList.contains('user-info')) console.log(balloonParent);
+        // if (balloonParent.classList.contains('user-info')) console.log(balloonParent);
         if (balloonToggler.tagName !== "BUTTON") balloonToggler = balloonParent.children[0].querySelectorAll('button')[0];
-        if (balloonParent.classList.contains('user-info')) console.log(balloonToggler);
+        // if (balloonParent.classList.contains('user-info')) console.log(balloonToggler);
         const balloon = balloonParent.children[1];
 
         if (

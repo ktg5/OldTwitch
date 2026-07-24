@@ -1,3 +1,6 @@
+const gqlUrl = "https://gql.twitch.tv";
+
+
 class TwitchGql {
     clientid = "";
     oauth = "";
@@ -11,6 +14,10 @@ class TwitchGql {
         this.oauth = oauth;
 
         console.log('ot-gql: Twitch GQL instance made.');
+
+        this.defHeaders = {
+            "client-id": this.clientid
+        }
     }
 
 
@@ -28,10 +35,10 @@ class TwitchGql {
         if (oauth && !this.oauth) this.oauth = oauth;
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/integrity", {
+            await demand(`${gqlUrl}/integrity`, {
                 "headers": {
+                    ...this.defHeaders,
                     "authorization": `OAuth ${oauth}`,
-                    "client-id": this.clientid,
                     "x-device-id": deviceId,
                 },
                 "body": null,
@@ -64,10 +71,10 @@ class TwitchGql {
         if (oauth && !this.oauth) this.oauth = oauth;
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
+                    ...this.defHeaders,
                     "authorization": `OAuth ${oauth}`,
-                    "client-id": this.clientid,
                     "x-device-id": "0",
                 },
                 body: JSON.stringify({
@@ -110,10 +117,10 @@ class TwitchGql {
                 await this.getClientInteg(oauth);
             }
 
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
                     "authorization": `OAuth ${oauth}`,
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                     "client-integrity": this.integToken.token,
                     "x-device-id": deviceId,
                 },
@@ -161,10 +168,10 @@ class TwitchGql {
         if (oauth && !this.oauth) this.oauth = oauth;
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
                     "authorization": `OAuth ${oauth}`,
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                     "x-device-id": deviceId,
                 },
                 body: JSON.stringify({
@@ -206,10 +213,10 @@ class TwitchGql {
         if (oauth && !this.oauth) this.oauth = oauth;
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
                     "authorization": `OAuth ${oauth}`,
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                     "x-device-id": deviceId,
                 },
                 body: JSON.stringify({
@@ -253,10 +260,10 @@ class TwitchGql {
         if (oauth && !this.oauth) this.oauth = oauth;
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
                     "authorization": `OAuth ${oauth}`,
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                     "x-device-id": deviceId,
                 },
                 body: JSON.stringify({
@@ -310,9 +317,9 @@ class TwitchGql {
         }
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                     "x-device-id": "0"
                 },
                 body: JSON.stringify([
@@ -417,7 +424,7 @@ class TwitchGql {
      */
     async getDirectoryIndex(oauth, limit, byViewers) {
         let Headers = {
-            "client-id": this.clientid,
+            ...this.defHeaders,
             "x-device-id": "0"
         }
         if (this.oauth != undefined) oauth = this.oauth;
@@ -432,7 +439,7 @@ class TwitchGql {
         }
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: Headers,
                 body: JSON.stringify({
                     "operationName": "BrowsePage_AllDirectories",
@@ -489,7 +496,7 @@ class TwitchGql {
         }
 
         let Headers = {
-            "client-id": this.clientid,
+            ...this.defHeaders,
             "x-device-id": "0"
         }
         if (this.oauth != undefined) oauth = this.oauth;
@@ -539,7 +546,7 @@ class TwitchGql {
         }
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: Headers,
                 body: JSON.stringify(Body),
                 method: "POST"
@@ -579,7 +586,7 @@ class TwitchGql {
         if (!string) return console.error(`"string" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
                     "client-id": this.clientid
                 },
@@ -622,7 +629,7 @@ class TwitchGql {
         if (!string) return console.error(`"string" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
                     "client-id": this.clientid
                 },
@@ -683,29 +690,14 @@ class TwitchGql {
      * Fetches a channel's data from twitch.
      * @param {string} name - The name of the channel to fetch.
      * @returns {Promise<Object>} A promise that resolves with the channel's data.
-     * The data object contains the following properties:
-     * - live: A boolean indicating if the channel is live.
-     * - ...all user data from Twitch.
-     * - watchParty: The channel's watch party data.
-     * - chatRules: The channel's chat rules.
-     * - description: The channel's description.
-     * - primaryColor: The channel's primary color.
-     * - followerCount: The channel's follower count.
-     * - roles: The channel's roles.
-     * - schedule: The channel's schedule.
-     * - primaryTeam: The channel's primary team.
-     * - panels: The channel's panels.
-     * 
-     * If the channel is live, the data object also contains the following properties:
-     * - broadcastSettings.game: The game that the channel is streaming.
      */
     async getChannel(name) {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {   
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify([
                     {
@@ -799,14 +791,15 @@ class TwitchGql {
                         roles: data[3].data.user.roles,
                         schedule: data[3].data.user.channel.schedule,
                         primaryTeam: data[3].data.user.primaryTeam,
-                        lastBroadcast: data[4].data.user.lastBroadcast
+                        lastBroadcast: data[4].data.user.lastBroadcast,
+                        offlineImageURL: await this.getChannelOfflineImg(name)
                     };
                     if (cleanData.stream) cleanData.stream.startedAt = data[4].data.user.stream.createdAt;
                     if (gameSlug) cleanData.broadcastSettings.game = await this.getCategory(gameSlug);
 
-                    await demand("https://gql.twitch.tv/gql", {
+                    await demand(`${gqlUrl}/gql`, {
                         headers: {
-                            "client-id": this.clientid,
+                            ...this.defHeaders,
                         },
                         body: JSON.stringify({
                             "operationName": "ChannelPanels",
@@ -841,9 +834,9 @@ class TwitchGql {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify([
                     {
@@ -970,7 +963,7 @@ class TwitchGql {
         }
 
         return new Promise(async (res, rej) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
                     "client-id": this.clientid
                 },
@@ -1007,9 +1000,9 @@ class TwitchGql {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify({
                     "operationName": "SupportPanelCheckoutService",
@@ -1051,6 +1044,41 @@ class TwitchGql {
     }
 
     /**
+     * @description Gets the image link for a channel's offline image
+     * @param {string} name - The name of the channel.
+     * @returns {Promise<Object>}
+     */
+    async getChannelOfflineImg(name) {
+        if (!name) return console.error(`"name" is required but returned null.`);
+
+        return new Promise(async (resolve, reject) => {
+            await demand(`${gqlUrl}/gql`, {
+                headers: {
+                    ...this.defHeaders,
+                },
+                body: JSON.stringify({
+                    "operationName": "OfflineBannerOverlay",
+                    "variables": {
+                        "login": name,
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "sha256Hash": "64116eb1e0e2818e8d7a8afb2fa1e9a2fac5b2d1b5e8300b39209aa414f2e577",
+                            "version": 1
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+                let data = await rawData.json();
+
+                if (data.errors) resolve({ errors: data.errors });
+                else resolve(data.data.user.offlineImageURL);
+            });
+        });
+    }
+
+    /**
      * @description Gets the metadata of a given stream.
      * @param {string} name - The name of the channel.
      * @returns {Promise<Object|null>} A promise that resolves with the stream metadata if the stream is live, otherwise resolves to `null`.
@@ -1059,9 +1087,9 @@ class TwitchGql {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify({
                     "operationName": "VideoPlayerStreamMetadata",
@@ -1104,9 +1132,9 @@ class TwitchGql {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify({
                     "operationName": "VideoPreviewOverlay",
@@ -1145,9 +1173,9 @@ class TwitchGql {
         if (!name) return console.error(`"name" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify({
                     "operationName": "StreamRefetchManager",
@@ -1196,10 +1224,10 @@ class TwitchGql {
                 await this.getClientInteg(oauth);
             }
 
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
+                    ...this.defHeaders,
                     "authorization": `OAuth ${oauth}`,
-                    "client-id": this.clientid,
                     "client-integrity": this.integToken.token,
                     "x-device-id": deviceId,
                 },
@@ -1250,10 +1278,10 @@ class TwitchGql {
                 await this.getClientInteg(oauth);
             }
 
-            await demand("https://gql.twitch.tv/gql", {
+            await demand(`${gqlUrl}/gql`, {
                 headers: {
+                    ...this.defHeaders,
                     "authorization": `OAuth ${oauth}`,
-                    "client-id": this.clientid,
                     "client-integrity": this.integToken.token,
                     "x-device-id": "0",
                 },
@@ -1293,9 +1321,9 @@ class TwitchGql {
         if (!query) return console.error(`"query" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            demand("https://gql.twitch.tv/gql", {
+            demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify({
                     "operationName": "SearchResultsPage_SearchResults",
@@ -1373,9 +1401,9 @@ class TwitchGql {
         }
 
         return new Promise(async (resolve, reject) => {
-            demand("https://gql.twitch.tv/gql", {
+            demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify([
                     {
@@ -1501,9 +1529,9 @@ class TwitchGql {
         if (!slug) return console.error(`"slug" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            demand("https://gql.twitch.tv/gql", {
+            demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify({
                     "operationName": "Directory_DirectoryBanner",
@@ -1559,9 +1587,9 @@ class TwitchGql {
         }
 
         return new Promise(async (resolve, reject) => {
-            demand("https://gql.twitch.tv/gql", {
+            demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify({
                     "operationName": "DirectoryPage_Game",
@@ -1621,9 +1649,9 @@ class TwitchGql {
         if (!Array.isArray(tags)) tags = [tags]; 
 
         return new Promise((resolve, reject) => {
-            demand("https://gql.twitch.tv/gql", {
+            demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify({
                     "operationName": "BrowsePage_Popular",
@@ -1671,9 +1699,9 @@ class TwitchGql {
         if (!id) return console.error(`"id" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            demand("https://gql.twitch.tv/gql", {
+            demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify({
                     "operationName": "AdRequestHandling",
@@ -1695,9 +1723,9 @@ class TwitchGql {
                 method: "POST"
             }).then(async rawData => {
                 let data = await rawData.json();
-                if (data.data.video) await demand("https://gql.twitch.tv/gql", {
+                if (data.data.video) await demand(`${gqlUrl}/gql`, {
                     headers: {
-                        "client-id": this.clientid,
+                        ...this.defHeaders,
                     },
                     body: JSON.stringify({
                         "operationName": "VideoMetadata",
@@ -1736,9 +1764,9 @@ class TwitchGql {
         if (!id) return console.error(`"id" is required but returned null.`);
 
         return new Promise((resolve, reject) => {
-            demand("https://gql.twitch.tv/gql", {
+            demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify({
                     "operationName": "VideoCommentsByOffsetOrCursor",
@@ -1772,9 +1800,9 @@ class TwitchGql {
         if (!slug) return console.error(`"slug" is required but returned null.`);
 
         return new Promise(async (resolve, reject) => {
-            demand("https://gql.twitch.tv/gql", {
+            demand(`${gqlUrl}/gql`, {
                 headers: {
-                    "client-id": this.clientid,
+                    ...this.defHeaders,
                 },
                 body: JSON.stringify({
                     "operationName": "ShareClipRenderStatus",
