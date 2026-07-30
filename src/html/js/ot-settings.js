@@ -1,6 +1,6 @@
 var def_ot_config;
 var extensionLocation = document.querySelector('body').getAttribute('oldttv-url');
-  
+
 function doSettings() {
     return new Promise((resolve, reject) => {
         let firstInit = setInterval(async () => {

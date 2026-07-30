@@ -28,6 +28,11 @@ Alright, now let's give the language some data needed to display on OldTwitch.
 Great! Need you gotta do the actual translation stuff.
 
 ## Editing a language folder
+### Keep in mind while editing:
+* Keep things as short as possible--don't want to fill up the whole page with text.
+* Some strings might contain strings that get replaced with values by OldTwitch's scripting, like how `&OLDTTV{STREAMER}&` within `"streamer-channels"` gets replaced with the streamer's name. Make these in your translation and move them around your text, but don't change any characters.
+* The `__comment` values are there just for those trying to find the correct category of text when looking at the file. You may edit this value, but it will not be displayed onto any page.
+
 ### `index.json`
 * This is where basic details about the language are--display-name within settings, author names, and a version number.
 * When making changes to a language, make sure to add yourself to the list of authors!
@@ -35,7 +40,6 @@ Great! Need you gotta do the actual translation stuff.
 
 ### `pages.json`
 * Contains text for anything & everything on every OldTwitch page.
-* The `__comment` values are there just for those trying to find the correct category of text when looking at the file. You may edit this, but it will not be displayed onto any page.
 
 ### `settings.json`
 * Each option has a object of two variables with strings (aka text). Those variables being `title` & `desc`. Edit the string values of each option.

@@ -1365,18 +1365,27 @@ class TwitchGql {
     /**
      * @description Fetches the category information, streamers, videos and clips for a given category slug.
      * @param {string} slug - The slug of the category to fetch information for.
-     * @param {Object} [args] - Optional. An object containing the following optional properties:
-     * - streamSort: The sort type of the streamers. Defaults to `RELEVANCE`. Other values are `VIEWER_COUNT`, `VIEWER_COUNT_ASC`, and `RECENT`
-     * - vodSort: The sort type of the videos and clips. Defaults to `VIEWS`. Other values are just `TIME`.
-     * - clipSort: The sort type of the clips. Defaults to `LAST_WEEK`. Other values are `LAST_DAY`, `LAST_MONTH`, and `ALL_TIME`.
-     * - tags: An array of strings containing the tags to filter the streamers by.
-     * - languages: An array of strings containing the languages to filter the streamers by.
-     * - filters: An array of strings containing the filters to apply on the streamers.
-     * - limit: The number of streamers to fetch. Defaults to 100.
+     * @param {{
+     *  streamSort: 'RELEVANCE' | 'VIEWER_COUNT' | 'VIEWER_COUNT_ASC' | 'RECENT',
+     *  vodSort: 'VIEWS' | 'TIME',
+     *  clipSort: 'LAST_DAY' | 'LAST_WEEK' | 'LAST_MONTH' | 'ALL_TIME'
+     *  tags: string[],
+     *  languages: string[],
+     *  filters: string[],
+     *  limit: number,
+     *  costreams: boolean
+     * }} [args] - Optional. An object containing the following optional properties:
+     * - `streamSort`: The sort type of the streamers. Defaults to `RELEVANCE`. Other values are `VIEWER_COUNT`, `VIEWER_COUNT_ASC`, and `RECENT`
+     * - `vodSort`: The sort type of the videos and clips. Defaults to `VIEWS`. Other values are just `TIME`.
+     * - `clipSort`: The sort type of the clips. Defaults to `LAST_WEEK`. Other values are `LAST_DAY`, `LAST_MONTH`, and `ALL_TIME`.
+     * - `tags`: An array of strings containing the tags to filter the streamers by.
+     * - `languages`: An array of strings containing the languages to filter the streamers by.
+     * - `filters`: An array of strings containing the filters to apply on the streamers.
+     * - `limit`: The number of streamers to fetch. Defaults to 100.
      * @returns {Promise<Object>} A promise that resolves to an object containing the category information, streamers, videos and clips.
      * Logs an error if the slug is invalid.
      */
-    async getAllCategoryData(slug, args) {
+    async getCategoryMedia(slug, args) {
         if (!slug) return console.error(`"slug" is required but returned null.`);
 
         let argStreamSort = "RELEVANCE";
@@ -1385,19 +1394,19 @@ class TwitchGql {
         let argTags, argLang, argFilters, argLimit;
 
         if (args) {
-            if (args instanceof Object) return console.error(`"args" must be an object.`);
-
-            if (args.streamSort) argStreamSort = args.streamSort;
-            else console.warn("sort arg not set, going with \"RELEVANCE\".");
-            if (args.vodSort) argVodSort = args.vodSort;
-            else console.warn("sort arg not set, going with \"VIEWS\".");
-            if (args.vodSort) argVodSort = args.vodSort;
-            else console.warn("sort arg not set, going with \"LAST_WEEK\".");
-            if (args.tags) argTags = args.tags;
-            if (args.languages) argLang = args.languages;
-            if (args.filters) argFilters = args.filters;
-            if (args.limit) argLimit = args.limit;
-            else console.warn("limit arg not set, going with 100.");
+            if (args instanceof Object) {
+                if (args.streamSort) argStreamSort = args.streamSort;
+                else console.warn("sort arg not set, going with \"RELEVANCE\".");
+                if (args.vodSort) argVodSort = args.vodSort;
+                else console.warn("sort arg not set, going with \"VIEWS\".");
+                if (args.vodSort) argVodSort = args.vodSort;
+                else console.warn("sort arg not set, going with \"LAST_WEEK\".");
+                if (args.tags) argTags = args.tags;
+                if (args.languages) argLang = args.languages;
+                if (args.filters) argFilters = args.filters;
+                if (args.limit) argLimit = args.limit;
+                else console.warn("limit arg not set, going with 100.");
+            } else return console.error(`"args" must be an object.`);
         }
 
         return new Promise(async (resolve, reject) => {
@@ -1509,13 +1518,101 @@ class TwitchGql {
                         };
                         resolve(cleanData);
                     } catch (error) {
-                        console.error("TwitchGql.getAllCategoryData(): ", error);
+                        console.error("TwitchGql.getCategoryMedia(): ", error);
                         console.error("returned data from gql: ", data);
                         resolve({ errors: data });
                     }
                 }
             })
         });
+    }
+
+    /**
+     * @description Fetches the category information, streamers, videos and clips for a given category slug.
+     * @param {string} slug - The slug of the category to fetch information for.
+     * @param {{
+     *  streamSort: 'RELEVANCE' | 'VIEWER_COUNT' | 'VIEWER_COUNT_ASC' | 'RECENT',
+     *  tags: string[],
+     *  languages: string[],
+     *  filters: string[],
+     *  limit: number,
+     *  costreams: boolean
+     * }} [args] - Optional. An object containing the following optional properties:
+     * - `streamSort`: The sort type of the streamers. Defaults to `RELEVANCE`. Other values are `VIEWER_COUNT`, `VIEWER_COUNT_ASC`, and `RECENT`
+     * - `tags`: An array of strings containing the tags to filter the streamers by.
+     * - `languages`: An array of strings containing the languages to filter the streamers by.
+     * - `filters`: An array of strings containing the filters to apply on the streamers.
+     * - `limit`: The number of streamers to fetch. Defaults to 100.
+     * - `costreams`: If streams that are streaming with another streamer should show.
+     * @returns {Promise<Object>} A promise that resolves to an object containing the category information, streamers, videos and clips.
+     * Logs an error if the slug is invalid.
+     */
+    async getCategoryStreams(slug, args) {
+        if (!slug) return console.error(`"slug" is required but returned null.`);
+
+        let argStreamSort = "RELEVANCE";
+        let argVodSort = "VIEWS";
+        let argClipSort = "LAST_WEEK";
+        let argCoStreams = true;
+        let argTags, argLang, argFilters, argLimit;
+
+        if (args) {
+            if (args instanceof Object) {
+                if (args.streamSort) argStreamSort = args.streamSort;
+                else console.warn("sort arg not set, going with \"RELEVANCE\".");
+                if (args.vodSort) argVodSort = args.vodSort;
+                else console.warn("sort arg not set, going with \"VIEWS\".");
+                if (args.vodSort) argVodSort = args.vodSort;
+                else console.warn("sort arg not set, going with \"LAST_WEEK\".");
+                if (args.tags) argTags = args.tags;
+                if (args.languages) argLang = args.languages;
+                if (args.filters) argFilters = args.filters;
+                if (args.limit) argLimit = args.limit;
+                if (args.costreams) argCoStreams = args.costreams;
+                else console.warn("limit arg not set, going with 100.");
+            } else return console.error(`"args" must be an object.`);
+        }
+
+        return new Promise(async (resolve, reject) => {
+            demand(`${gqlUrl}/gql`, {
+                headers: {
+                    ...this.defHeaders,
+                },
+                body: JSON.stringify({
+                    "operationName": "DirectoryPage_Game",
+                    "variables": {
+                        "imageWidth": 50,
+                        "slug": slug,
+                        "options": {
+                            "includeRestricted": [
+                                "SUB_ONLY_LIVE"
+                            ],
+                            "sort": argStreamSort,
+                            "recommendationsContext": {
+                                "platform": "web"
+                            },
+                            "freeformTags": null,
+                            "tags": argTags ? argTags : [],
+                            "broadcasterLanguages": argLang ? argLang : [],
+                            "systemFilters": argFilters ? argFilters : []
+                        },
+                        "sortTypeIsRecency": false,
+                        "limit": argLimit ? argLimit : 100,
+                        "includeIsDJ": true,
+                        "includeCostreaming": argCoStreams
+                    },
+                    "extensions": {
+                        "persistedQuery": {
+                            "version": 1,
+                            "sha256Hash": "86bcceb4e8b1a51256ff8eed8bd8aae4acacf80d737efe904f84f3aeadf8cafd"
+                        }
+                    }
+                }),
+                method: "POST"
+            }).then(async rawData => {
+
+            });
+        })
     }
 
     /**

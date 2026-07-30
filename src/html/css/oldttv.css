@@ -54,9 +54,16 @@ body {
 
             .content {
                 height: 90%;
+                font-size: 16px;
 
                 p {
-                    font-size: 16px;
+                    font-size: 1em;
+                }
+
+                ul li {
+                    display: list-item;
+                    list-style: disc;
+                    margin-left: 18px;
                 }
             }
 

@@ -41,41 +41,44 @@ setTimeout(() => {
 
 
             // replace channel embed offline image with actual channel offline image
-            fetch("https://gql.twitch.tv/gql", {
-                headers: {
-                    "client-id": "kimne78kx3ncx6brgo4mv6wki5h1ko",
-                },
-                body: JSON.stringify({
-                    "operationName": "OfflineBannerOverlay",
-                    "variables": {
-                        "login": params.get('channel')
+            if (params.get('channel') !== null) {
+                fetch("https://gql.twitch.tv/gql", {
+                    headers: {
+                        "client-id": "kimne78kx3ncx6brgo4mv6wki5h1ko",
                     },
-                    "extensions": {
-                        "persistedQuery": {
-                            "sha256Hash": "64116eb1e0e2818e8d7a8afb2fa1e9a2fac5b2d1b5e8300b39209aa414f2e577",
-                            "version": 1
+                    body: JSON.stringify({
+                        "operationName": "OfflineBannerOverlay",
+                        "variables": {
+                            "login": params.get('channel')
+                        },
+                        "extensions": {
+                            "persistedQuery": {
+                                "sha256Hash": "64116eb1e0e2818e8d7a8afb2fa1e9a2fac5b2d1b5e8300b39209aa414f2e577",
+                                "version": 1
+                            }
                         }
-                    }
-                }),
-                method: "POST"
-            }).then(async rawData => {
-                let data = await rawData.json();
+                    }),
+                    method: "POST"
+                }).then(async rawData => {
+                    let data = await rawData.json();
+                    console.log(data);
 
-                if (data.errors) alert(JSON.stringify(data.errors));
-                else {
-                    const img = data.data.user.offlineImageURL;
-                    // create style element with offline img
-                    const style = document.createElement('style');
-                    style.textContent = `
+                    if (data.errors) alert(JSON.stringify(data.errors));
+                    else {
+                        const img = data.data.user.offlineImageURL;
+                        // create style element with offline img
+                        const style = document.createElement('style');
+                        style.textContent = `
 .offline-embeds {
     background-image: url("${img}") !important;
 }
-                    `;
-                    style.id = "oldtwitch-css";
-                    style.classList.add("oldtwitch-offlineimg");
-                    document.head.insertAdjacentElement('beforebegin', style);
-                }
-            });
+                        `;
+                        style.id = "oldtwitch-css";
+                        style.classList.add("oldtwitch-offlineimg");
+                        document.head.insertAdjacentElement('beforebegin', style);
+                    }
+                });
+            }
         break;
 
         case 'www.twitch.tv':

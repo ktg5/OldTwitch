@@ -103,7 +103,7 @@ class Alert {
     <div class="side-1">
         <div class="content">
             <h2>${String(data.title)}</h2>
-            <p>${String(data.desc)}</p>
+            <p>${marked.parse(String(data.desc))}</p>
         </div>
         <div class="actions"></div>
     </div>

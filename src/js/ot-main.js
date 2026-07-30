@@ -161,9 +161,11 @@ async function handlePageChange() {
     // First, let's see what page we're working with.
     var injectTarget = '';
     var jsSrcs = [
+        runtime.getURL('lib/marked.min.js'),
+        runtime.getURL(`lib/twitch-v1.js`),
+
         runtime.getURL(`html/js/ot-gql.js`),
         runtime.getURL(`html/js/ot-hermes.js`),
-        runtime.getURL(`lib/twitch-v1.js`),
         runtime.getURL(`html/js/ot-webmain.js`),
         runtime.getURL(`html/js/ot-search.js`),
         runtime.getURL(`html/js/ot-alert.js`)

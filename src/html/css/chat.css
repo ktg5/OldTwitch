@@ -25,6 +25,10 @@
     text-transform: none !important;
 }
 
+.tw-root--theme-dark .stream-chat-header [data-test-selector="chat-room-header-label"] {
+    color: #fff !important;
+}
+
 .jxaBAK, .community-highlight {
     box-shadow: none !important;
 }

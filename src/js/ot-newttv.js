@@ -28,9 +28,10 @@ window.addEventListener('load', () => {
 
     // Button on click
     oldTwitchButton.querySelector('button').addEventListener('click', () => {
-        // Split the "nooldttv" from location.search
+        // Split the "nooldttv" & "newttv" from location.search
         let searchParams = new URLSearchParams(location.search);
         searchParams.delete('nooldttv');
+        searchParams.delete('newttv');
         location.search = searchParams.toString();
     });
 

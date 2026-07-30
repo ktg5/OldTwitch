@@ -9,11 +9,11 @@
     },
 
     "permissions": [
-        "tabs",
         "storage",
         "cookies",
         "scripting",
-        "webRequest"
+        "webRequest",
+        "https://gql.twitch.tv/*"
     ],
 
     "action": {
@@ -30,7 +30,8 @@
                 "*://www.twitch.tv/settings/*", "*://www.twitch.tv/privacy", "*://www.twitch.tv/subscriptions",
                 "*://www.twitch.tv/signup", "*://www.twitch.tv/login", "*://www.twitch.tv/user/*",
                 "*://clips.twitch.tv/embed*", "*://clips.twitch.tv/create*", "*://www.twitch.tv/settings",
-                "*://www.twitch.tv/drops", "*://www.twitch.tv/moderator/*", "*://www.twitch.tv/passport-callback"
+                "*://www.twitch.tv/drops", "*://www.twitch.tv/moderator/*", "*://www.twitch.tv/passport-callback",
+                "*://www.twitch.tv/signup?*", "*://www.twitch.tv/login?*", "*://www.twitch.tv/*?*newttv*"
             ],
             "js": ["js/ot-config.js", "js/ot-main.js"],
             "all_frames": true,
@@ -38,7 +39,7 @@
         },
 
         {
-            "matches": ["*://www.twitch.tv/*?*nooldttv*"],
+            "matches": ["*://www.twitch.tv/*?*nooldttv*", "*://www.twitch.tv/*?*newttv*"],
             "js": ["js/ot-config.js", "js/ot-newttv.js"],
             "run_at": "document_end"
         },

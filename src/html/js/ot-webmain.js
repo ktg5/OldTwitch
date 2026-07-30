@@ -333,14 +333,26 @@ async function initCmdsForConfig() {
         new Alert({
             title: "Welcome to OldTwitch!",
             desc: `
-            Thanks for installing my extension!\n\n
-            This is my second browser extension published, and much has been
-            learned since the first one. If you need to use the modern Twitch site at any point, you can click
-            on the "View on New Twitch" button. If you'd like to mess with the settings, use the "OldTwitch"
-            button, which will redirect you to the settings page.\n\n
-            If you step into a issue, please report it to the GitHub page! Which can be found in the settings
-            page.\n\n
-            Thanks once again.
+Thanks for installing my extension!
+
+<br>
+
+This is my second browser extension published, and much has been learned since the first one.
+
+If you need to use the modern Twitch site at any point, you can click on the "View on New Twitch"
+button at the top right. If you'd like to mess with the settings, use the "OldTwitch" button,
+which will redirect you to the settings page.
+
+<br>
+
+This extension also supports different languages--which need to be made. If you'd like to assist,
+You can click on the "Help with Translation!" button at the bottom of this alert.
+
+<br>
+
+If you step into a issue, please report it to the GitHub page! Which can be found in the settings
+page.
+Thanks once again.
             `,
             actions: [
                 {
@@ -348,7 +360,7 @@ async function initCmdsForConfig() {
                     text: "Help with Translation!",
                     callback: () => {
                         setWelcome();
-                        location.href = "https://github.com/ktg5/OldTwitch/tree/main/src/lang#readme";
+                        window.open("https://github.com/ktg5/OldTwitch/tree/main/src/lang#readme");
                     }
                 },
                 {
@@ -368,19 +380,6 @@ async function initCmdsForConfig() {
                 }
             ]
         });
-    } 
-    // Update msgs
-    if (
-        userConfig.alertUpdates === true
-        && userConfig.welcomeMsg !== true
-    ) {
-        const storageKey = 'oldttv-prevver'
-        const prevVer = localStorage.getItem(storageKey);
-
-        new Alert({
-            title: lang.page['newver-alert-title'],
-            desc: lang.page['newver-alert-desc']
-        })
     }
 
 
@@ -430,93 +429,133 @@ async function addGlobals() {
     await initCmdsForConfig();
 
 
-    // Update notify
-    if (userConfig.alertUpdates) {
-        // Check if we have the current version
-        // Get current version
-        currentVersion = document.body.getAttribute(`oldttv-ver`);
-        let currentDevBuild;
-        let isDev = false;
-        if (document.body.getAttribute(`oldttv-ver`).includes("dev")) {
-            isDev = true;
-            currentDevBuild = currentVersion.split("dev")[1].split(":")[0];
-            currentVersion = currentVersion.split(":").pop();
-        }
+    // Version checking stuff
+    // Get current version
+    currentVersion = document.body.getAttribute(`oldttv-ver`);
+    currentVersionforcheck = String(currentVersion);
+    let currentDevBuild;
+    let isDev = false;
+    if (document.body.getAttribute(`oldttv-ver`).includes("dev")) {
+        isDev = true;
 
-        // Pull latest version from GitHub files
-        let latestVersion = await fetch(`https://raw.githubusercontent.com/ktg5/OldTwitch/refs/heads/main/src/ver.txt`).then(res => res.text());
-        // console.log("latestVersion: ", latestVersion);
-        let latestDevBuild;
-        let latestIsDev = false;
-        if (latestVersion.includes("dev")) {
-            latestIsDev = true;
-            latestDevBuild = latestVersion.split("dev")[1].split(":")[0];
-            latestVersion = latestVersion.split(":").pop();
-        }
+        // make dev disclaimer at the bottom
+        const devDiv = document.createElement('div');
+        devDiv.classList.add('dev-disclaimer');
+        devDiv.textContent = 'DEV BUILD';
+        devDiv.style.position = 'absolute';
+        devDiv.style.bottom = '0';
+        devDiv.style.left = '0';
+        devDiv.style.right = '0';
+        devDiv.style.margin = 'auto';
+        devDiv.style.padding = '4px';
+        devDiv.style.width = 'fit-content';
+        devDiv.style.background = '#942f2f';
+        devDiv.style.fontSize = '14px';
+        document.querySelector('.twilight-root').insertAdjacentElement('beforeend', devDiv);
 
+        currentDevBuild = currentVersionforcheck.split("dev")[1].split(":")[0];
+        currentVersionforcheck = currentVersionforcheck.split(":").pop();
+    }
+    // Pull latest version from GitHub files
+    let latestVersion = await fetch(`https://raw.githubusercontent.com/ktg5/OldTwitch/refs/heads/main/src/ver.txt`).then(res => res.text());
+    // console.log("latestVersion: ", latestVersion);
+    let latestDevBuild;
+    let latestIsDev = false;
+    if (latestVersion.includes("dev")) {
+        latestIsDev = true;
+        latestDevBuild = latestVersion.split("dev")[1].split(":")[0];
+        latestVersion = latestVersion.split(":").pop();
+    }
 
-        // Basic checking
-        let latestParts = latestVersion.split(".").map(Number);
-        let currentParts = currentVersion.split(".").map(Number);
-        if (
-            latestVersion
-            && currentVersion
-        ) {
-            // Check dev versions if they exist
-            if (isDev) {
-                // First check if latestVersion is a dev build & has a newer dev version
-                if (
-                    latestIsDev
-                    && latestDevBuild > currentDevBuild
-                ) updateNotification(`older dev build: latest: ${latestDevBuild}, current: ${currentDevBuild}\nlatestVersion: dev${latestDevBuild}:${latestVersion}`);
-            }
-
-            // Check all version parts one by one
-            let versionsMatch = true;
-            // console.log(latestParts);
-            for (let i = 0; i < latestParts.length; i++) {
-                // If the current part is greater than the latest part, break
-                // console.log(latestParts[i] , currentParts[i]);
-                if (
-                    latestParts[i] < currentParts[i]
-                    && latestParts[i] !== currentParts[i]
-                ) {
-                    versionsMatch = false;
-                    break;
-                }
-
-                // Check each version part for any differences or missing parts
-                if (
-                    latestParts[i] > currentParts[i]
-                    || currentParts[i] == undefined
-                ) {
-                    versionsMatch = false;
-                    updateNotification(`older version: latest: ${latestVersion}, current: ${currentVersion}`);
-                    break;
-                }
-            }
-
-            // Do another dev check since version is either above or same
+    // Basic checking
+    let latestParts = latestVersion.split(".").map(Number);
+    let currentParts = currentVersionforcheck.split(".").map(Number);
+    if (
+        latestVersion
+        && currentVersionforcheck
+    ) {
+        // Check dev versions if they exist
+        if (isDev) {
+            // First check if latestVersion is a dev build & has a newer dev version
             if (
-                isDev
-                && !latestIsDev
-                && versionsMatch
-            ) updateNotification(`newer version is not a dev build: latest: ${latestVersion}, current: ${currentVersion}`);
+                latestIsDev
+                && latestDevBuild > currentDevBuild
+            ) updateNotification(`older dev build: latest: ${latestDevBuild}, current: ${currentDevBuild}\nlatestVersion: dev${latestDevBuild}:${latestVersion}`);
         }
 
+        // Check all version parts one by one
+        let versionsMatch = true;
+        // console.log(latestParts);
+        for (let i = 0; i < latestParts.length; i++) {
+            // If the current part is greater than the latest part, break
+            // console.log(latestParts[i] , currentParts[i]);
+            if (
+                latestParts[i] < currentParts[i]
+                && latestParts[i] !== currentParts[i]
+            ) {
+                versionsMatch = false;
+                break;
+            }
 
-        // Show update notification
-        function updateNotification(debug) {
-            if (debug) console.info(`REASON FOR UPDATE NOTICE: `, debug);
-            new BannerAlert(lang.page['update-alert'], [
-                {
-                    key: "update",
-                    text: lang.page['update-alert-btn'],
-                    action: () => location.href = "https://github.com/ktg5/oldttv/releases/latest"
-                }
-            ]);
+            // Check each version part for any differences or missing parts
+            if (
+                latestParts[i] > currentParts[i]
+                || currentParts[i] == undefined
+            ) {
+                versionsMatch = false;
+                updateNotification(`older version: latest: ${latestVersion}, current: ${currentVersionforcheck}`);
+                break;
+            }
+        }
+
+        // Do another dev check since version is either above or same
+        if (
+            isDev
+            && !latestIsDev
+            && versionsMatch
+        ) updateNotification(`newer version is not a dev build: latest: ${latestVersion}, current: ${currentVersionforcheck}`);
+    }
+
+    // Show update notification
+    function updateNotification(debug) {
+        if (debug) console.info(`REASON FOR UPDATE NOTICE: `, debug);
+        
+        if (userConfig.alertUpdates !== false) new BannerAlert(lang.page['update-alert'], [
+            {
+                key: "update",
+                text: lang.page['update-alert-btn'],
+                callback: () => location.href = "https://github.com/ktg5/oldttv/releases/latest"
+            }
+        ]);
+    }
+
+
+    // Set storage version value lel
+    // And show release notes if it's different or null
+    const verItemName = 'oldttv-ver';
+    const pastVersion = localStorage.getItem(verItemName);
+    if (pastVersion !== currentVersion) {
+        if (userConfig.showReleaseNotes !== false) {
+            // Pull release or dev depending on what this build is
+            let type = 'release';
+            if (isDev) type = 'dev';
+
+            let url = `${extensionLocation}/logs.${type}.md`;
+            await demand(url).then((d) => {
+                // Make alert lel
+                console.log("currentVersion: ", currentVersion);
+                new Alert({
+                    title: lang.page['newver-alert-title'],
+                    desc: `
+${lang.page['newver-alert-desc'].replace('&OLDTTV{VER}&', currentVersion)}
+
+${d.body}
+                    `
+                });
+            });
         }
     }
+    localStorage.setItem(verItemName, currentVersion);
 
 
     // Add navbar if found
@@ -956,7 +995,7 @@ function popupAction(args) {
                 console.error(`popupAction error`);
                 return alert('stop lel');
             }
-            popupWindowIF.src = `https://www.twitch.tv/${args.clip.host}/clip/${args.clip.id}?editclip&nooldttv`;
+            popupWindowIF.src = `https://www.twitch.tv/${args.clip.host}/clip/${args.clip.id}?editclip&newttv`;
             args.resizeTarget = '#clip-editor-modal';
         break;
     }

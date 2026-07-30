@@ -7,6 +7,9 @@ declare class TwitchGql {
         token: string;
         expiration: number;
     };
+    defHeaders: {
+        "client-id": string;
+    };
     /**
      * **STILL WIP**
      *
@@ -134,6 +137,12 @@ declare class TwitchGql {
      */
     getChannelEmotes(name: string): Promise<Array<any>>;
     /**
+     * @description Gets the image link for a channel's offline image
+     * @param {string} name - The name of the channel.
+     * @returns {Promise<Object>}
+     */
+    getChannelOfflineImg(name: string): Promise<any>;
+    /**
      * @description Gets the metadata of a given stream.
      * @param {string} name - The name of the channel.
      * @returns {Promise<Object|null>} A promise that resolves with the stream metadata if the stream is live, otherwise resolves to `null`.
@@ -184,18 +193,64 @@ declare class TwitchGql {
     /**
      * @description Fetches the category information, streamers, videos and clips for a given category slug.
      * @param {string} slug - The slug of the category to fetch information for.
-     * @param {Object} [args] - Optional. An object containing the following optional properties:
-     * - streamSort: The sort type of the streamers. Defaults to `RELEVANCE`. Other values are `VIEWER_COUNT`, `VIEWER_COUNT_ASC`, and `RECENT`
-     * - vodSort: The sort type of the videos and clips. Defaults to `VIEWS`. Other values are just `TIME`.
-     * - clipSort: The sort type of the clips. Defaults to `LAST_WEEK`. Other values are `LAST_DAY`, `LAST_MONTH`, and `ALL_TIME`.
-     * - tags: An array of strings containing the tags to filter the streamers by.
-     * - languages: An array of strings containing the languages to filter the streamers by.
-     * - filters: An array of strings containing the filters to apply on the streamers.
-     * - limit: The number of streamers to fetch. Defaults to 100.
+     * @param {{
+     *  streamSort: 'RELEVANCE' | 'VIEWER_COUNT' | 'VIEWER_COUNT_ASC' | 'RECENT',
+     *  vodSort: 'VIEWS' | 'TIME',
+     *  clipSort: 'LAST_DAY' | 'LAST_WEEK' | 'LAST_MONTH' | 'ALL_TIME'
+     *  tags: string[],
+     *  languages: string[],
+     *  filters: string[],
+     *  limit: number,
+     *  costreams: boolean
+     * }} [args] - Optional. An object containing the following optional properties:
+     * - `streamSort`: The sort type of the streamers. Defaults to `RELEVANCE`. Other values are `VIEWER_COUNT`, `VIEWER_COUNT_ASC`, and `RECENT`
+     * - `vodSort`: The sort type of the videos and clips. Defaults to `VIEWS`. Other values are just `TIME`.
+     * - `clipSort`: The sort type of the clips. Defaults to `LAST_WEEK`. Other values are `LAST_DAY`, `LAST_MONTH`, and `ALL_TIME`.
+     * - `tags`: An array of strings containing the tags to filter the streamers by.
+     * - `languages`: An array of strings containing the languages to filter the streamers by.
+     * - `filters`: An array of strings containing the filters to apply on the streamers.
+     * - `limit`: The number of streamers to fetch. Defaults to 100.
      * @returns {Promise<Object>} A promise that resolves to an object containing the category information, streamers, videos and clips.
      * Logs an error if the slug is invalid.
      */
-    getAllCategoryData(slug: string, args?: any): Promise<any>;
+    getCategoryMedia(slug: string, args?: {
+        streamSort: "RELEVANCE" | "VIEWER_COUNT" | "VIEWER_COUNT_ASC" | "RECENT";
+        vodSort: "VIEWS" | "TIME";
+        clipSort: "LAST_DAY" | "LAST_WEEK" | "LAST_MONTH" | "ALL_TIME";
+        tags: string[];
+        languages: string[];
+        filters: string[];
+        limit: number;
+        costreams: boolean;
+    }): Promise<any>;
+    /**
+     * @description Fetches the category information, streamers, videos and clips for a given category slug.
+     * @param {string} slug - The slug of the category to fetch information for.
+     * @param {{
+     *  streamSort: 'RELEVANCE' | 'VIEWER_COUNT' | 'VIEWER_COUNT_ASC' | 'RECENT',
+     *  tags: string[],
+     *  languages: string[],
+     *  filters: string[],
+     *  limit: number,
+     *  costreams: boolean
+     * }} [args] - Optional. An object containing the following optional properties:
+     * - `streamSort`: The sort type of the streamers. Defaults to `RELEVANCE`. Other values are `VIEWER_COUNT`, `VIEWER_COUNT_ASC`, and `RECENT`
+     * - `tags`: An array of strings containing the tags to filter the streamers by.
+     * - `languages`: An array of strings containing the languages to filter the streamers by.
+     * - `filters`: An array of strings containing the filters to apply on the streamers.
+     * - `limit`: The number of streamers to fetch. Defaults to 100.
+     * - `costreams`: If streams that are streaming with another streamer should show.
+     * @returns {Promise<Object>} A promise that resolves to an object containing the category information, streamers, videos and clips.
+     * Logs an error if the slug is invalid.
+     */
+    getCategoryStreams(slug: string, args?: {
+        streamSort: "RELEVANCE" | "VIEWER_COUNT" | "VIEWER_COUNT_ASC" | "RECENT";
+        tags: string[];
+        languages: string[];
+        filters: string[];
+        limit: number;
+        costreams: boolean;
+    }): Promise<any>;
     /**
      * Fetches the category information for a given slug.
      *

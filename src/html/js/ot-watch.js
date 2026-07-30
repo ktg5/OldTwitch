@@ -474,7 +474,7 @@ async function setIframeVideo (args) {
                     if (channelData.primaryTeam) {
                         document.querySelector(`[data-a-target="team-holder"]`).classList.remove("tw-hide");
                         document.querySelector(`[data-a-target="team-name"]`).innerHTML = channelData.primaryTeam.displayName;
-                        document.querySelector(`[data-a-target="team-name"]`).parentElement.href = `https://www.twitch.tv/team/${channelData.primaryTeam.name}?nooldttv`;
+                        document.querySelector(`[data-a-target="team-name"]`).parentElement.href = `https://www.twitch.tv/team/${channelData.primaryTeam.name}`;
                     }
 
                     // imgs
@@ -839,7 +839,7 @@ async function setIframeVideo (args) {
                 ) {
                     const editButton = document.querySelector('[data-a-target="editclip-button"]');
                     editButton.classList.remove('tw-hide');
-                    editButton.querySelector('button').addEventListener('click', e => { location.href = `https://www.twitch.tv/${clipData.curator.login}/clip/${args.slug}?editclip&nooldttv` });
+                    editButton.querySelector('button').addEventListener('click', e => { location.href = `https://www.twitch.tv/${clipData.curator.login}/clip/${args.slug}?editclip&newttv` });
                 }
             };
             if (gql) {

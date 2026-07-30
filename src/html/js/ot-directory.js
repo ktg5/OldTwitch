@@ -8,7 +8,9 @@ let gqlAction = async () => {
     if (location.pathname.includes('/directory/category/')) {
 
         // Get all game info
-        let categoryData = await gql.getAllCategoryData(location.pathname.split('/directory/category/').pop());
+        const gameSlugWithTab = location.pathname.split('/directory/category/').pop().split('/');
+        const gameSlug = gameSlugWithTab[0];
+        let categoryData = await gql.getCategoryMedia(gameSlug);
         console.log('categoryData: ', categoryData);
 
         // Set page title
@@ -31,10 +33,28 @@ let gqlAction = async () => {
         // Add streams
         let divInject = document.querySelector(`[data-a-target="directory-root-scroller"] .tw-tower`);
 
+        // Make sortbar
+        const sortBar = new SortBar(document.querySelector('[data-a-target="sort-bar"]'));
+
         // Load the desired data of a streamer on watch page
+        /**
+         * 
+         * @param {{ elmnt: HTMLElement, tab: "live-channels" | "videos" | "clips" }} sideargs 
+         * @returns {void}
+         */
         async function loadStreamerSidePage(sideargs) {
-            if (!sideargs.elmnt) return alert("Invalid element");
-            if (!sideargs.tab) return alert("Invalid tab");
+            if (
+                !sideargs.elmnt
+                || !sideargs instanceof HTMLElement
+            ) {
+                console.error(`directory.loadStreamerSidePage(): Invalid element--got: `, sideargs.elmnt);
+                return alert("directory.loadStreamerSidePage(): Invalid element, check logs");
+            }
+            if (!sideargs.tab) {
+                const txt = "directory.loadStreamerSidePage(): Invalid tab string";
+                console.error(`${txt}--got: `, sideargs.tab);
+                return alert(txt);
+            }
 
             // clear old data
             divInject.innerHTML = "";
@@ -51,7 +71,10 @@ let gqlAction = async () => {
             sideargs.elmnt.classList.add(selectedTabName);
 
 
-            // set data
+            /**
+             * @param {Object[]} data category data from GQL
+             * @returns {void}
+             */
             function setTabData(data) {
                 if (!data) return alert("Invalid data");
                 if (data.length < 1) return divInject.innerHTML = `<h4 style="max-width: 100%; width: 100%;" data-lang-target="no-results"></h4>`;
@@ -96,28 +119,31 @@ let gqlAction = async () => {
 
                     let streamerDiv = document.createElement('div');
                     streamerDiv.className = "directory-item";
+                    const thumbImg = String(item.animatedPreviewURL ? item.animatedPreviewURL : item.thumbnailURL ? item.thumbnailURL : item.previewImageURL)
+                        .replace('1920x1080', '640x360');
                     streamerDiv.innerHTML = `
-                    <div class="tw-mg-b-2">
-                        <div class="tw-mg-b-05">
-                            <figure class="tw-aspect tw-aspect--16x9 tw-aspect--align-top">
-                                <a href="${itemHref}">
-                                    <img class="tw-image" src="${item.animatedPreviewURL ? item.animatedPreviewURL : item.thumbnailURL ? item.thumbnailURL : item.previewImageURL}">
-                                </a>
-                            </figure>
-                        </div>
-                        <div class="item-info">
-                            <div class="item-text">
-                                <p class="item-name"><a href="${itemHref}">${item.title}</a></p>
-                                <p class="item-subtext tw-font-size-7">${itemSubtext}</p>
-                            </div>
-                        </div>
-                    </div>
+<div class="tw-mg-b-2">
+    <div class="tw-mg-b-05">
+        <figure class="tw-aspect tw-aspect--16x9 tw-aspect--align-top">
+            <a href="${itemHref}">
+                <img class="tw-image" src="${thumbImg}">
+            </a>
+        </figure>
+    </div>
+    <div class="item-info">
+        <div class="item-text">
+            <p class="item-name"><a href="${itemHref}">${item.title}</a></p>
+            <p class="item-subtext tw-font-size-7">${itemSubtext}</p>
+        </div>
+    </div>
+</div>
                     `;
                     divInject.appendChild(streamerDiv);
                 });
             }
 
             // check tab type & go to the set data function
+            // also set sortbar info
             switch (sideargs.tab) {
                 case "live-channels":
                     setTabData(categoryData.streams);
@@ -135,21 +161,29 @@ let gqlAction = async () => {
 
 
         // go to tab if found
-        if (location.hash.length > 0) {
-            let tab = location.hash.split("#")[1];
+        if (gameSlugWithTab.length > 1) {
+            console.log(gameSlugWithTab);
+            let tab = gameSlugWithTab[1];
             let elmnt = document.querySelector(`[data-a-target="game-directory-${tab}-tab"]`);
-
-            if (elmnt) loadStreamerSidePage({elmnt: elmnt, tab: tab});
+            loadStreamerSidePage({elmnt: elmnt, tab: tab});
         } else {
             let elmnt = document.querySelector(`[data-a-target="game-directory-live-channels-tab"]`);
-            if (elmnt) loadStreamerSidePage({elmnt: elmnt, tab: "live-channels"});
+            loadStreamerSidePage({elmnt: elmnt, tab: "live-channels"});
         }
 
         // Make topbar buttons worky
-        document.addEventListener("click", async (e) => {
-            let closestTarget = e.target.closest(`.directory-tabs__item`);
+        document.querySelectorAll('.directory-tabs__item').forEach((tabItem) => {
+            tabItem.href = tabItem.href.replace('__SLUG__', gameSlug);
 
-            if (closestTarget && closestTarget.href) loadStreamerSidePage({elmnt: closestTarget, tab: closestTarget.getAttribute('data-a-target').split('game-directory-')[1].split('-tab')[0]});
+            tabItem.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                // set location
+                history.pushState({}, '', tabItem.href);
+                history.replaceState({}, '', tabItem.href);
+
+                loadStreamerSidePage({elmnt: tabItem, tab: tabItem.getAttribute('data-a-target').split('game-directory-')[1].split('-tab')[0]});
+            });
         });
 
     } else {
