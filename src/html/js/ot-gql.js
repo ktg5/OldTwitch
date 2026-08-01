@@ -1396,11 +1396,11 @@ class TwitchGql {
         if (args) {
             if (args instanceof Object) {
                 if (args.streamSort) argStreamSort = args.streamSort;
-                else console.warn("sort arg not set, going with \"RELEVANCE\".");
+                else console.warn("stream sort arg not set, going with \"RELEVANCE\".");
                 if (args.vodSort) argVodSort = args.vodSort;
-                else console.warn("sort arg not set, going with \"VIEWS\".");
-                if (args.vodSort) argVodSort = args.vodSort;
-                else console.warn("sort arg not set, going with \"LAST_WEEK\".");
+                else console.warn("vod sort arg not set, going with \"VIEWS\".");
+                if (args.clipSort) argClipSort = args.clipSort;
+                else console.warn("clip sort arg not set, going with \"LAST_WEEK\".");
                 if (args.tags) argTags = args.tags;
                 if (args.languages) argLang = args.languages;
                 if (args.filters) argFilters = args.filters;
@@ -1551,19 +1551,13 @@ class TwitchGql {
         if (!slug) return console.error(`"slug" is required but returned null.`);
 
         let argStreamSort = "RELEVANCE";
-        let argVodSort = "VIEWS";
-        let argClipSort = "LAST_WEEK";
         let argCoStreams = true;
         let argTags, argLang, argFilters, argLimit;
 
         if (args) {
             if (args instanceof Object) {
                 if (args.streamSort) argStreamSort = args.streamSort;
-                else console.warn("sort arg not set, going with \"RELEVANCE\".");
-                if (args.vodSort) argVodSort = args.vodSort;
-                else console.warn("sort arg not set, going with \"VIEWS\".");
-                if (args.vodSort) argVodSort = args.vodSort;
-                else console.warn("sort arg not set, going with \"LAST_WEEK\".");
+                else console.warn("stream sort arg not set, going with \"RELEVANCE\".");
                 if (args.tags) argTags = args.tags;
                 if (args.languages) argLang = args.languages;
                 if (args.filters) argFilters = args.filters;

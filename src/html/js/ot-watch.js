@@ -136,7 +136,7 @@ async function setIframeVideo (args) {
                             selections: [
                                 {
                                     id: "videos",
-                                    displayName: "Videos",
+                                    displayName: lang.page['video-tab'],
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "VIDEOS"));
@@ -144,7 +144,7 @@ async function setIframeVideo (args) {
                                 },
                                 {
                                     id: "archives",
-                                    displayName: "Archives",
+                                    displayName: lang.page['archives'],
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "ARCHIVE"));
@@ -152,7 +152,7 @@ async function setIframeVideo (args) {
                                 },
                                 {
                                     id: "highlights",
-                                    displayName: "Highlights",
+                                    displayName: lang.page['highlights'],
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "HIGHLIGHT"));
@@ -434,29 +434,28 @@ async function setIframeVideo (args) {
                         let panelsContainer = document.querySelector(`.channel-panels-container`);
                         channelData.panels.forEach(panel => {
                             // check if the current panel is a blank panel
-                            if (panel.type !== "EXTENSION") if (panel.description == null && panel.title == null && panel.imageURL == null && panel.linkURL == null) return;
+                            if (panel.type === "EXTENSION") return;
+                            if (panel.description === null && panel.title === null && panel.imageURL === null && panel.linkURL === null) return;
 
                             // insert panel
                             let panelDiv = document.createElement("div");
                             panelDiv.className = "default-panel"
                             panelDiv.setAttribute("data-a-target", `panel-${panelsContainer.childElementCount}`);
-                            if (panel.type !== "EXTENSION") {
-                                panelDiv.innerHTML = `
-                                ${panel.linkURL ? `<a data-test-selector="link_url_panel" class="tw-link" rel="noopener noreferrer" target="_blank" href="${panel.linkURL}">` : ""}
-                                    ${panel.title ? `<h3 data-test-selector="title_panel" class="tw-title">${panel.title}</h3>`: ""}
-                                    ${panel.imageURL ? `<img data-test-selector="image_panel" src="${panel.imageURL}">` : ""}
-                                ${panel.linkURL ? "</a>" : ""}
-                                ${panel.description ? `
-                                <div data-test-selector="description_panel">
-                                    <div class="tw-typeset">
-                                        <div class="panel-description">
-                                            ${twitchMarkdown(panel.description)}
-                                        </div>
-                                    </div>
-                                </div>
-                                ` : ""}
-                                `;
-                            }
+                            panelDiv.innerHTML = `
+${panel.linkURL ? `<a data-test-selector="link_url_panel" class="tw-link" rel="noopener noreferrer" target="_blank" href="${panel.linkURL}">` : ""}
+    ${panel.title ? `<h3 data-test-selector="title_panel" class="tw-title">${panel.title}</h3>`: ""}
+    ${panel.imageURL ? `<img data-test-selector="image_panel" src="${panel.imageURL}">` : ""}
+${panel.linkURL ? "</a>" : ""}
+${panel.description ? `
+<div data-test-selector="description_panel">
+    <div class="tw-typeset">
+        <div class="panel-description">
+            ${twitchMarkdown(panel.description)}
+        </div>
+    </div>
+</div>
+` : ""}
+                            `;
 
                             panelsContainer.appendChild(panelDiv);
                         });
@@ -762,6 +761,9 @@ async function setIframeVideo (args) {
                     timeDiv.querySelector('.tw-stat__value').innerHTML = `${calcDateDiffToTxt(currentDate, new Date(vodData.createdAt))} ago`;
                 }
                 addStremerInfo();
+
+                // header btn
+                document.querySelector('.channel-header__user').addEventListener('click', () => location.href = `/${channelData.login}`);
             };
             if (gql) {
                 gqlAction();
@@ -841,6 +843,9 @@ async function setIframeVideo (args) {
                     editButton.classList.remove('tw-hide');
                     editButton.querySelector('button').addEventListener('click', e => { location.href = `https://www.twitch.tv/${clipData.curator.login}/clip/${args.slug}?editclip&newttv` });
                 }
+
+                // header btn
+                document.querySelector('.channel-header__user').addEventListener('click', () => location.href = `/${channelData.login}`);
             };
             if (gql) {
                 gqlAction();

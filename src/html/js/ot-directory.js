@@ -33,8 +33,15 @@ let gqlAction = async () => {
         // Add streams
         let divInject = document.querySelector(`[data-a-target="directory-root-scroller"] .tw-tower`);
 
+        // Make loading spinner
+        const loadingSpinner = new LoadingSpinner(document.querySelector('.simplebar-scroll-content .tw-tower').parentElement);
         // Make sortbar
-        const sortBar = new SortBar(document.querySelector('[data-a-target="sort-bar"]'));
+        const sortBarDiv = document.querySelector('[data-a-target="sort-bar"]');
+        const sortBar = new SortBar(sortBarDiv);
+        sortBar.div.classList.remove('tw-mg-b-2');
+
+        // Remove other placeholders in the sortbar area
+        document.querySelector('.game-details-box').querySelectorAll('.tw-placeholder-wrapper').forEach((placeholder) => placeholder.remove());
 
         // Load the desired data of a streamer on watch page
         /**
@@ -78,6 +85,8 @@ let gqlAction = async () => {
             function setTabData(data) {
                 if (!data) return alert("Invalid data");
                 if (data.length < 1) return divInject.innerHTML = `<h4 style="max-width: 100%; width: 100%;" data-lang-target="no-results"></h4>`;
+                divInject.innerHTML = '';
+                loadingSpinner.toggle(false);
 
                 data.forEach(item => {
                     // href
@@ -142,19 +151,136 @@ let gqlAction = async () => {
                 });
             }
 
+
+            /**
+             * @param {Object} data 
+             */
+            async function sortBarSelect(data) {
+                divInject.innerHTML = '';
+                loadingSpinner.toggle(true);
+                console.log(data);
+                return await gql.getCategoryMedia(gameSlug, data);
+            }
+
             // check tab type & go to the set data function
             // also set sortbar info
             switch (sideargs.tab) {
                 case "live-channels":
+                    // first init
                     setTabData(categoryData.streams);
+
+                    // sort bar stuff
+                    sortBar.setOptions([
+                        {
+                            id: "streams",
+                            textBeforeSelect: lang.page['sorted-by'],
+                            selections: [
+                                {
+                                    id: "viewers",
+                                    displayName: lang.page['viewers'],
+                                    onSelect: async (d) => setTabData((await sortBarSelect({
+                                        streamSort: "VIEWER_COUNT"
+                                    })).streams)
+                                },
+                                {
+                                    id: "viewers_low",
+                                    displayName: lang.page['viewers-low'],
+                                    onSelect: async (d) => setTabData((await sortBarSelect({
+                                        streamSort: 'VIEWER_COUNT_ASC'
+                                    })).streams)
+                                },
+                                {
+                                    id: "recommended",
+                                    displayName: lang.page['recommended'],
+                                    onSelect: async (d) => setTabData((await sortBarSelect({
+                                        streamSort: 'RELEVANCE'
+                                    })).streams),
+                                    selected: true
+                                },
+                                {
+                                    id: "recent",
+                                    displayName: lang.page['recent'],
+                                    onSelect: async (d) => setTabData((await sortBarSelect({
+                                        streamSort: 'RECENT'
+                                    })).streams)
+                                }
+                            ]
+                        }
+                    ]);
                 break;
     
                 case "videos":
+                    // first init
                     setTabData(categoryData.videos);
+
+                    // sort bar stuff
+                    sortBar.setOptions([
+                        {
+                            id: "videos_sort",
+                            textBeforeSelect: lang.page['sorted-by'],
+                            selections: [
+                                {
+                                    id: "views",
+                                    displayName: lang.page['total-views'],
+                                    onSelect: async (d) => setTabData((await sortBarSelect({
+                                        vodSort: 'VIEWS'
+                                    })).videos),
+                                    selected: true
+                                },
+                                {
+                                    id: "time",
+                                    displayName: lang.page['recent'],
+                                    onSelect: async (d) => setTabData((await sortBarSelect({
+                                        vodSort: 'TIME'
+                                    })).videos)
+                                }
+                            ]
+                        }
+                    ]);
                 break;
             
                 case "clips":
+                    // first init
                     setTabData(categoryData.clips);
+
+                    // sort bar stuff
+                    sortBar.setOptions([
+                        {
+                            id: "clips",
+                            textBeforeSelect: lang.page['show-from'],
+                            selections: [
+                                {
+                                    id: "last_day",
+                                    displayName: lang.page['last-day'],
+                                    onSelect: async (d) => setTabData((await sortBarSelect({
+                                        clipSort: 'LAST_DAY'
+                                    })).clips)
+                                },
+                                {
+                                    id: "last_week",
+                                    displayName: lang.page['last-week'],
+                                    onSelect: async (d) => setTabData((await sortBarSelect({
+                                        clipSort: 'LAST_WEEK'
+                                    })).clips),
+                                    selected: true
+                                },
+                                {
+                                    id: "last_month",
+                                    displayName: lang.page['last-month'],
+                                    onSelect: async (d) => setTabData((await sortBarSelect({
+                                        clipSort: 'LAST_MONTH'
+                                    })).clips)
+                                },
+                                {
+                                    id: "all_time",
+                                    displayName: lang.page['all-time'],
+                                    onSelect: async (d) => setTabData((await sortBarSelect({
+                                        clipSort: 'ALL_TIME'
+                                    })).clips)
+                                }
+                            ]
+                        }
+                    ]);
                 break;
             }
         }

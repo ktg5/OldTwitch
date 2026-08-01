@@ -92,8 +92,18 @@
     "last-month": "the Last Month",
     "all-time": "All Time",
     "recommended": "Recommended",
+    "recent": "recent",
     "viewers": "Maties (High to Low)",
+    "archives": "Archives",
+    "highlights": "highlights",
 
     "__comment": "Category Pages:",
-    "all-categories-page-title": "All Seven Seas - Twitch"
+    "all-categories-page-title": "All Seven Seas - Twitch",
+
+    "__comment": "Other Text:",
+    "popup-escape": "Click anywhere or press the \"Escape\" key to close this window.",
+    "popup-wait": "Please wait for the iframe to load. If you've been waiting for a while, please report it to the GitHub page.",
+    "settings-title": "OldTwitch Settings",
+    "404": "The channel could not be found, or has been deleted by its owner.",
+    "browse-channels": "Browse Other Crew"
 }

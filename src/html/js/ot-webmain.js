@@ -1155,12 +1155,12 @@ class LoadingSpinner {
         this.div.innerHTML = `<div class="tw-loading-spinner"></div>`;
         
         // Insert after target
-        target.insertAdjacentElement('afterend', this.div);
+        target.insertAdjacentElement('afterbegin', this.div);
     }
 
     /**
      * Toggle this spinner visually
-     * @param {boolean} force Force the toggle
+     * @param {boolean} [force] Force the toggle
      */
     toggle(force) {
         if (force !== null) {
@@ -1187,12 +1187,27 @@ class LoadingSpinner {
 }
 
 
+/**
+ * @typedef SortSelection
+ * @prop {string} id sort selection id
+ * @prop {string} textBeforeSelect the string of text to display before the dropdown menu
+ * @prop {SortOption[]} selections a list of `SortOption`s used for this `SortSelection`
+ */
+
+/**
+ * @typedef SortOption
+ * @prop {string} id
+ * @prop {string} displayName
+ * @prop {(d: any) => any} onSelect
+ * @prop {boolean} [selected]
+ */
+
 class SortBar {
     /**
-     * Make a div--aka the `sortBar` var--into a SortBar, with each option
+     * Make a div--aka the `sortBar` var--into a `SortBar`, with each option
      * having a function that runs when an option is changed by the client
-     * @param {HTMLElement} sortBar The div to turn a SortBar
-     * @param {SortOption[]} [options] A list of SortOptions to set to the SortBar. Can be set later using `SortBar.setOptions`
+     * @param {HTMLElement} sortBar The div to turn a `SortBar`
+     * @param {SortSelection[]} [options] A list of `SortSelections` to set to the `SortBar`. Can be set later using `SortBar.setOptions`
      */
     constructor(sortBar, options) {
         // Make sure div provided is valid
@@ -1212,6 +1227,7 @@ class SortBar {
 
         // Edit div to have defaults
         this.div.classList.add("tw-border-t", "tw-border-r", "tw-border-b", "tw-border-l", "tw-c-background", "tw-flex", "tw-flex-row", "tw-mg-b-2", "tw-pd-2");
+        this.div.classList.remove("tw-placeholder-wrapper");
         this.div.innerHTML = `<div data-sort-insert class="tw-flex tw-flex-grow-1"></div>`;
         this.optionsInsert = this.div.querySelector('[data-sort-insert]');
 
@@ -1222,7 +1238,7 @@ class SortBar {
 
     /**
      * Set options to the current SortBar
-     * @param {SortOption[]} options A list of SortOptions to set to the SortBar
+     * @param {SortSelection[]} [options] A list of `SortSelections` to set to the `SortBar`. Can be set later using `SortBar.setOptions`
      * @returns {void}
      */
     setOptions(options) {
@@ -1271,9 +1287,20 @@ class SortBar {
                     let selectionDiv = document.createElement('div');
                     selectionDiv.classList.add("tw-block", "tw-full-width", "tw-interactable", "tw-interactable--inverted");
                     // If this is the first option, then show it within the selection button
-                    if (i == 0) {
+                    let selectedClassName = 'tw-interactable--selected';
+                    if (
+                        i == 0
+                        || selection.selected === true
+                    ) {
+                        // if this selection is forced to be selected, remove the classname off of the first one
+                        let possibleSelected = document.querySelector(`.${selectedClassName}`);
+                        if (
+                            possibleSelected !== null
+                            && selection.selected === true
+                        ) possibleSelected.classList.remove(selectedClassName);
+
                         this.div.querySelector('[data-test-selector="sort-dropdown-button"] [data-a-target="tw-button-text"]').textContent = selection.displayName;
-                        selectionDiv.classList.add('tw-interactable--selected');
+                        selectionDiv.classList.add(selectedClassName);
                     }
                     selectionDiv.setAttribute('data-sort-selection-id', selection.id);
                     selectionDiv.innerHTML = `<div class="tw-pd-x-1 tw-pd-y-05">${selection.displayName}</div>`;
@@ -1281,13 +1308,13 @@ class SortBar {
                     // Add click function
                     selectionDiv.addEventListener('click', (d) => {
                         // Check if clicked selection is already selected, then do nothing
-                        if (selectionDiv.classList.contains('tw-interactable--selected')) return;
+                        if (selectionDiv.classList.contains(selectedClassName)) return;
 
                         // Set HTML
                         this.div.querySelector('.tw-balloon').classList.add('tw-hide');
                         this.div.querySelector('[data-test-selector="sort-dropdown-button"] [data-a-target="tw-button-text"]').textContent = selection.displayName;
-                        selectionsInsert.querySelector('.tw-interactable--selected').classList.remove('tw-interactable--selected');
-                        selectionDiv.classList.add('tw-interactable--selected');
+                        selectionsInsert.querySelector(`.${selectedClassName}`).classList.remove(selectedClassName);
+                        selectionDiv.classList.add(selectedClassName);
 
                         // Run function
                         selection.onSelect({ ...d });
@@ -1418,128 +1445,134 @@ setTimeout(async () => {
 
     // If index page, do index page things
     if (location.pathname == "/") {
+        let userConfigInit = setInterval(async () => {
+            if (userConfig) {
 
-        // Do home apge stuff
-        const homePageData = await gql.getHomePage(userConfig.lang);
-        const zeroStreamersData = await gql.getZeroStreamers();
+                clearInterval(userConfigInit)
 
-        console.log('homePageData: ', homePageData);
-    
-        // Set first featured stream
-        let featuredStreams = homePageData.featuredStreams;
-        let featuredStreamFigure = document.querySelector(`.anon-front__featured-section figure`);
-        featuredStreamFigure.id = "iframe-insert";
-        featuredStreamFigure.innerHTML = '';
-        let featuredStreamIframe;
-        vodExec = () => {
+                // Do home apge stuff
+                const homePageData = await gql.getHomePage(userConfig.lang);
+                const zeroStreamersData = await gql.getZeroStreamers();
 
-            function setHeaderStream(i) {
-                // reset iframe
-                document.querySelector(`#iframe-insert`).innerHTML = "";
-                
-                // iframe
-                featuredStreamIframe = new Twitch.Player("iframe-insert", {
-                    channel: featuredStreams[i].broadcaster.login,
-                    muted: false
-                });
+                console.log('homePageData: ', homePageData);
+            
+                // Set first featured stream
+                let featuredStreams = homePageData.featuredStreams;
+                let featuredStreamFigure = document.querySelector(`.anon-front__featured-section figure`);
+                featuredStreamFigure.id = "iframe-insert";
+                featuredStreamFigure.innerHTML = '';
+                let featuredStreamIframe;
+                vodExec = () => {
 
-                // channel details
-                document.querySelector(`.streamer-pfp`).innerHTML = `<a href="https://twitch.tv/${featuredStreams[i].broadcaster.login}"><img class="tw-image" src="${featuredStreams[i].broadcaster.profileImageURL}"></a>`;
-                document.querySelector(`.item-name`).innerHTML = `<a style="color: #b8b5c0;" href="https://twitch.tv/${featuredStreams[i].broadcaster.login}">${featuredStreams[i].broadcaster.displayName}</a>`;
-                document.querySelector(`.streamer-category`).innerHTML = `<a href="https://twitch.tv/directory/category/${featuredStreams[i].game.slug}">${featuredStreams[i].game.displayName}</a>`;
-                document.querySelector(`.streamer-desc`).innerHTML = "";
-                document.querySelector(`.streamer-tags`).innerHTML = "";
-                featuredStreams[i].freeformTags.forEach(streamTag => {
-                    document.querySelector(`.streamer-tags`).innerHTML += `<a class="search-tag" href="https://twitch.tv/directory/all/tags/${streamTag.name}">${streamTag.name}</a>`;
-                });
-                
-                // gql data of selected stream
-                gql.getChannel(featuredStreams[i].broadcaster.login).then((d) => {
-                    // d.description
-                    document.querySelector(`.streamer-desc`).innerHTML = d.description;
-                });
-            }
+                    function setHeaderStream(i) {
+                        // reset iframe
+                        document.querySelector(`#iframe-insert`).innerHTML = "";
+                        
+                        // iframe
+                        featuredStreamIframe = new Twitch.Player("iframe-insert", {
+                            channel: featuredStreams[i].broadcaster.login,
+                            muted: false
+                        });
 
-            // other channelssesese below main
-            for (let i = 0; i < featuredStreams.length; i++) {
-                const featuredStream = featuredStreams[i];
-                
-                let targetDiv = document.querySelector(`.tw-flex.tw-flex-nowrap.tw-pd-x-05.tw-pd-y-1`).children[i];
-                if (targetDiv) {
-                    if (featuredStream.game) targetDiv.title = `${featuredStream.broadcaster.displayName} - ${featuredStream.game.displayName}`;
-                    else targetDiv.title = `${featuredStream.broadcaster.displayName}`;
-                    targetDiv.style.cursor = "pointer";
-                    targetDiv.innerHTML = `<img class="tw-image" src="${featuredStream.previewImageURL}">`;
-                    if (i == 0) targetDiv.classList.add("channel-selected");
-                    targetDiv.addEventListener('click', (e) => {
-                        if (document.querySelector(`.channel-selected`)) document.querySelector(`.channel-selected`).classList.remove("channel-selected");
-                        targetDiv.classList.add("channel-selected");
-                        setHeaderStream(i);
-                    });
-                }
-            }
+                        // channel details
+                        document.querySelector(`.streamer-pfp`).innerHTML = `<a href="https://twitch.tv/${featuredStreams[i].broadcaster.login}"><img class="tw-image" src="${featuredStreams[i].broadcaster.profileImageURL}"></a>`;
+                        document.querySelector(`.item-name`).innerHTML = `<a style="color: #b8b5c0;" href="https://twitch.tv/${featuredStreams[i].broadcaster.login}">${featuredStreams[i].broadcaster.displayName}</a>`;
+                        document.querySelector(`.streamer-category`).innerHTML = `<a href="https://twitch.tv/directory/category/${featuredStreams[i].game.slug}">${featuredStreams[i].game.displayName}</a>`;
+                        document.querySelector(`.streamer-desc`).innerHTML = "";
+                        document.querySelector(`.streamer-tags`).innerHTML = "";
+                        featuredStreams[i].freeformTags.forEach(streamTag => {
+                            document.querySelector(`.streamer-tags`).innerHTML += `<a class="search-tag" href="https://twitch.tv/directory/all/tags/${streamTag.name}">${streamTag.name}</a>`;
+                        });
+                        
+                        // gql data of selected stream
+                        gql.getChannel(featuredStreams[i].broadcaster.login).then((d) => {
+                            // d.description
+                            document.querySelector(`.streamer-desc`).innerHTML = d.description;
+                        });
+                    }
 
-            // set default
-            setHeaderStream(0);
+                    // other channelssesese below main
+                    for (let i = 0; i < featuredStreams.length; i++) {
+                        const featuredStream = featuredStreams[i];
+                        
+                        let targetDiv = document.querySelector(`.tw-flex.tw-flex-nowrap.tw-pd-x-05.tw-pd-y-1`).children[i];
+                        if (targetDiv) {
+                            if (featuredStream.game) targetDiv.title = `${featuredStream.broadcaster.displayName} - ${featuredStream.game.displayName}`;
+                            else targetDiv.title = `${featuredStream.broadcaster.displayName}`;
+                            targetDiv.style.cursor = "pointer";
+                            targetDiv.innerHTML = `<img class="tw-image" src="${featuredStream.previewImageURL}">`;
+                            if (i == 0) targetDiv.classList.add("channel-selected");
+                            targetDiv.addEventListener('click', (e) => {
+                                if (document.querySelector(`.channel-selected`)) document.querySelector(`.channel-selected`).classList.remove("channel-selected");
+                                targetDiv.classList.add("channel-selected");
+                                setHeaderStream(i);
+                            });
+                        }
+                    }
 
-        };
-        if (Twitch !== undefined) {
-            vodExec();
-        } else {
-            let tempInit = setInterval(() => {
-                if (Twitch) {
-                    vodExec();
-                    clearInterval(tempInit);
+                    // set default
+                    setHeaderStream(0);
+
                 };
-            }, 50);
-        };
+                if (Twitch !== undefined) {
+                    vodExec();
+                } else {
+                    let tempInit = setInterval(() => {
+                        if (Twitch) {
+                            vodExec();
+                            clearInterval(tempInit);
+                        };
+                    }, 50);
+                };
 
-        // Shelves
-        // Top Games
-        let topGamesGrid = document.querySelector(`[data-a-target="featured-insert"]`);
-        for (let i = 0; i < homePageData.shelves.TopGamesForYou.length; i++) {
-            const game = homePageData.shelves.TopGamesForYou[i];
+                // Shelves
+                // Top Games
+                let topGamesGrid = document.querySelector(`[data-a-target="featured-insert"]`);
+                for (let i = 0; i < homePageData.shelves.TopGamesForYou.length; i++) {
+                    const game = homePageData.shelves.TopGamesForYou[i];
 
-            // covert art
-            topGamesGrid.children[i].querySelector(`figure`).innerHTML = `<a href="https://twitch.tv/directory/category/${game.categorySlug}"><img class="tw-image" src="${game.boxArtURL}"></a>`;
-            // title
-            topGamesGrid.children[i].querySelector(`.game-title`).innerHTML = `<a href="https://twitch.tv/directory/category/${game.categorySlug}">${game.displayName}</a>`;
-            // viewers
-            topGamesGrid.children[i].querySelector(`.game-tags`).textContent = lang.page['game-viewers'].replace('&OLDTTV{GAME_VIEWERS}&', game.viewersCount);
-        }
+                    // covert art
+                    topGamesGrid.children[i].querySelector(`figure`).innerHTML = `<a href="https://twitch.tv/directory/category/${game.categorySlug}"><img class="tw-image" src="${game.boxArtURL}"></a>`;
+                    // title
+                    topGamesGrid.children[i].querySelector(`.game-title`).innerHTML = `<a href="https://twitch.tv/directory/category/${game.categorySlug}">${game.displayName}</a>`;
+                    // viewers
+                    topGamesGrid.children[i].querySelector(`.game-tags`).textContent = lang.page['game-viewers'].replace('&OLDTTV{GAME_VIEWERS}&', game.viewersCount);
+                }
 
-        // Streams from nobody.live
-        let zeroStreamersGrid = document.querySelector(`[data-a-target="zero-streamers-insert"]`);
-        if (zeroStreamersData) for (let i = 0; i < zeroStreamersData.length; i++) {
-            const channel = zeroStreamersData[i];
-            // console.log(channel);
+                // Streams from nobody.live
+                let zeroStreamersGrid = document.querySelector(`[data-a-target="zero-streamers-insert"]`);
+                if (zeroStreamersData) for (let i = 0; i < zeroStreamersData.length; i++) {
+                    const channel = zeroStreamersData[i];
+                    // console.log(channel);
 
-            // covert art
-            zeroStreamersGrid.children[i].querySelector(`figure`).innerHTML = `<a href="https://twitch.tv/${channel.user_login}"><img class="tw-image" src="${channel.thumbnail_url}"></a>`;
-            // title
-            zeroStreamersGrid.children[i].querySelector(`.item-name`).innerHTML = `<a href="https://twitch.tv/${channel.user_login}">${channel.user_name}</a>`;
-            // viewers
-            zeroStreamersGrid.children[i].querySelector(`.item-subtext`).innerHTML = `${channel.viewer_count} viewers on ${channel.user_name}`;
-        }
+                    // covert art
+                    zeroStreamersGrid.children[i].querySelector(`figure`).innerHTML = `<a href="https://twitch.tv/${channel.user_login}"><img class="tw-image" src="${channel.thumbnail_url}"></a>`;
+                    // title
+                    zeroStreamersGrid.children[i].querySelector(`.item-name`).innerHTML = `<a href="https://twitch.tv/${channel.user_login}">${channel.user_name}</a>`;
+                    // viewers
+                    zeroStreamersGrid.children[i].querySelector(`.item-subtext`).innerHTML = `${channel.viewer_count} viewers on ${channel.user_name}`;
+                }
 
-        // Top Channels
-        let topStreamersGrid = document.querySelector(`[data-a-target="top-streamers-insert"]`);
-        for (let i = 0; i < homePageData.shelves.TopLiveChannelsYouMayLikeLoggedOut.length; i++) {
-            const channel = homePageData.shelves.TopLiveChannelsYouMayLikeLoggedOut[i];
+                // Top Channels
+                let topStreamersGrid = document.querySelector(`[data-a-target="top-streamers-insert"]`);
+                for (let i = 0; i < homePageData.shelves.TopLiveChannelsYouMayLikeLoggedOut.length; i++) {
+                    const channel = homePageData.shelves.TopLiveChannelsYouMayLikeLoggedOut[i];
 
-            if (
-                topStreamersGrid.children[i]
-                && channel.broadcaster !== null
-            ) {
-                // covert art
-                topStreamersGrid.children[i].querySelector(`figure`).innerHTML = `<a href="https://twitch.tv/${channel.broadcaster.login}"><img class="tw-image" src="${channel.previewImageURL}"></a>`;
-                // title
-                topStreamersGrid.children[i].querySelector(`.item-name`).innerHTML = `<a href="https://twitch.tv/${channel.broadcaster.login}">${channel.broadcaster.displayName}</a>`;
-                // viewers
-                topStreamersGrid.children[i].querySelector(`.item-subtext`).innerHTML = `${channel.viewersCount} viewers on ${channel.broadcaster.displayName}`;
+                    if (
+                        topStreamersGrid.children[i]
+                        && channel.broadcaster !== null
+                    ) {
+                        // covert art
+                        topStreamersGrid.children[i].querySelector(`figure`).innerHTML = `<a href="https://twitch.tv/${channel.broadcaster.login}"><img class="tw-image" src="${channel.previewImageURL}"></a>`;
+                        // title
+                        topStreamersGrid.children[i].querySelector(`.item-name`).innerHTML = `<a href="https://twitch.tv/${channel.broadcaster.login}">${channel.broadcaster.displayName}</a>`;
+                        // viewers
+                        topStreamersGrid.children[i].querySelector(`.item-subtext`).innerHTML = `${channel.viewersCount} viewers on ${channel.broadcaster.displayName}`;
+                    }
+                }
+
             }
-        }
-
+        }, 100);
     };
 
 

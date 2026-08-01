@@ -92,7 +92,11 @@
     "last-month": "the Last Month",
     "all-time": "All Time",
     "recommended": "Recommended",
+    "recent": "Recent",
     "viewers": "Viewers (High to Low)",
+    "viewers-low": "Viewers (Low to High)",
+    "archives": "Archives",
+    "highlights": "highlights",
 
     "__comment": "Category Pages:",
     "all-categories-page-title": "All Categories",
