@@ -23,7 +23,7 @@ setTimeout(() => {
 
 
             // Add player CSS to head
-            document.head.insertAdjacentHTML('afterbegin', `<link id="oldtwitch-css" class="oldtwitch-player" rel="stylesheet" type="text/css" href="${runtime.getURL('css/player.css')}">`);
+            document.head.insertAdjacentHTML('afterbegin', `<link id="oldtwitch-css" class="oldtwitch-player" rel="stylesheet" type="text/css" href="${runtime.getURL('html/css/player.css')}">`);
 
             // if in a iframe
             if (window.self !== window.top) {

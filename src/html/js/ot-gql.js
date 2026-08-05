@@ -897,15 +897,11 @@ class TwitchGql {
     }
 
     /**
-     * @typedef {"ARCHIVE" | "HIGHLIGHT" | "VIDEOS" | "CLIPS"} MediaType
-     * @typedef {"LAST_DAY" | "LAST_WEEK" | "LAST_MONTH" | "ALL_TIME"} ClipsSort
-     */
-    /**
      * Get VODs, highlights or clips from a channel.
      * @param {string} name Name of channel.
-     * @param {MediaType} type The type of media to look for.
+     * @param {"ARCHIVE" | "HIGHLIGHT" | "VIDEOS" | "CLIPS"} type The type of media to look for.
      * @param {number} [limit] The amount of items to return back. (Defaults to 30)
-     * @param {ClipsSort} [sort] This is mostly used for clips, but used to be for everything on a channels page.
+     * @param {"LAST_DAY" | "LAST_WEEK" | "LAST_MONTH" | "ALL_TIME"} [sort] This is mostly used for clips, but used to be for everything on a channels page.
      * @returns {object} Returns a list of objects that include data for each media fetched.
      */
     async getChannelMedia(name, type, limit, sort) {
@@ -1903,7 +1899,7 @@ class TwitchGql {
                     "extensions": {
                         "persistedQuery": {
                             "version": 1,
-                            "sha256Hash": "f130048a462a0ac86bb54d653c968c514e9ab9ca94db52368c1179e97b0f16eb"
+                            "sha256Hash": "66038e29eb00d8fd115b0ce1a1382dd9d41168739b08bc87dc042af6a730541f"
                         }
                     }
                 }),

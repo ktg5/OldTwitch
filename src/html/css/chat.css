@@ -3,42 +3,51 @@
 }
 
 
-.tw-root--theme-dark .chat-room {
+.tw-root--theme-dark .chat-room { 
+    /* chat base bg */
     background: var(--color-background-body) !important;
 }
 
 .Layout-sc-1xcs6mc-0 .stream-chat-header {
+    /* header - "Stream Chat" */
     justify-content: left !important;
     padding-left: 2rem !important;
     min-height: 5rem;
 }
 
 .tw-root--theme-dark .stream-chat-header {
+    /* header but dark mode */
     border-bottom: 1px solid var(--color-background-alt) !important;
 }
 
 .tw-root--theme-dark .Layout-sc-1xcs6mc-0.pMQwv {
+    /* fix border at bottom of header when in dark theme */
     border-bottom: 1px solid var(--color-background-alt) !important;
 }
 
-.stream-chat-header [data-test-selector="chat-room-header-label"] {
+.stream-chat-header .stream-chat-header #chat-room-header-label {
+    /* text in chat header */
     text-transform: none !important;
 }
 
-.tw-root--theme-dark .stream-chat-header [data-test-selector="chat-room-header-label"] {
+.tw-root--theme-dark .stream-chat-header .stream-chat-header #chat-room-header-label {
+    /* text in chat header but in dark theme */
     color: #fff !important;
 }
 
 .jxaBAK, .community-highlight {
+    /* chat alerts like pinned messages, predictions, polls, etc.. */
     box-shadow: none !important;
 }
 
 .sticky-community-highlight strong {
+    /* pinned message text? */
     color: var(--color-text-base) !important;
 }
 
 
 .chat-wysiwyg-input__box {
+    /* chat input box */
     border: 1px solid #dad8de;
     background: #fff;
     color: #433f4a;
@@ -60,16 +69,14 @@
     resize: vertical;
     -ms-overflow-style: none;
     box-shadow: none !important;
-}
-
-.chat-wysiwyg-input__box {
     border: 1px solid var(--color-border-input);
     background-color: var(--color-background-body) !important;
     border-radius: 0 !important;
-}
 
-.chat-wysiwyg-input__box .chat-wysiwyg-input__placeholder {
-    color: var(--color-text-input) !important;
+    .chat-wysiwyg-input__placeholder {
+        /* placeholder text when no value is in the input box */
+        color: var(--color-text-input) !important;
+    }
 }
 
 .tw-root--theme-dark .chat-wysiwyg-input__box:hover {
@@ -91,6 +98,7 @@
 
 
 .ScCoreButton-sc-ocjdkq-0 {
+    /* ? */
     display: inline-flex;
     position: relative;
     align-items: center;
@@ -104,9 +112,13 @@
     -webkit-user-select: none;
     user-select: none;
     border-radius: 0 !important;
+    border: 1px solid transparent;
+    background: #6441a4 !important;
+    border-radius: 2px !important;
 }
 
 .kIbAir, .gjSLzh {
+    /* button base? */
     background: none !important;
     color: #6441a4 !important;
 }
@@ -116,16 +128,12 @@
 .jIBntd,
 .cFdOrq
 {
+    /* force color on follwing elemnts */
     color: var(--color-text-base) !important;
 }
 
-.ScCoreButton-sc-ocjdkq-0 {
-    border: 1px solid transparent;
-    background: #6441a4 !important;
-    border-radius: 2px !important;
-}
-
 .tw-root--theme-light [data-test-selector="chat-viewer-list"] svg {
+    /* change svg color for the viewer list button in light mode */
     fill: #323133;
 }
 
@@ -133,11 +141,8 @@
 .Layout-sc-1xcs6mc-0.iHgHKM button span,
 .dgVYJo
 {
+    /* force color on the redeems/bits button */
     color: #fff !important;
-}
-
-[data-test-selector="community-points-summary"] .bdoMMZ svg {
-    fill: #fff;
 }
 
 button[data-test-selector="chat-viewer-list"], button[data-test-selector="chat-viewer-list"] svg,
@@ -145,26 +150,36 @@ button[data-a-target="chat-badge-carousel-badge-icon"], button[data-a-target="ch
 button[data-a-target="chat-settings"], button[data-a-target="chat-settings"] svg,
 button[data-a-target="emote-picker-button"], button[data-a-target="emote-picker-button"] svg
 {
+    /* default svg color */
     background: transparent !important;
     color: var(--color-fill-current);
     fill: var(--color-fill-current);
 }
 
+[data-test-selector="community-points-summary"] .bdoMMZ svg {
+    /* force svg color */
+    fill: #fff;
+}
+
 .ScCoreButton-sc-ocjdkq-0:hover {
+    /* ? */
     text-decoration: none
 }
 
 .ScCoreButton-sc-ocjdkq-0:hover,.tw-root--theme-dark .ScCoreButton-sc-ocjdkq-0:hover,.tw-theme--light .ScCoreButton-sc-ocjdkq-0:hover {
+    /* ? */
     border-color: #7d5bbe;
     background: #7d5bbe;
     color: #fff
 }
 
 .ScCoreButton-sc-ocjdkq-0:focus {
+    /* ? */
     text-decoration: none
 }
 
 .ScCoreButton-sc-ocjdkq-0:focus,.tw-root--theme-dark .ScCoreButton-sc-ocjdkq-0:focus,.tw-theme--light .ScCoreButton-sc-ocjdkq-0:focus {
+    /* ? */
     border-color: #9a7fcc;
     background: #7d5bbe;
     color: #fff;
@@ -173,10 +188,12 @@ button[data-a-target="emote-picker-button"], button[data-a-target="emote-picker-
 }
 
 .ScCoreButton-sc-ocjdkq-0:active {
+    /* ? */
     text-decoration: none
 }
 
 .ScCoreButton-sc-ocjdkq-0:active,.tw-root--theme-dark .ScCoreButton-sc-ocjdkq-0:active,.tw-theme--light .ScCoreButton-sc-ocjdkq-0:active {
+    /* ? */
     border-color: #7d5bbe;
     background: #6441a4;
     color: #fff;
@@ -185,6 +202,7 @@ button[data-a-target="emote-picker-button"], button[data-a-target="emote-picker-
 }
 
 .ScCoreButton-sc-ocjdkq-0__text {
+    /* ? */
     position: relative;
     -webkit-box-flex: 1;
     -ms-flex-positive: 1;
@@ -194,69 +212,81 @@ button[data-a-target="emote-picker-button"], button[data-a-target="emote-picker-
 }
 
 .ScCoreButton-sc-ocjdkq-0--hollow {
+    /* ? */
     border: 1px solid #b19dd8;
     background: transparent;
     color: #6441a4
 }
 
 .tw-root--theme-dark .ScCoreButton-sc-ocjdkq-0--hollow {
+    /* ? */
     border: 1px solid #4b367c;
     background: transparent;
     color: #dad8de
 }
 
 .tw-theme--light .ScCoreButton-sc-ocjdkq-0--hollow {
+    /* ? */
     border: 1px solid #b19dd8;
     background: transparent;
     color: #6441a4
 }
 
 .ScCoreButton-sc-ocjdkq-0--hollow:hover {
+    /* ? */
     border-color: rgba(100,65,164,.5);
     background: rgba(100,65,164,.05);
     color: #2c2541
 }
 
 .tw-root--theme-dark .ScCoreButton-sc-ocjdkq-0--hollow:hover {
+    /* ? */
     border-color: rgba(100,65,164,.4);
     background: rgba(100,65,164,.2);
     color: #efeef1
 }
 
 .ScCoreButton-sc-ocjdkq-0--hollow:focus,.tw-theme--light .ScCoreButton-sc-ocjdkq-0--hollow:hover {
+    /* ? */
     border-color: rgba(100,65,164,.5);
     background: rgba(100,65,164,.05);
     color: #2c2541
 }
 
 .ScCoreButton-sc-ocjdkq-0--hollow:focus,.tw-root--theme-dark .ScCoreButton-sc-ocjdkq-0--hollow:focus {
+    /* ? */
     -webkit-box-shadow: 0 0 6px 0 #7d5bbe;
     box-shadow: 0 0 6px 0 #7d5bbe
 }
 
 .tw-root--theme-dark .ScCoreButton-sc-ocjdkq-0--hollow:focus {
+    /* ? */
     border-color: rgba(100,65,164,.4);
     background: rgba(100,65,164,.2);
     color: #efeef1
 }
 
 .tw-theme--light .ScCoreButton-sc-ocjdkq-0--hollow:focus {
+    /* ? */
     border-color: rgba(100,65,164,.5);
     background: rgba(100,65,164,.05)
 }
 
 .ScCoreButton-sc-ocjdkq-0--hollow:active,.tw-theme--light .ScCoreButton-sc-ocjdkq-0--hollow:focus {
+    /* ? */
     color: #2c2541;
     -webkit-box-shadow: 0 0 6px 0 #7d5bbe;
     box-shadow: 0 0 6px 0 #7d5bbe
 }
 
 .ScCoreButton-sc-ocjdkq-0--hollow:active {
+    /* ? */
     border-color: rgba(100,65,164,.6);
     background: transparent
 }
 
 .tw-root--theme-dark .ScCoreButton-sc-ocjdkq-0--hollow:active {
+    /* ? */
     border-color: rgba(100,65,164,.5);
     background: rgba(100,65,164,.1);
     color: #efeef1;
@@ -265,6 +295,7 @@ button[data-a-target="emote-picker-button"], button[data-a-target="emote-picker-
 }
 
 .tw-theme--light .ScCoreButton-sc-ocjdkq-0--hollow:active {
+    /* ? */
     border-color: rgba(100,65,164,.6);
     background: transparent;
     color: #2c2541;

@@ -105,7 +105,8 @@ async function setIframeVideo (args) {
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "CLIPS", 30, "LAST_WEEK"));
-                                    }
+                                    },
+                                    selected: true
                                 },
                                 {
                                     id: "last_month",
@@ -140,7 +141,8 @@ async function setIframeVideo (args) {
                                     onSelect: async (d) => {
                                         clearPageData();
                                         setTabData(await gql.getChannelMedia(args.channel, "VIDEOS"));
-                                    }
+                                    },
+                                    selected: true
                                 },
                                 {
                                     id: "archives",
