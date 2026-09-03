@@ -289,7 +289,7 @@ function twitchMarkdown(string) {
 // account, and if I did you won't be able to install this extension in the
 // first place. (That is if you downloaded the extension from a browser
 // extension store)
-/** @type { Object } */
+/** @type { User } */
 var userData,
 /** @type { string } */
     oauth,
@@ -611,20 +611,20 @@ ${d.body}
     </div>
     <div class="tw-border-t tw-border-r tw-border-b tw-border-l tw-elevation-1 tw-border-radius-small tw-c-background">
         <div class="tw-pd-1">
-            <a href="https://www.twitch.tv/${userData.displayName}" class="tw-interactable" data-lang-target="page-channel" data-a-target="channel-link">
-                <div class="tw-pd-x-1 tw-pd-y-05"></div>
+            <a href="https://www.twitch.tv/${userData.displayName}" class="tw-interactable" data-a-target="channel-link">
+                <div class="tw-pd-x-1 tw-pd-y-05" data-lang-target="page-channel"></div>
             </a>
-            <a href="https://dashboard.twitch.tv/u/${userData.displayName}/home" class="tw-interactable" data-lang-target="page-creator" data-a-target="dashboard-link">
-                <div class="tw-pd-x-1 tw-pd-y-05"></div>
+            <a href="https://dashboard.twitch.tv/u/${userData.displayName}/home" class="tw-interactable" data-a-target="dashboard-link">
+                <div class="tw-pd-x-1 tw-pd-y-05" data-lang-target="page-creator"></div>
             </a>
-            <a href="https://www.twitch.tv/subscriptions" class="tw-interactable" data-lang-target="page-subs" data-a-target="subscriptions-link">
-                <div class="tw-pd-x-1 tw-pd-y-05"></div>
+            <a href="https://www.twitch.tv/subscriptions" class="tw-interactable" data-a-target="subscriptions-link">
+                <div class="tw-pd-x-1 tw-pd-y-05" data-lang-target="page-subs"></div>
             </a>
-            <a href="https://www.twitch.tv/inventory" class="tw-interactable" data-lang-target="page-drops" data-a-target="inventory-link">
-                <div class="tw-pd-x-1 tw-pd-y-05"></div>
+            <a href="https://www.twitch.tv/inventory" class="tw-interactable" data-a-target="inventory-link">
+                <div class="tw-pd-x-1 tw-pd-y-05" data-lang-target="page-drops"></div>
             </a>
-            <a href="https://www.twitch.tv/settings" class="tw-interactable" data-lang-target="page-settings" data-a-target="settings-link">
-                <div class="tw-pd-x-1 tw-pd-y-05"></div>
+            <a href="https://www.twitch.tv/settings" class="tw-interactable" data-a-target="settings-link">
+                <div class="tw-pd-x-1 tw-pd-y-05" data-lang-target="page-settings"></div>
             </a>
         </div>
     </div>
@@ -714,34 +714,40 @@ ${d.body}
                     break;
                 }
 
-                channelList.items.forEach(stream => {
-                    let channelDiv;
+                channelList.items.forEach(item => {
+                    if (item === null) {
+                        console.warn('null item, possibly banned or deleted: ', item);
+                        return;
+                    }
 
-                    if (stream === null) return console.warn('null stream, possibly banned or deleted: ', stream);
-                    switch (stream.__typename) {
+                    let channelDiv;
+                    switch (item.__typename) {
                         case "Stream":
                             let categoryTxt, viewCountTxt = null;
-                            if (stream.game) categoryTxt = stream.game.displayName;
-                            if (stream.viewersCount) viewCountTxt = stream.viewersCount;
+                            if (item.game) categoryTxt = item.game.displayName;
+                            if (item.viewersCount) viewCountTxt = item.viewersCount;
 
                             // make div
                             channelDiv = document.createElement("a");
                             channelDiv.classList.add("channel");
 
                             // sometimes the gql returns null, idk why it even pulls it, but whatever.
-                            if (!stream.broadcaster) return console.warn('no user, stream: ', stream);
+                            if (!item.broadcaster) {
+                                console.warn('no user, stream: ', item);
+                                return;
+                            }
 
-                            channelDiv.href = `https://twitch.tv/${stream.broadcaster.login}`;
-                            if (stream.broadcaster) channelDiv.title = stream.broadcaster.broadcastSettings.title;
+                            channelDiv.href = `https://twitch.tv/${item.broadcaster.login}`;
+                            if (item.broadcaster) channelDiv.title = item.broadcaster.broadcastSettings.title;
                             channelDiv.innerHTML = `
 <figure class="tw-avatar tw-avatar--size-30">
     <div class="tw-overflow-hidden">
-        <img class="tw-image" src="${stream.broadcaster.profileImageURL}">
+        <img class="tw-image" src="${item.broadcaster.profileImageURL}">
     </div>
 </figure>
 <div class="channel-info">
     <div class="left">
-        <span class="title">${stream.broadcaster.displayName}</span>
+        <span class="title">${item.broadcaster.displayName}</span>
         <span class="category">${categoryTxt ? categoryTxt : ""}</span>
     </div>
     <div class="right">
@@ -757,17 +763,17 @@ ${d.body}
                             channelDiv = document.createElement("a");
                             channelDiv.classList.add("channel");
             
-                            channelDiv.href = `https://twitch.tv/${stream.login}`;
-                            if (stream.content) channelDiv.title = stream.broadcastSettings.title;
+                            channelDiv.href = `https://twitch.tv/${item.login}`;
+                            if (item.content) channelDiv.title = item.broadcastSettings.title;
                             channelDiv.innerHTML = `
 <figure class="tw-avatar tw-avatar--size-30">
     <div class="tw-overflow-hidden">
-        <img class="tw-image" src="${stream.profileImageURL}">
+        <img class="tw-image" src="${item.profileImageURL}">
     </div>
 </figure>
 <div class="channel-info">
     <div class="left">
-        <span class="title">${stream.displayName}</span>
+        <span class="title">${item.displayName}</span>
     </div>
     <div class="right tw-hide"></div>
 </div>

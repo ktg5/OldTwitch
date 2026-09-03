@@ -171,7 +171,7 @@ async function handlePageChange() {
         runtime.getURL(`html/js/ot-alert.js`)
     ];
     switch (true) {
-        case location.pathname == "/":
+        case location.pathname === "/" && !location.host.startsWith('clips.twitch.tv'):
             injectTarget = runtime.getURL(`${htmlDir}/index.html`);
         break;
 
@@ -191,6 +191,7 @@ async function handlePageChange() {
             jsSrcs.push(runtime.getURL(`html/js/ot-settings.js`));
         break;
 
+        case location.host.startsWith('clips.twitch.tv'):
         default:
             injectTarget = runtime.getURL(`${htmlDir}/watch.html`);
             jsSrcs.push(runtime.getURL('lib/marked.min.js'));

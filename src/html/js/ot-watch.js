@@ -791,7 +791,7 @@ ${panel.description ? `
 
             // set iframe
             let iframe = document.createElement('iframe');
-            iframe.src = `https://clips.twitch.tv/embed?clip=${args.slug}&parent=${location.hostname}`;
+            iframe.src = `https://clips.twitch.tv/embed?clip=${args.slug}&parent=${location.hostname}&allowfullscreen=true`;
             document.querySelector(`#iframe-insert`).appendChild(iframe);
 
             gqlAction = async () => {
@@ -879,24 +879,56 @@ const videoCheck1 = !pathname.startsWith("/video/") && pathname.includes("/video
 const videoCheck2 = pathname.startsWith("/videos/");
 // Check link for clips
 const clipCheck1 = location.host == "clips.twitch.tv";
-const clipCheck2 = pathnameSplit.length > 1 && pathname.includes("/clip/")
+const clipCheck2 = pathnameSplit.length > 1 && pathname.includes("/clip/");
 // Okay go!!!!!
 let arg1 = pathnameSplit[pathnameSplit.length - 1].split("?")[0];
 switch (true) {
     // Check if link is a video
     case videoCheck1:
-    case videoCheck2:
-        if (videoCheck1) pathname.split("/video/").pop();
-        else if (videoCheck2) pathname.split("/videos/").pop();
         if (pathname.includes("?")) arg1 = arg1.split("?")[0];
+        console.log(arg1);
         setIframeVideo({ type: "video", id: arg1 });
     break;
+    // Link is a video but wrong way
+    case videoCheck2:
+        gqlAction = async () => {
+            let vodData = await gql.getVodInfo(arg1);
+            if (!vodData) return showError({ id: 404 });
 
-    // Check if link is a clip
+            location.href = `https://twitch.tv/${vodData.owner.login}/video/${arg1}${location.search ? location.search : ''}`;
+        };
+        if (gql) gqlAction()
+        else {
+            let tempInit = setInterval(() => {
+                if (gql) {
+                    gqlAction();
+                    clearInterval(tempInit);
+                }
+            }, 50);
+        }
+    break;
+
+    // Link is a clip but wrong way
     case clipCheck1:
+        gqlAction = async () => {
+            clipData = await gql.getClip(pathnameSplit[2]);
+            if (!clipData) return showError({ id: 404 });
+
+            location.href = `https://twitch.tv/${clipData.broadcaster.login}/clip/${pathnameSplit[2]}${location.search ? location.search : ''}`;
+        };
+        if (gql) gqlAction()
+        else {
+            let tempInit = setInterval(() => {
+                if (gql) {
+                    gqlAction();
+                    clearInterval(tempInit);
+                }
+            }, 50);
+        }
+    break;
+    // Check if link is a clip
     case clipCheck2:
-        if (clipCheck1) setIframeVideo({ type: "clip", slug: pathnameSplit.pop(), channel: null });
-        else if (clipCheck2) setIframeVideo({ type: "clip", slug: pathname.split("clip/").pop(), channel: arg1 });
+        setIframeVideo({ type: "clip", slug: pathname.split("clip/").pop(), channel: arg1 });
     break;
 
     // Probably just a stream
