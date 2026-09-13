@@ -1,5 +1,6 @@
 * **Welcome & Release alert notes made**
 * **Channel panels now display markdown!**
+* **Added Polish as a selectable language! (thank you jakeayy!!)**
 * Directory category tabs & channel tabs now change the URL as the modern site
 * `clips.twitch.tv` & `/videos` links redirect to their respective original link pathing (unsure how to really word this)
 * A channel's offline image will be shown as the video player's background when offline, just like the modern site instead of using the channel page's background--which for some reason is the default when viewing via embed?...
@@ -8,4 +9,5 @@
 * Updated extension permissions to not include stuff not used
 * Added `?newttv` as a search param, which is the same way as `?nooldttv` still works
 * Worked on chat & player embed CSS
-* Updated lang ReadMe a bit
+* Updated lang ReadMe a good amount
+* Build script improvements

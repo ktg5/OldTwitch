@@ -3,7 +3,8 @@
 This guide follows in the same steps as my other extension, PlayerTube. Both will be updated the same way with some variotions between the two. If you find making languages for this easy, consider adding to PlayerTube's list of languages too! Thanks!
 
 ## Setting up the coding stuff
-First things first, make a fork of OldTwitch from the main page of the repo & download your fork of it using:
+First things first, make a fork of OldTwitch from the main page of the repo & download your fork of it using the following:
+**⚠ Before running this command, please make sure to change the `[GITHUB-USER]` part of the command to your GitHub username!**
 ```bash
 git clone https://github.com/[GITHUB-USER]/OldTwitch.git
 ```

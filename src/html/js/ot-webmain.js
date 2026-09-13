@@ -1556,7 +1556,9 @@ setTimeout(async () => {
                     // title
                     zeroStreamersGrid.children[i].querySelector(`.item-name`).innerHTML = `<a href="https://twitch.tv/${channel.user_login}">${channel.user_name}</a>`;
                     // viewers
-                    zeroStreamersGrid.children[i].querySelector(`.item-subtext`).innerHTML = `${channel.viewer_count} viewers on ${channel.user_name}`;
+                    zeroStreamersGrid.children[i].querySelector(`.item-subtext`).innerHTML = lang.page['viewers-watching']
+                        .replace('&OLDTTV{VIEWERS}&', channel.viewer_count)
+                        .replace('&OLDTTV{CHANNEL}&', channel.user_name);
                 }
 
                 // Top Channels

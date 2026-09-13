@@ -9,13 +9,12 @@ function insertSpacer() {
     console.log(`-------------`);
 }
 
-
 // Before starting, make sure that the other folders don't exist.
 var chromeDir = 'dist/OldTTV-Chrome';
 var firefoxDir = 'dist/OldTTV-Firefox';
-if (fs.existsSync('./dist')) {
+if (fs.existsSync('dist')) {
     console.log(`Deleting dist folder`);
-    fs.rmSync('./dist', { recursive: true });
+    fs.rmSync('dist', { recursive: true });
     console.log(`Deleted dist folder`);
 }
 
@@ -80,7 +79,7 @@ process.argv.forEach(function (val, index, array) {
 async function makeWebScript(dir: string) {
     if (!dir.endsWith('.js')) return console.error('makeWebScript: the requested dir, "' + dir + '" should be a JS script dumbass!!!');
 
-    const srcDistDir = './src/dist';
+    const srcDistDir = 'src/dist';
     if (!fs.existsSync(srcDistDir)) fs.mkdirSync(srcDistDir);
 
     const copyScriptDir = `${srcDistDir}/${path.parse(dir).base}`;
@@ -120,8 +119,8 @@ insertSpacer();
 
 // Make a "-web" version of the ot-gql script
 // Delete old web script
-makeWebScript('./src/html/js/ot-gql.js');
-makeWebScript('./src/html/js/ot-hermes.js');
+makeWebScript('src/html/js/ot-gql.js');
+makeWebScript('src/html/js/ot-hermes.js');
 
 
 // Change settings depending on if we're building a dev build or not.
@@ -134,7 +133,7 @@ function setSettings(extRoot: string) {
         console.log("Changing & saving default settings for production build...");
 
         // Open the default settings file
-        const defaultSettings = JSON.parse(fs.readFileSync('./src/default_config.json', { encoding: 'utf8' }));
+        const defaultSettings = JSON.parse(fs.readFileSync('src/default_config.json', { encoding: 'utf8' }));
 
         // Change the default settings
         defaultSettings['alertUpdates'] = false;
@@ -146,9 +145,9 @@ function setSettings(extRoot: string) {
 
 
 // Make sure to have the dist folder ready.
-if (!fs.existsSync('./dist')) fs.mkdirSync('./dist');
+if (!fs.existsSync('dist')) fs.mkdirSync('dist');
 // Let's copy the src folder for Chrome.
-copyDir('./src', chromeDir).then(async () => {
+copyDir('src', chromeDir).then(async () => {
     console.log(`(Re)made the Chrome folder`);
 
     if (!delZips) {
@@ -178,7 +177,7 @@ copyDir('./src', chromeDir).then(async () => {
 });
 
 // Then we copy the same folder for Firefox.
-copyDir('./src', firefoxDir).then(async () => {
+copyDir('src', firefoxDir).then(async () => {
     console.log(`(Re)made the Firefox folder`);
     // Then we modify the Firefox extension a bit cuz no
     // browser developer can come up with extension
