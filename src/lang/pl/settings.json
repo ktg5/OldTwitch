@@ -1,0 +1,26 @@
+{
+    "showReleaseNotes": {
+        "title": "Pokaż zmiany aktualizacji",
+        "desc": "Ta opcja pokaże zmiany aktualizacji gdy zaktualizowano do nowej wersji OldTwitch."
+    },
+    "alertUpdates": {
+        "title": "Powiadom mnie gdy przestarzałe",
+        "desc": "Pokazuje banner na górze strony by zaktualizować OldTwitch. Domyślnie właczone na wersjach deweloperskich."
+    },
+    "lang": {
+        "title": "Ustaw język",
+        "desc": "Zmiań język całego OldTwitch. (Pomóć liście rosnąć--wesprzyj na GitHub!)"
+    },
+    "year": {
+        "title": "Rok motywu",
+        "desc": "Ustawia rok motywu na wszystkie strony OldTwitch. Trzeba odświeżyć by zmienić zmiany."
+    },
+    "forceColorMode": {
+        "title": "Wymuś tryb koloru",
+        "desc": "OldTwitch wymusi tryb koloru ustawiony w opcji \"Wymuś jaki tryb koloru\"."
+    },
+    "forceWhichColorMode": {
+        "title": "Wymuś jaki tryb koloru",
+        "desc": "Wymusi jasny lub ciemny tryb na wszystkich stronach."
+    }
+}
