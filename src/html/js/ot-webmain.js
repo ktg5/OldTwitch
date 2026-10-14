@@ -354,6 +354,7 @@ If you step into a issue, please report it to the GitHub page! Which can be foun
 page.
 Thanks once again.
             `,
+            img: `${extensionLocation}/assets/banner.png`,
             actions: [
                 {
                     key: "help",
@@ -377,8 +378,8 @@ Thanks once again.
                     callback: () => {
                         setWelcome();
                     }
-                }
-            ]
+                },
+            ],
         });
     }
 
@@ -550,7 +551,8 @@ async function addGlobals() {
 ${lang.page['newver-alert-desc'].replace('&OLDTTV{VER}&', currentVersion)}
 
 ${d.body}
-                    `
+                    `,
+                    img: `${extensionLocation}/assets/banner.png`,
                 });
             });
         }

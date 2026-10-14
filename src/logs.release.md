@@ -1,6 +1,7 @@
 * **Welcome & Release alert notes made**
 * **Channel panels now display markdown!**
 * **Added Polish as a selectable language! (thank you jakeayy!!)**
+* Made extension branding
 * Directory category tabs & channel tabs now change the URL as the modern site
 * `clips.twitch.tv` & `/videos` links redirect to their respective original link pathing (unsure how to really word this)
 * A channel's offline image will be shown as the video player's background when offline, just like the modern site instead of using the channel page's background--which for some reason is the default when viewing via embed?...
