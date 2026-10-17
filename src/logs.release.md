@@ -1,3 +1,4 @@
+* 0.1.1: Fixed issues with build script and other things while using OldTwitch
 * **Welcome & Release alert notes made**
 * **Channel panels now display markdown!**
 * **Added Polish as a selectable language! (thank you jakeayy!!)**

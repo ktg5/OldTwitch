@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "OldTwitch",
     "description": "A browser extension to bring back the old Twitch look",
-    "version": "0.1",
+    "version": "0.1.1",
 
     "background": {
         "service_worker": "js/ot-background.js"
@@ -72,6 +72,9 @@
 
     "web_accessible_resources": [{
         "matches": ["*://*.twitch.tv/*"],
-        "resources": ["html/*", "js/*", "css/*", "lib/*", "ver.txt", "default_config.json"]
+        "resources": [
+            "html/*", "js/*", "css/*", "lib/*",
+            "ver.txt", "default_config.json", "assets/*"
+        ]
     }]
 }

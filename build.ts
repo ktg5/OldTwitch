@@ -123,7 +123,9 @@ makeWebScript('src/html/js/ot-gql.js');
 makeWebScript('src/html/js/ot-hermes.js');
 
 
-// Change settings depending on if we're building a dev build or not.
+/**
+ * change settings depending on if we're building a dev build or not.
+ */
 function setSettings(extRoot: string) {
     let devBuild = false;
     fs.readFileSync(`${extRoot}/ver.txt`, { encoding: 'utf8' }).split('\n').forEach(line => {
@@ -143,12 +145,48 @@ function setSettings(extRoot: string) {
     }
 }
 
+/**
+ * takes in the browser dist dir and removes the `__comment` files from all lang files
+ * @param root dir of browser dist folder
+ */
+function rmJsonComments(root: string) {
+    const rootDir = fs.readdirSync(path.join(root, 'lang'), { withFileTypes: true });
+    rootDir.forEach((lang) => {
+        const langDir = path.join(root, 'lang', lang.name);
+        if (lang.isDirectory()) fs.readdirSync(langDir, { withFileTypes: true }).forEach((langFile) => {
+            const langFileDir = path.join(langDir, langFile.name);
+            // read file
+            const langFileRead = fs.readFileSync(langFileDir, 'utf-8');
+            const langFileJson = JSON.parse(langFileRead);
+            // delete unused
+            delete langFileJson.__comment;
+            // save to file
+            fs.writeFileSync(langFileDir, JSON.stringify(langFileJson), { encoding: 'utf-8' });
+        });
+    });
+}
+
+
+/**
+ * make zip out of `dir`
+ * @param dir folder xd
+ */
+function zipDir(dir: string) {
+    const zip = new Zip();
+    const outputDir = `${dir}.zip`;
+    zip.addLocalFolder(dir);
+    zip.writeZip(outputDir);
+}
+
 
 // Make sure to have the dist folder ready.
 if (!fs.existsSync('dist')) fs.mkdirSync('dist');
 // Let's copy the src folder for Chrome.
 copyDir('src', chromeDir).then(async () => {
     console.log(`(Re)made the Chrome folder`);
+
+    setSettings(chromeDir);
+    rmJsonComments(chromeDir);
 
     if (!delZips) {
         // If the zip already exists...
@@ -158,15 +196,10 @@ copyDir('src', chromeDir).then(async () => {
             console.log("Deleted old Chrome zip");
         }
 
-        setSettings(chromeDir);
-
         console.log("Zipping Chrome version...");
         // Try to zip up the extension
         try {
-            const zip = new Zip();
-            const outputDir = `${chromeDir}.zip`;
-            zip.addLocalFolder(chromeDir);
-            zip.writeZip(outputDir);
+            zipDir(chromeDir);
             if (delFolders) fs.rmSync(chromeDir, { recursive: true });
         } catch (e) {
             console.log(`WHAT THE FRICK! ${e}`);
@@ -239,16 +272,14 @@ copyDir('src', firefoxDir).then(async () => {
         console.log("Deleted old Firefox zip");
     }
 
-    setSettings(chromeDir);
+    setSettings(firefoxDir);
+    rmJsonComments(firefoxDir);
 
     console.log("Zipping Firefox version...");
     if (!delZips) {
         // Try to zip up the extension
         try {
-            const zip = new Zip();
-            const outputDir = `${firefoxDir}.zip`;
-            zip.addLocalFolder(firefoxDir);
-            zip.writeZip(outputDir);
+            zipDir(firefoxDir);
             if (delFolders) fs.rmSync(firefoxDir, { recursive: true });
         } catch (e) {
             console.log(`WHAT THE FRICK! ${e}`);
