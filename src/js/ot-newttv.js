@@ -24,7 +24,7 @@ window.addEventListener('load', () => {
     `;
 
     // Insert to page
-    document.querySelector(`.Layout-sc-1xcs6mc-0.bZYcrx`).insertBefore(oldTwitchButton, document.querySelector(`.Layout-sc-1xcs6mc-0.fNSfLT`));
+    document.querySelector(`.Layout-sc-1xcs6mc-0.jCxYDG`).insertBefore(oldTwitchButton, document.querySelector(`.Layout-sc-1xcs6mc-0.fNSfLT`));
 
     // Button on click
     oldTwitchButton.querySelector('button').addEventListener('click', () => {

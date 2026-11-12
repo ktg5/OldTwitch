@@ -2,6 +2,10 @@
     scrollbar-width: none;
 }
 
+code {
+    font-family: monospace !important;
+}
+
 
 .watch-container {
     position: relative;

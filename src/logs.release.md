@@ -1,3 +1,5 @@
+* 0.1.2: **Quick Manfiest update--removing unused permissions.** (`cookies`, `scripting`, & `webRequest`) Origianlly thought I needed these since multiple scripts use the same thing, but I guess not since I tested myself & got an email from Google to look at my extension permissions else I'd get murdered xdd
+* 0.1.2: Also fixed `Return to OldTwitch` button not injecting on new Twitch page
 * 0.1.1: Fixed issues with build script and other things while using OldTwitch
 * **Welcome & Release alert notes made**
 * **Channel panels now display markdown!**
