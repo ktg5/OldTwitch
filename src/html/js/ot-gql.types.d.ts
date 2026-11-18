@@ -225,7 +225,7 @@ type VideoComment = {
     "id": string,
     "commenter": User,
     "contentOffsetSeconds": 27,
-    /** Formated as YYYY-MM-DDTHH:SS:??? */
+    /** Formated as `YYYY`-`MM`-`DD`T`HH`:`SS`:`???` */
     "createdAt": string,
     "message": {
         "fragments": {
@@ -275,7 +275,7 @@ type StreamEdge = {
     freeformTags?: EdgeTag[] | null,
     broadcaster?: User;
     game?: GameEdge | null,
-    /** Formated as YYYY-MM-DDTHH:SS:??? */
+    /** Formated as `YYYY`-`MM`-`DD`T`HH`:`SS`:`???` */
     createdAt?: string,
     /** unsure what this is atm */
     contentClassificationLabels?: Array<any>,
@@ -297,9 +297,9 @@ type VideoEdge = {
     "previewThumbnailURL": string,
     /** Replace `{width}` & `{height}` with whatever pixels you want */
     templatePreviewThumbnailURL?: string,
-    /** Formated as YYYY-MM-DDTHH:SS:??? */
+    /** Formated as `YYYY`-`MM`-`DD`T`HH`:`SS`:`???` */
     "publishedAt"?: string,
-    /** Formated as YYYY-MM-DDTHH:SS:??? */
+    /** Formated as `YYYY`-`MM`-`DD`T`HH`:`SS`:`???` */
     createdAt?: string,
     "self"?: VideoSelfEdge,
     "title": string,
@@ -325,7 +325,7 @@ type ClipEdge = {
     broadcastIdentifier: BroadcastIdOnly;
     broadcaster: User;
     thumbnailURL: string;
-    /** Formated as YYYY-MM-DDTHH:SS:??? */
+    /** Formated as `YYYY`-`MM`-`DD`T`HH`:`SS`:`???` */
     createdAt: string;
     durationSeconds: number,
     "champBadge": null,

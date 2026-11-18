@@ -229,9 +229,12 @@ copyDir('src', firefoxDir).then(async () => {
     delete firefoxManifest.action; // Manifest v2 moment
     delete firefoxManifest.background.service_worker; // This is only for Chrome, Firefox will freak out if this isn't deleted lol.
     // Add ID for addin' the extension to the browser lololol
-    firefoxManifest.applications = {
+    firefoxManifest.browser_specific_settings = {
         "gecko": {
-            "id": "imgaming@home.lol"
+            "id": "imextragaming@home.lol",
+            "data_collection_permissions": {
+                "required": ["none"]
+            }
         }
     };
 
